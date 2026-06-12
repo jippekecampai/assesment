@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Campai Recruitment</title>
+    <link rel="stylesheet" href="styles.css?v=20260612-unknown-fallback" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Hoofdnavigatie">
+        <a class="brand" href="#overview" aria-label="Campai recruitment assessment start">
+          <span class="brand-mark"><img src="assets/campai-logo-white.png" alt="Campai" /></span>
+        </a>
+        <nav class="nav-list">
+          <button class="nav-item active" data-view="overview">
+            <span class="nav-icon">01</span>
+            Overzicht
+          </button>
+          <button class="nav-item" data-view="test">
+            <span class="nav-icon">02</span>
+            Kandidaattest
+          </button>
+          <button class="nav-item" data-view="questions">
+            <span class="nav-icon">03</span>
+            Vragenbank
+          </button>
+          <button class="nav-item" data-view="governance">
+            <span class="nav-icon">04</span>
+            Governance
+          </button>
+        </nav>
+        <div class="tenant-card">
+          <span class="label">Gebruik</span>
+          <strong>Campai-only</strong>
+          <p>Interne assessment voor Campai sollicitanten. Geen klantportaal of externe klantomgeving.</p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="crumb">Assessments / Campai recruitment</p>
+            <h1>Assessmentconsole voor rol-fit</h1>
+          </div>
+          <div class="topbar-actions">
+            <label class="search">
+              <span>Zoeken</span>
+              <input id="globalSearch" type="search" placeholder="Kandidaat, rol, domein, ticket-thema" />
+            </label>
+            <button class="ghost-button" id="exportBtn">Rapport exporteren</button>
+          </div>
+        </header>
+
+        <section class="view active" id="overviewView" aria-label="Reviewer dashboard">
+          <div class="candidate-strip panel">
+            <div class="candidate-profile">
+              <div class="avatar" id="candidateAvatar">AP</div>
+              <div>
+                <h2 id="candidateName">Arjun Patel</h2>
+                <p id="candidateMeta">Cloud Engineer kandidaat / Amsterdam / test afgerond</p>
+              </div>
+            </div>
+            <div class="meta-grid">
+              <div>
+                <span class="label">Assessment</span>
+                <strong>Camai MSP Technical Assessment</strong>
+              </div>
+              <div>
+                <span class="label">Rubric</span>
+                <strong>v3.1.0 / rolgewogen</strong>
+              </div>
+              <div>
+                <span class="label">Integriteit</span>
+                <strong class="ok">Schoon</strong>
+              </div>
+              <div>
+                <span class="label">Advies</span>
+                <strong id="decisionLabel">Geschikt</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-row">
+            <label>
+              Kandidaat beoordelen
+              <select id="candidateSelect"></select>
+            </label>
+            <label>
+              Doelrol
+              <select id="roleSelect"></select>
+            </label>
+            <label>
+              Domeinfilter
+              <select id="domainSelect"></select>
+            </label>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel role-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Beslisondersteuning</span>
+                  <h3>Beste rol-fit</h3>
+                </div>
+                <span class="status-pill" id="fitPill">Sterke fit</span>
+              </div>
+              <div id="roleBars" class="role-bars"></div>
+              <div class="qualification-ring">
+                <div class="ring" id="scoreRing"><span>0</span></div>
+                <div>
+                  <strong id="qualificationStatus">Geschikt</strong>
+                  <p id="qualificationText">Voldoet aan de benchmark zonder blokkerend risico.</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel skill-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Bewijskaart</span>
+                  <h3>Competentiekaart</h3>
+                </div>
+                <button class="text-button" id="resetViewBtn">Reset</button>
+              </div>
+              <div class="skill-map-wrap">
+                <svg id="radarChart" viewBox="0 0 420 320" role="img" aria-label="Radar voor competenties"></svg>
+                <div class="benchmark-table" id="benchmarkTable"></div>
+              </div>
+            </section>
+
+            <aside class="panel inspector-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Recruitmentadvies</span>
+                  <h3>Beslisinspector</h3>
+                </div>
+              </div>
+              <div id="decisionInspector"></div>
+            </aside>
+
+            <section class="panel topic-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Domeindekking</span>
+                  <h3>Topicmatrix</h3>
+                </div>
+                <span class="mini-legend"><i class="good"></i> sterk <i class="warn"></i> aandacht <i class="risk"></i> risico</span>
+              </div>
+              <div id="topicMatrix" class="topic-matrix"></div>
+            </section>
+
+            <section class="panel timeline-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Praktijkscenario's</span>
+                  <h3>Scenarioprestatie</h3>
+                </div>
+              </div>
+              <div id="scenarioTimeline" class="scenario-timeline"></div>
+            </section>
+
+            <section class="panel evidence-panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Audit trail</span>
+                  <h3>Vraagbewijs</h3>
+                </div>
+                <button class="ghost-button compact" id="showAllEvidenceBtn">Alles tonen</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Vraag</th>
+                      <th>Domein</th>
+                      <th>Type</th>
+                      <th>Score</th>
+                      <th>Bewijs</th>
+                    </tr>
+                  </thead>
+                  <tbody id="evidenceRows"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="testView" aria-label="Kandidaattest">
+          <div class="test-layout">
+            <section class="panel test-card">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Kandidaatervaring</span>
+                  <h3>Adaptief Campai assessment</h3>
+                </div>
+                <span class="status-pill">Lokaal opgeslagen</span>
+              </div>
+              <div class="progress-track"><span id="testProgress"></span></div>
+              <div id="testQuestion"></div>
+              <div class="test-actions">
+                <button class="ghost-button" id="prevQuestionBtn">Vorige</button>
+                <button class="primary-button" id="nextQuestionBtn">Opslaan en verder</button>
+              </div>
+            </section>
+            <aside class="panel test-side">
+              <h3>Testopbouw</h3>
+              <p>Combineert kennisvragen, scenario-inschatting, troubleshooting, klantcommunicatie, werkhouding en Engelse taalvaardigheid.</p>
+              <div id="testComposition"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="questionsView" aria-label="Vragenbank">
+          <div class="factory-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Aanbevolen bron</span>
+                  <h3>Campai vragenfabriek</h3>
+                </div>
+              </div>
+              <ol class="pipeline">
+                <li>
+                  <strong>Bronmateriaal exporteren</strong>
+                  <p>Gebruik Autotask tickets, Datto RMM meldingen, IT Glue SOP's, Microsoft 365 incidenten, changes, projectretrospectives en sales discovery notes.</p>
+                </li>
+                <li>
+                  <strong>Anonimiseren en normaliseren</strong>
+                  <p>Verwijder klantnamen, gebruikersnamen, e-mailadressen, IP's, domeinen, contractwaardes, credentials en andere herleidbare klantdata.</p>
+                </li>
+                <li>
+                  <strong>Classificeren naar rol en domein</strong>
+                  <p>Label elke casus met rolrelevantie, domein, vaardigheidstype, moeilijkheid, faalmodus en verwacht bewijs.</p>
+                </li>
+                <li>
+                  <strong>Vraagkandidaten maken</strong>
+                  <p>Maak meerkeuzevragen, praktijkscenario's, schriftelijke diagnoses, prioriteringsvragen en klantreacties.</p>
+                </li>
+                <li>
+                  <strong>Menselijke review en benchmark</strong>
+                  <p>Senior engineers keuren antwoordsleutel, scoringsrubric, onacceptabele antwoorden en rolthreshold goed.</p>
+                </li>
+              </ol>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Auteursmodel</span>
+                  <h3>Vraagtemplate</h3>
+                </div>
+              </div>
+              <form id="questionForm" class="question-form">
+                <label>Domein <select id="authorDomain"></select></label>
+                <label>Rolfocus <select id="authorRole"></select></label>
+                <label>Vraagtype
+                  <select id="authorType">
+                    <option>Scenario</option>
+                    <option>Kennischeck</option>
+                    <option>Troubleshooting</option>
+                    <option>Klantreactie</option>
+                    <option>Werkhouding</option>
+                    <option>Engelse taalvaardigheid</option>
+                    <option>Sales discovery</option>
+                  </select>
+                </label>
+                <label>Campai-bron
+                  <input id="authorSource" placeholder="Ticketthema, SOP, project, incident, vendor objective" />
+                </label>
+                <label>Conceptvraag
+                  <textarea id="authorPrompt" rows="4" placeholder="Beschrijf de opdracht voor de kandidaat"></textarea>
+                </label>
+                <button class="primary-button" type="submit">Conceptvraag toevoegen</button>
+              </form>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Vragenbank</span>
+                  <h3>Seedvragen om met Campai-data te valideren</h3>
+                </div>
+              </div>
+              <div id="draftQuestions" class="draft-list"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Alternatieven voor ticket mining</span>
+                  <h3>Andere betrouwbare vraagbronnen</h3>
+                </div>
+              </div>
+              <div class="source-grid" id="sourceOptions"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="governanceView" aria-label="Governance">
+          <div class="governance-grid">
+            <section class="panel">
+              <h3>Campai-only governance</h3>
+              <ul class="check-list">
+                <li>Alle kandidaten, rubrics, brondata en exports blijven binnen Campai recruitment.</li>
+                <li>Reviewerrechten zijn gescheiden van vraagbeheer en assessmentbeheer.</li>
+                <li>Rolthresholds worden versiebeheerd, goedgekeurd en vastgezet zodra een assessment start.</li>
+                <li>Rapporten tonen bewijs en caveats; geen AI-only afwijzing zonder menselijke review.</li>
+              </ul>
+            </section>
+            <section class="panel">
+              <h3>Regels voor data</h3>
+              <ul class="check-list">
+                <li>Importeer geen ruwe klantidentificatie in de vragenbank.</li>
+                <li>Bewaar originele ticketreferenties apart en afgeschermd, niet in kandidaatvragen.</li>
+                <li>Gebruik service principals of app registrations voor broningestie waar mogelijk.</li>
+                <li>Log elke gegenereerde vraag, reviewwijziging, score-overrule en rapportexport.</li>
+              </ul>
+            </section>
+            <section class="panel wide">
+              <h3>Aanbevolen productiearchitectuur</h3>
+              <div class="architecture">
+                <div><strong>Frontend</strong><span>React/Next.js app met kandidaat- en reviewportaal</span></div>
+                <div><strong>Identity</strong><span>Microsoft Entra ID voor Campai medewerkers, uitnodigingslinks voor kandidaten</span></div>
+                <div><strong>Backend</strong><span>API met rubricversies, exports, auditlog en kandidaatstatus</span></div>
+                <div><strong>Data</strong><span>Postgres of Azure SQL, blob storage voor geanonimiseerde bronpakketten</span></div>
+                <div><strong>AI-assist</strong><span>Optioneel conceptvragen maken uit geanonimiseerde bronnen, altijd human-approved</span></div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js?v=20260612-unknown-fallback"></script>
+  </body>
+</html>
