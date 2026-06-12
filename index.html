@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Campai Recruitment</title>
-    <link rel="stylesheet" href="styles.css?v=20260612-unknown-fallback" />
+    <link rel="stylesheet" href="styles.css?v=20260612-azure-api" />
   </head>
   <body>
     <div class="app-shell">
@@ -44,6 +44,10 @@
             <h1>Assessmentconsole voor rol-fit</h1>
           </div>
           <div class="topbar-actions">
+            <div class="identity-pill" id="identityPill">
+              <span>SSO</span>
+              <strong>Controleren...</strong>
+            </div>
             <label class="search">
               <span>Zoeken</span>
               <input id="globalSearch" type="search" placeholder="Kandidaat, rol, domein, ticket-thema" />
@@ -333,6 +337,6 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=20260612-unknown-fallback"></script>
+    <script src="app.js?v=20260612-azure-api"></script>
   </body>
 </html>

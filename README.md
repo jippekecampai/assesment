@@ -39,3 +39,18 @@ npm run dev
 ```
 
 Open daarna `http://127.0.0.1:4173`.
+
+## Azure testomgeving
+
+Deze app is voor nu single-tenant en Campai-only opgezet.
+
+- Resource group: `rg-cmp-assessment-test`
+- Regio: `westeurope`
+- App Service plan: `cmp-asp-assessment-test-weu-001`
+- Web App: `cmp-app-assessment-test-weu-001`
+- URL: `https://cmp-app-assessment-test-weu-001.azurewebsites.net`
+- Storage account: `cmpassesstestweu001`
+- Tabel: `AssessmentResults`
+- SSO: App Service Authentication met Microsoft Entra ID
+
+Let op: Azure Storage accountnamen mogen geen streepjes bevatten. Daarom volgt de storage accountnaam de `cmp` conventie zonder `-`.
