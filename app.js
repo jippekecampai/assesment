@@ -372,6 +372,96 @@ const trainingModules = [
     format: "Consulting scenario",
     proof: "Permissions, labels, adoption, governance en realistische verwachting",
     badge: "Copilot Governance Advisor"
+  },
+  {
+    id: "az900-cloud-fundamentals",
+    title: "Azure Fundamentals voor MSP-context",
+    domain: "Azure",
+    level: "L1",
+    xp: 80,
+    format: "Kennischeck + klantscenario",
+    proof: "IaaS/PaaS/SaaS, regions, availability zones, cost control en shared responsibility uitgelegd in klanttaal",
+    badge: "Azure Fundamentals"
+  },
+  {
+    id: "azure-governance-rbac-policy",
+    title: "Azure governance: RBAC, Policy en locks",
+    domain: "Azure",
+    level: "L2",
+    xp: 115,
+    format: "Governance case",
+    proof: "Resource groups, tags, RBAC-scope, Azure Policy, locks en change-impact vastgelegd",
+    badge: "Azure Governance Steward"
+  },
+  {
+    id: "m365-security-assessment",
+    title: "M365 security assessment uitvoeren",
+    domain: "Microsoft 365",
+    level: "L3",
+    xp: 140,
+    format: "Assessmentlab",
+    proof: "Identity, Conditional Access, Exchange, Teams, SharePoint en Intune findings geprioriteerd met attack-path impact",
+    badge: "M365 Security Assessor"
+  },
+  {
+    id: "entra-identity-hardening",
+    title: "Entra ID identity hardening",
+    domain: "Microsoft 365",
+    level: "L2",
+    xp: 110,
+    format: "Security review",
+    proof: "MFA, break-glass, risky sign-ins, legacy auth, app consent en adminrollen beoordeeld",
+    badge: "Identity Hardening Analyst"
+  },
+  {
+    id: "teams-sharepoint-secure-collab",
+    title: "Teams en SharePoint secure collaboration review",
+    domain: "SharePoint / Teams",
+    level: "L2",
+    xp: 105,
+    format: "Governance review",
+    proof: "Guest access, external sharing, ownership, lifecycle, sensitivity labels en herstelplan beschreven",
+    badge: "Secure Collaboration Reviewer"
+  },
+  {
+    id: "intune-baseline-drift",
+    title: "Intune baseline drift en endpoint risico",
+    domain: "Microsoft 365",
+    level: "L2",
+    xp: 105,
+    format: "Endpoint security case",
+    proof: "Compliance, configuration profiles, excluded devices, rollout rings en rollback vastgelegd",
+    badge: "Endpoint Baseline Analyst"
+  },
+  {
+    id: "attack-path-triage",
+    title: "Attack-path triage voor MSP-klanten",
+    domain: "Basic IT & Troubleshooting",
+    level: "L3",
+    xp: 135,
+    format: "Security scenario",
+    proof: "Initial access, privilege escalation, lateral movement, data exposure en mitigaties geprioriteerd",
+    badge: "Attack Path Mapper"
+  },
+  {
+    id: "secure-code-review-foundations",
+    title: "Secure review foundations voor scripts en automations",
+    domain: "Basic IT & Troubleshooting",
+    level: "L2",
+    xp: 95,
+    format: "Review-opdracht",
+    proof: "Inputvalidatie, secrets, least privilege, logging en rollback-risico benoemd",
+    badge: "Secure Automation Reviewer"
+  },
+  {
+    id: "security-awareness-consulting",
+    title: "Security awareness zonder bangmakerij",
+    domain: "Werkhouding & Communicatie",
+    level: "L1",
+    xp: 70,
+    format: "Consulting rollenspel",
+    proof: "Risico, gedrag, training, meetbare opvolging en realistische toon in klantgesprek",
+    badge: "Security Awareness Coach"
   }
 ];
 
@@ -468,6 +558,62 @@ const testQuestions = [
     type: "English assessment",
     prompt: "Write the best short customer update in English after a Microsoft 365 incident where service is restored but monitoring continues.",
     options: ["Fixed now.", "Service has been restored. We are monitoring the environment and will share a final update once we have confirmed stability.", "Problem gone maybe.", "You caused the issue and we fixed it."],
+    answer: 1
+  },
+  {
+    domain: "Azure",
+    type: "Fundamentals",
+    prompt: "Een klant vraagt waarom een workload beter in Azure App Service dan op een losse VM kan draaien. Wat is het sterkste antwoord?",
+    options: ["Omdat App Service altijd goedkoper is dan elke VM", "Omdat App Service platformbeheer, schaalopties en deployment vereenvoudigt terwijl de klant minder OS-beheer hoeft te doen", "Omdat App Service geen monitoring nodig heeft", "Omdat een VM nooit geschikt is voor webapplicaties"],
+    answer: 1
+  },
+  {
+    domain: "Azure",
+    type: "Governance",
+    prompt: "Een engineer wil snel rechten op een hele Azure subscription om een incident op te lossen. Wat is de beste MSP-aanpak?",
+    options: ["Owner-rechten permanent toekennen zodat vertraging wordt voorkomen", "Minimaal benodigde rol en scope bepalen, tijdelijk toekennen, logging vastleggen en achteraf intrekken", "Het wachtwoord van een global admin delen", "Alle resource locks verwijderen zodat niets blokkeert"],
+    answer: 1
+  },
+  {
+    domain: "Microsoft 365",
+    type: "Security assessment",
+    prompt: "Welke combinatie geeft het beste startpunt voor een M365 security assessment bij een nieuwe klant?",
+    options: ["Alleen Secure Score bekijken en het percentage rapporteren", "Identity, Conditional Access, legacy auth, adminrollen, external sharing, mailflow en endpoint compliance samen beoordelen", "Alleen de Exchange mailboxgroottes controleren", "Alleen vragen of de klant MFA gebruikt"],
+    answer: 1
+  },
+  {
+    domain: "Microsoft 365",
+    type: "Entra ID",
+    prompt: "Je ziet risky sign-ins en geen duidelijk break-glass proces. Wat hoort in je advies?",
+    options: ["Alle risky users direct verwijderen", "MFA en CA valideren, break-glass accounts borgen, adminrollen beperken en monitoring/alerting vastleggen", "Alle gebruikers global admin maken zodat support sneller kan helpen", "Alle sign-in logs wissen na afronding"],
+    answer: 1
+  },
+  {
+    domain: "SharePoint / Teams",
+    type: "Governance",
+    prompt: "Een Teams-omgeving heeft veel gastgebruikers en niemand weet wie eigenaar is. Wat toets je eerst?",
+    options: ["Alle gasten blokkeren zonder impactanalyse", "Owners, gasttoegang, external sharing, lifecycle, sensitivity labels en dataclassificatie", "Alle kanalen hernoemen", "Alleen controleren of Teams kan bellen"],
+    answer: 1
+  },
+  {
+    domain: "Basic IT & Troubleshooting",
+    type: "Security scenario",
+    prompt: "Een tenant heeft legacy auth, zwakke adminhygiëne en brede SharePoint sharing. Hoe prioriteer je?",
+    options: ["Eerst cosmetic branding aanpassen", "Attack path bepalen, identity-risico's sluiten, datadeling beperken en changes met rollback en communicatie plannen", "Alle gebruikers tegelijk blokkeren", "Alleen een rapport sturen zonder hersteladvies"],
+    answer: 1
+  },
+  {
+    domain: "Werkhouding & Communicatie",
+    type: "Consulting",
+    prompt: "Een klant wil security awareness inkopen maar reageert slecht op bangmakerij. Wat is de beste aanpak?",
+    options: ["Vooral incidenten overdrijven zodat urgentie ontstaat", "Risico concreet maken, gedrag meetbaar trainen, positieve toon houden en opvolging afspreken", "Alle medewerkers verplicht dagelijks testen zonder uitleg", "Alleen phishingstatistieken tonen"],
+    answer: 1
+  },
+  {
+    domain: "Basic IT & Troubleshooting",
+    type: "Secure automation",
+    prompt: "Je reviewt een PowerShell-script dat tenantinstellingen wijzigt. Welke review is minimaal nodig?",
+    options: ["Alleen kijken of het script snel draait", "Permissions, inputvalidatie, logging, secrets, dry-run/rollback en tenant-scope controleren", "Het script direct als global admin uitvoeren", "Alle foutmeldingen onderdrukken"],
     answer: 1
   }
 ];
@@ -634,6 +780,54 @@ const draftQuestions = [
     role: "Cloud Engineer",
     source: "Engelse klantcommunicatie",
     prompt: "Laat de kandidaat in het Engels een korte incidentupdate schrijven met impact, herstelstatus, monitoring en next update."
+  },
+  {
+    domain: "Azure",
+    role: "Cloud Engineer",
+    source: "Azure interview en AZ-900 bronmateriaal",
+    prompt: "Laat de kandidaat aan een MKB-klant uitleggen wanneer IaaS, PaaS en SaaS logisch zijn, inclusief shared responsibility, kosten en beheerimpact."
+  },
+  {
+    domain: "Azure",
+    role: "Technical Account Manager",
+    source: "Azure governance bronmateriaal",
+    prompt: "Laat de kandidaat een governanceadvies maken voor resource groups, tags, RBAC, locks, Policy en kostenbewaking in een multi-customer MSP-omgeving."
+  },
+  {
+    domain: "Microsoft 365",
+    role: "Modern Work Consultant",
+    source: "M365 Assessment Toolkit",
+    prompt: "Laat de kandidaat een M365 security intake ontwerpen met identity, Conditional Access, Exchange, Teams, SharePoint, Intune en attack-path prioritering."
+  },
+  {
+    domain: "Microsoft 365",
+    role: "Servicedesk Engineer",
+    source: "M365 Assessment Toolkit",
+    prompt: "Laat de kandidaat triageren waarom MFA/Conditional Access onverwacht blokkeert, inclusief sign-in logs, policy scope, exclusions en break-glass risico."
+  },
+  {
+    domain: "SharePoint / Teams",
+    role: "Modern Work Consultant",
+    source: "M365 Assessment Toolkit",
+    prompt: "Laat de kandidaat een secure collaboration review doen voor gasten, external sharing, owners, lifecycle, sensitivity labels en herstelmaatregelen."
+  },
+  {
+    domain: "Basic IT & Troubleshooting",
+    role: "Cloud Engineer",
+    source: "UnitOneAI SecuritySkills",
+    prompt: "Laat de kandidaat een attack path uitschrijven vanaf zwakke identity controls naar datalekrisico en dit vertalen naar MSP-remediationstappen."
+  },
+  {
+    domain: "Basic IT & Troubleshooting",
+    role: "Servicedesk Engineer",
+    source: "UnitOneAI SecuritySkills",
+    prompt: "Laat de kandidaat een automation-script reviewen op secrets, permissies, tenant-scope, logging, dry-run en rollback."
+  },
+  {
+    domain: "Werkhouding & Communicatie",
+    role: "Sales",
+    source: "Security awareness bronmateriaal",
+    prompt: "Laat de kandidaat security awareness positioneren zonder angstverkoop: gedrag, risico, meetbaarheid, opvolging en realistische klantverwachting."
   }
 ];
 
@@ -674,6 +868,7 @@ const documentationMap = [
   ["Kandidaatresultaat", "Azure Table Storage", "Score, antwoorden, rolfit, exportmoment"],
   ["Trainingresultaat", "Azure Table Storage", "Medewerker, leerpad, XP, badges, modulebewijs"],
   ["Bronmateriaal", "Afgeschermde opslag", "Geanonimiseerde bronpakketten"],
+  ["Open source inspiratie", "CONTENT_SOURCES.md", "Repo, licentie, gebruikstype en Campai-afleiding"],
   ["Wijzigingen", "Auditlog", "Actor, tijdstip, actie, context"],
   ["Beleid", "Repository", "Thresholds, rubricversies, rolrechten"]
 ];

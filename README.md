@@ -50,6 +50,7 @@ De Academy gebruikt dezelfde domeinen en rolwegingen als recruitment, maar met e
 - Career plan met actieve rol, doelrol, vorige rolcontext, performance/XP en gekoppelde leerdoelen.
 - Onboard & Learn tabel met modules, type, domein, progress, status en een detailmodal voor link, statusupdate, comment en timeline.
 - Aanbevolen modules met praktijkbewijs, zoals Conditional Access triage, Azure restore, Datto RMM alertflow, Fortigate VPN, SharePoint governance en klantcommunicatie.
+- Uitgebreide modules en vragen op basis van gereviewde open-source inspiratie rond Azure Fundamentals, M365 security assessments, attack-path analyse, secure automation en security awareness. Zie `CONTENT_SOURCES.md`.
 - Gamification stuurt gewenst MSP-gedrag: veilige werkwijze, documentatie, klantcommunicatie en herbruikbare teamprocessen.
 - Teamchallenge vermijdt individuele ranglijsten als primair mechanisme; samenwerking en bewijs wegen zwaarder dan snelheid.
 

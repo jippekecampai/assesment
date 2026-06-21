@@ -34,7 +34,7 @@ Campai Console
 │   ├── id, title, domain       domain ∈ domains[]
 │   ├── level, xp, format
 │   ├── proof, badge
-│   └── [optioneel] prerequisites[], resources[]
+│   └── [optioneel] prerequisites[], resources[], sourceRefs[]
 │
 ├── testQuestions[]
 │   ├── id (auto), domain       domain ∈ domains[]
@@ -45,6 +45,9 @@ Campai Console
 ├── fallbackQuestions{}         domain → fallback-vraag als kandidaat domein niet kent
 │
 ├── draftQuestions[]            conceptvragen voor de vragenbank
+│   └── source                  bronlabel voor senior review en attributie
+│
+├── CONTENT_SOURCES.md          bronregister voor externe inspiratie en licenties
 │
 └── dashboardModules[]          registry van alle dashboard-modules
     ├── id, title, description
@@ -112,13 +115,15 @@ Campai Console
 ### Nieuwe trainingsmodule
 1. Voeg een object toe aan `trainingModules[]` met een `domain` ∈ `domains[]`
 2. De module verschijnt automatisch in het leerprofiel van medewerkers in de Academy
-3. Documenteer in `CHANGELOG.md`
+3. Leg externe bron of inspiratie vast in `CONTENT_SOURCES.md` wanneer van toepassing
+4. Documenteer in `CHANGELOG.md`
 
 ### Nieuwe assessmentvraag
 1. Voeg een object toe aan `testQuestions[]` met `domain`, `type`, `prompt`, `options[]` en `answer`
 2. Opties worden automatisch gehusseld; het juiste antwoord staat niet meer altijd op dezelfde positie
 3. Overweeg ook een fallback-variant toe te voegen aan `fallbackQuestions{}`
-4. Documenteer in `CHANGELOG.md`
+4. Leg externe bron of inspiratie vast in `CONTENT_SOURCES.md` wanneer van toepassing
+5. Documenteer in `CHANGELOG.md`
 
 ### Nieuwe dashboard-module
 1. Voeg HTML aan het betreffende view toe in `index.html` (panel met uniek `id`)

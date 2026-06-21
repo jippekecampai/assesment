@@ -4,6 +4,8 @@
 
 ### Added
 
+- Open-source inspiratie verwerkt in Campai-eigen trainingsmodules, assessmentvragen en conceptvragen voor Azure, M365 security, attack paths, secure automation en security awareness.
+- `CONTENT_SOURCES.md` toegevoegd voor bronregistratie, licentie-inschatting en gebruiksbeleid.
 - Overzicht uitgebreid met stats strip, kandidaat-/medewerkerkaarten en domeindekking-heatmap.
 - `DATASTRUCTURE.md` toegevoegd als protocol voor nieuwe kandidaten, medewerkers, domeinen, rollen, modules en dashboardmodules.
 - `people[]` en `dashboardModules[]` toegevoegd als basis voor uitbreidbare dashboardstructuur.
@@ -23,6 +25,7 @@
 
 ### Risk / Follow-up
 
+- Letterlijk hergebruik van externe content alleen doen na expliciete licentiecheck; onduidelijke bronnen zijn nu uitsluitend als inspiratie gebruikt.
 - Modulevoortgang staat lokaal in `localStorage`; productiegebruik vereist server-side opslag en autorisatie.
 - Trainingdata moet gescheiden blijven van recruitment- en HR-besluitvorming.
 - Badges zijn nu gekoppeld aan moduleafronding, maar nog niet aan senior review of bewijsuploads.
