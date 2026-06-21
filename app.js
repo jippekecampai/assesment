@@ -203,6 +203,185 @@ const candidates = [
   }
 ];
 
+const learners = [
+  {
+    id: "LV",
+    name: "Lotte Vermeer",
+    role: "Servicedesk Engineer",
+    targetRole: "Cloud Engineer",
+    meta: "Interne medewerker / 7 maanden in dienst / service desk naar cloud",
+    scores: {
+      "AI / Copilot": 58,
+      "Microsoft 365": 74,
+      Azure: 51,
+      "Kaseya Stack": 78,
+      Fortigate: 48,
+      VoIP: 62,
+      Servers: 69,
+      "SharePoint / Teams": 71,
+      "SharePoint / Azure Migrations": 46,
+      Inforcer: 54,
+      "Basic IT & Troubleshooting": 82,
+      "Werkhouding & Communicatie": 86,
+      Engels: 72
+    }
+  },
+  {
+    id: "DK",
+    name: "Daan Koster",
+    role: "Cloud Engineer",
+    targetRole: "Technical Account Manager",
+    meta: "Interne medewerker / projectengineer / groeit naar klantregie",
+    scores: {
+      "AI / Copilot": 76,
+      "Microsoft 365": 84,
+      Azure: 88,
+      "Kaseya Stack": 66,
+      Fortigate: 74,
+      VoIP: 56,
+      Servers: 82,
+      "SharePoint / Teams": 78,
+      "SharePoint / Azure Migrations": 80,
+      Inforcer: 61,
+      "Basic IT & Troubleshooting": 83,
+      "Werkhouding & Communicatie": 68,
+      Engels: 74
+    }
+  },
+  {
+    id: "NO",
+    name: "Nora Otten",
+    role: "Modern Work Consultant",
+    targetRole: "Modern Work Consultant",
+    meta: "Interne medewerker / adoptie en governance / senior verdieping",
+    scores: {
+      "AI / Copilot": 81,
+      "Microsoft 365": 86,
+      Azure: 62,
+      "Kaseya Stack": 44,
+      Fortigate: 42,
+      VoIP: 50,
+      Servers: 58,
+      "SharePoint / Teams": 90,
+      "SharePoint / Azure Migrations": 82,
+      Inforcer: 76,
+      "Basic IT & Troubleshooting": 72,
+      "Werkhouding & Communicatie": 84,
+      Engels: 80
+    }
+  }
+];
+
+const trainingModules = [
+  {
+    id: "m365-ca-triage",
+    title: "Conditional Access incident triage",
+    domain: "Microsoft 365",
+    level: "L2",
+    xp: 90,
+    format: "Scenario + loganalyse",
+    proof: "Sign-in logs, impactanalyse, rollback en klantupdate",
+    badge: "Conditional Access Responder"
+  },
+  {
+    id: "azure-restore",
+    title: "Azure VM herstel zonder paniek",
+    domain: "Azure",
+    level: "L2",
+    xp: 110,
+    format: "Praktijklab",
+    proof: "Restore point, boot diagnostics, validatie en kostenbewuste nazorg",
+    badge: "Azure Recovery Operator"
+  },
+  {
+    id: "kaseya-alert-flow",
+    title: "Datto RMM alert naar Autotask ticket",
+    domain: "Kaseya Stack",
+    level: "L1",
+    xp: 70,
+    format: "Workflow-drill",
+    proof: "Ticket, IT Glue check, EDR-context en interne overdracht",
+    badge: "RMM Triage Starter"
+  },
+  {
+    id: "fortigate-vpn",
+    title: "Fortigate VPN storing ontleden",
+    domain: "Fortigate",
+    level: "L2",
+    xp: 100,
+    format: "Troubleshooting case",
+    proof: "Phase 1/2, routes, NAT, logging en testplan",
+    badge: "Firewall Triage"
+  },
+  {
+    id: "sharepoint-permissions",
+    title: "SharePoint rechten en gasttoegang herstellen",
+    domain: "SharePoint / Teams",
+    level: "L2",
+    xp: 95,
+    format: "Governance case",
+    proof: "Owner-model, sensitivity, guest review en preventieve controls",
+    badge: "Permission Fixer"
+  },
+  {
+    id: "migration-cutover",
+    title: "SharePoint/Azure migratie cutover",
+    domain: "SharePoint / Azure Migrations",
+    level: "L3",
+    xp: 130,
+    format: "Projectsimulatie",
+    proof: "Discovery, pilot, delta sync, rollback, communicatie en nazorg",
+    badge: "Migration Planner"
+  },
+  {
+    id: "inforcer-baseline",
+    title: "Inforcer baseline rollout met uitzonderingen",
+    domain: "Inforcer",
+    level: "L2",
+    xp: 90,
+    format: "Policy-review",
+    proof: "Baselineversie, rollout ring, exception governance en audit",
+    badge: "Baseline Steward"
+  },
+  {
+    id: "customer-update",
+    title: "Klantupdate onder druk",
+    domain: "Werkhouding & Communicatie",
+    level: "L1",
+    xp: 75,
+    format: "Communicatie-drill",
+    proof: "Heldere status, impact, eigenaar, vervolgstap en toon",
+    badge: "Customer Update Pro"
+  },
+  {
+    id: "english-incident",
+    title: "English incident communication",
+    domain: "Engels",
+    level: "L1",
+    xp: 65,
+    format: "Schrijfopdracht",
+    proof: "Short customer update with impact, restoration status and next update",
+    badge: "English Incident Communicator"
+  },
+  {
+    id: "copilot-readiness",
+    title: "Copilot-readiness zonder datarisico",
+    domain: "AI / Copilot",
+    level: "L2",
+    xp: 100,
+    format: "Consulting scenario",
+    proof: "Permissions, labels, adoption, governance en realistische verwachting",
+    badge: "Copilot Governance Advisor"
+  }
+];
+
+const teamChallenge = {
+  title: "Van RMM-alert naar veilige klantupdate",
+  goal: "Los als team een ketenincident op waarin Datto RMM, Autotask, IT Glue, Microsoft 365 en klantcommunicatie samenkomen.",
+  rules: ["Geen klantdata in screenshots", "Elke stap krijgt een eigenaar", "Documentatie telt mee als bewijs", "De beste score is herbruikbare werkwijze"],
+  reward: "Team XP + workflow-template voor de vragenbank"
+};
+
 const evidence = [
   ["Troubleshoot Entra ID sign-in met Conditional Access", "Microsoft 365", "Scenario", 82, "Vond geblokkeerde locatiepolicy en stelde een least-privilege uitzondering voor."],
   ["Herstel een Azure VM na mislukte update", "Azure", "Lab", 86, "Gebruikte restore point, boot diagnostics en documenteerde rollback-risico."],
@@ -436,21 +615,58 @@ const draftQuestions = [
   }
 ];
 
-const sourceOptions = [
-  ["Vendorcertificeringen", "Gebruik Microsoft, Fortinet, Kaseya en Inforcer objectives als dekking, maar herschrijf ze naar Campai-scenario's."],
-  ["Interne SOP's en runbooks", "Zet IT Glue procedures om naar praktijkvragen die toetsen of kandidaten volgens de Campai-werkwijze denken."],
-  ["Post-incident reviews", "Gebruik geanonimiseerde lessons learned uit escalaties om judgement, communicatie en root-cause thinking te toetsen."],
-  ["Shadow interviews", "Vraag senior engineers, consultants en TAM's naar vijf casussen die goede kandidaten onderscheiden van zwakke kandidaten."],
-  ["Projectretrospectives", "Haal migratie-, adoptie- en changevragen uit afgeronde SharePoint-, Azure- en Teams-projecten."],
-  ["Gedragsinterviews", "Gebruik STAR-vragen over ownership, samenwerken, feedback, klantdruk, planning en omgaan met fouten."],
-  ["Rolkalibratie", "Laat sterke huidige medewerkers de test maken om drempelwaardes te tunen en vage of oneerlijke vragen te vinden."]
+const currentUserProfile = {
+  name: "Campai gebruiker",
+  email: "local@campai.nl",
+  role: "Assessment Admin",
+  source: "Entra ID",
+  permissions: ["Dashboard review", "Vraagbeheer", "Rollenbeheer", "Auditlog bekijken"]
+};
+
+const adminRoles = [
+  {
+    name: "Assessment Admin",
+    scope: "Rollen, rubrics, auditlog",
+    permissions: ["Alle dashboardviews", "Vraagbeheer", "Rubricbeheer", "Auditlog", "Export"]
+  },
+  {
+    name: "Reviewer",
+    scope: "Kandidaatbeoordeling",
+    permissions: ["Dashboard", "Kandidaatrapport", "Export"]
+  },
+  {
+    name: "Question Author",
+    scope: "Vraagbeheer",
+    permissions: ["Vragenbank", "Conceptvragen", "Bronregistratie"]
+  },
+  {
+    name: "Candidate",
+    scope: "Assessmentflow",
+    permissions: ["Kandidaattest", "Eigen autosave"]
+  }
+];
+
+const documentationMap = [
+  ["Profiel en rol", "Entra ID", "Naam, e-mail, approl"],
+  ["Vragenbank", "Dashboard", "Domein, rol, type, bron, reviewstatus"],
+  ["Kandidaatresultaat", "Azure Table Storage", "Score, antwoorden, rolfit, exportmoment"],
+  ["Trainingresultaat", "Azure Table Storage", "Medewerker, leerpad, XP, badges, modulebewijs"],
+  ["Bronmateriaal", "Afgeschermde opslag", "Geanonimiseerde bronpakketten"],
+  ["Wijzigingen", "Auditlog", "Actor, tijdstip, actie, context"],
+  ["Beleid", "Repository", "Thresholds, rubricversies, rolrechten"]
 ];
 
 let selectedCandidate = candidates[0];
 let selectedRole = roles[1];
 let selectedDomain = "Alle domeinen";
+let selectedLearner = learners[0];
+let selectedLearningRole = roles.find((role) => role.name === selectedLearner.targetRole) || roles[1];
 let currentQuestion = Number(localStorage.getItem("camaiQuestionIndex") || 0);
 let answers = JSON.parse(localStorage.getItem("camaiAnswers") || "{}");
+let auditLog = JSON.parse(localStorage.getItem("camaiAuditLog") || "[]");
+let completedModules = JSON.parse(localStorage.getItem("camaiCompletedModules") || "{}");
+let moduleUpdates = JSON.parse(localStorage.getItem("camaiModuleUpdates") || "{}");
+let activeModuleId = "";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -480,9 +696,12 @@ function init() {
   bindEvents();
   restoreFallbackQuestions();
   loadIdentity();
+  ensureInitialAuditEntry();
   renderAll();
   renderTest();
+  renderAcademy();
   renderQuestionFactory();
+  renderAdminPanel();
 }
 
 function bindNavigation() {
@@ -504,19 +723,26 @@ function populateControls() {
   $("#domainSelect").innerHTML = ["Alle domeinen", ...domains].map((domain) => `<option>${domain}</option>`).join("");
   $("#authorDomain").innerHTML = domains.map((domain) => `<option>${domain}</option>`).join("");
   $("#authorRole").innerHTML = roles.map((role) => `<option>${role.name}</option>`).join("");
+  $("#learnerSelect").innerHTML = learners.map((learner) => `<option value="${learner.id}">${learner.name}</option>`).join("");
+  $("#learningRoleSelect").innerHTML = roles.map((role) => `<option value="${role.id}">${role.name}</option>`).join("");
+  $("#learnerSelect").value = selectedLearner.id;
+  $("#learningRoleSelect").value = selectedLearningRole.id;
 }
 
 function bindEvents() {
   $("#candidateSelect").addEventListener("change", (event) => {
     selectedCandidate = candidates.find((candidate) => candidate.id === event.target.value);
+    recordAudit("Kandidaat geselecteerd", selectedCandidate.name);
     renderAll();
   });
   $("#roleSelect").addEventListener("change", (event) => {
     selectedRole = roles.find((role) => role.id === event.target.value);
+    recordAudit("Doelrol geselecteerd", selectedRole.name);
     renderAll();
   });
   $("#domainSelect").addEventListener("change", (event) => {
     selectedDomain = event.target.value;
+    recordAudit("Domeinfilter gewijzigd", selectedDomain);
     renderEvidence();
   });
   $("#resetViewBtn").addEventListener("click", () => {
@@ -524,13 +750,39 @@ function bindEvents() {
     selectedDomain = "Alle domeinen";
     $("#roleSelect").value = selectedRole.id;
     $("#domainSelect").value = selectedDomain;
+    recordAudit("Dashboardweergave gereset", "Cloud Engineer / alle domeinen");
     renderAll();
     toast("Weergave teruggezet naar Cloud Engineer en alle domeinen.");
   });
   $("#showAllEvidenceBtn").addEventListener("click", () => {
     selectedDomain = "Alle domeinen";
     $("#domainSelect").value = selectedDomain;
+    recordAudit("Vraagbewijsfilter gereset", "Alle domeinen");
     renderEvidence();
+  });
+  $("#learnerSelect").addEventListener("change", (event) => {
+    selectedLearner = learners.find((learner) => learner.id === event.target.value);
+    selectedLearningRole = roles.find((role) => role.name === selectedLearner.targetRole) || selectedLearningRole;
+    $("#learningRoleSelect").value = selectedLearningRole.id;
+    recordAudit("Leerprofiel geselecteerd", selectedLearner.name);
+    renderAcademy();
+  });
+  $("#learningRoleSelect").addEventListener("change", (event) => {
+    selectedLearningRole = roles.find((role) => role.id === event.target.value);
+    recordAudit("Leerdoel geselecteerd", `${selectedLearner.name} / ${selectedLearningRole.name}`);
+    renderAcademy();
+  });
+  $("#exportTrainingBtn").addEventListener("click", exportTrainingReport);
+  $("#moduleModalClose").addEventListener("click", closeModuleModal);
+  $("#moduleModal").addEventListener("click", (event) => {
+    if (event.target.id === "moduleModal") closeModuleModal();
+  });
+  $("#moduleSaveBtn").addEventListener("click", saveModuleUpdate);
+  $("#moduleConnectGoalBtn").addEventListener("click", () => {
+    if (!activeModuleId) return;
+    const module = trainingModules.find((item) => item.id === activeModuleId);
+    recordAudit("Module aan leerdoel gekoppeld", `${selectedLearner.name} / ${module?.title || activeModuleId}`);
+    toast("Module gekoppeld aan leerdoel.");
   });
   $("#exportBtn").addEventListener("click", exportReport);
   $("#prevQuestionBtn").addEventListener("click", () => {
@@ -551,6 +803,7 @@ function bindEvents() {
       source: $("#authorSource").value || "Handmatige Campai-bron",
       prompt: $("#authorPrompt").value || "Conceptvraag wacht op senior review."
     });
+    recordAudit("Conceptvraag toegevoegd", `${$("#authorDomain").value} / ${$("#authorRole").value}`);
     event.target.reset();
     renderQuestionFactory();
     toast("Conceptvraag toegevoegd voor review.");
@@ -558,7 +811,14 @@ function bindEvents() {
   $("#globalSearch").addEventListener("input", (event) => {
     selectedDomain = domains.find((domain) => domain.toLowerCase().includes(event.target.value.toLowerCase())) || "Alle domeinen";
     $("#domainSelect").value = selectedDomain;
+    if (event.target.value.trim()) recordAudit("Zoekfilter gebruikt", event.target.value.trim());
     renderEvidence();
+  });
+  $("#clearAuditBtn").addEventListener("click", () => {
+    auditLog = [];
+    localStorage.setItem("camaiAuditLog", JSON.stringify(auditLog));
+    recordAudit("Auditlog gereset", "Lokale dashboardlog opnieuw gestart");
+    renderAdminPanel();
   });
 }
 
@@ -793,6 +1053,7 @@ function renderTest() {
         answers[questionId] = selected;
       }
       localStorage.setItem("camaiAnswers", JSON.stringify(answers));
+      recordAudit("Kandidaatantwoord opgeslagen", `${question.domain} / vraag ${currentQuestion + 1}`);
       renderTest();
     });
   });
@@ -805,6 +1066,7 @@ function renderTest() {
         note: getUnknownNote(question.domain)
       };
       localStorage.setItem("camaiAnswers", JSON.stringify(answers));
+      recordAudit("Bekende systemen bijgewerkt", question.domain);
     });
   });
   const note = $("#unknownNote");
@@ -817,6 +1079,7 @@ function renderTest() {
         note: getUnknownNote(question.domain)
       };
       localStorage.setItem("camaiAnswers", JSON.stringify(answers));
+      recordAudit("Toelichting onbekend onderwerp bijgewerkt", question.domain);
     });
   }
   $("#prevQuestionBtn").disabled = currentQuestion === 0;
@@ -906,26 +1169,330 @@ function renderComposition() {
     .join("");
 }
 
-function renderQuestionFactory() {
-  $("#draftQuestions").innerHTML = draftQuestions
+function learnerCompletedIds(learner = selectedLearner) {
+  return completedModules[learner.id] || [];
+}
+
+function learnerModuleUpdates(learner = selectedLearner) {
+  return moduleUpdates[learner.id] || {};
+}
+
+function getModuleUpdate(moduleId) {
+  return learnerModuleUpdates()[moduleId] || {};
+}
+
+function moduleStatus(moduleId) {
+  if (isModuleCompleted(moduleId)) return "completed";
+  return getModuleUpdate(moduleId).status || "todo";
+}
+
+function moduleProgress(moduleId) {
+  const status = moduleStatus(moduleId);
+  if (status === "completed") return 100;
+  if (status === "progress") return 50;
+  return 0;
+}
+
+function isModuleCompleted(moduleId) {
+  return learnerCompletedIds().includes(moduleId);
+}
+
+function recommendedDomains() {
+  return domains
+    .map((domain) => {
+      const weight = selectedLearningRole.weights[domain] || 0;
+      const target = Math.round(selectedLearningRole.threshold - 4 + weight * 70);
+      const current = selectedLearner.scores[domain] || 0;
+      return {
+        domain,
+        current,
+        target,
+        gap: Math.max(0, target - current),
+        weight
+      };
+    })
+    .sort((a, b) => b.gap + b.weight * 10 - (a.gap + a.weight * 10));
+}
+
+function recommendedModules() {
+  const priority = recommendedDomains();
+  return trainingModules
+    .map((module) => {
+      const domain = priority.find((item) => item.domain === module.domain);
+      const completed = isModuleCompleted(module.id);
+      return {
+        ...module,
+        completed,
+        gap: domain?.gap || 0,
+        current: domain?.current || 0,
+        target: domain?.target || selectedLearningRole.threshold,
+        priority: completed ? -1 : (domain?.gap || 0) + (domain?.weight || 0) * 80
+      };
+    })
+    .sort((a, b) => b.priority - a.priority || b.xp - a.xp);
+}
+
+function learnerXp() {
+  return trainingModules
+    .filter((module) => isModuleCompleted(module.id))
+    .reduce((total, module) => total + module.xp, 0);
+}
+
+function learnerLevel(xp = learnerXp()) {
+  return Math.max(1, Math.floor(xp / 250) + 1);
+}
+
+function toggleModule(moduleId) {
+  const current = new Set(learnerCompletedIds());
+  if (current.has(moduleId)) {
+    current.delete(moduleId);
+    setModuleUpdate(moduleId, { status: "todo" });
+    recordAudit("Trainingsmodule heropend", `${selectedLearner.name} / ${moduleId}`);
+  } else {
+    current.add(moduleId);
+    setModuleUpdate(moduleId, { status: "completed" });
+    recordAudit("Trainingsmodule afgerond", `${selectedLearner.name} / ${moduleId}`);
+  }
+  completedModules[selectedLearner.id] = Array.from(current);
+  localStorage.setItem("camaiCompletedModules", JSON.stringify(completedModules));
+  renderAcademy();
+}
+
+function setModuleUpdate(moduleId, patch) {
+  const learnerUpdates = learnerModuleUpdates();
+  learnerUpdates[moduleId] = {
+    ...learnerUpdates[moduleId],
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+  moduleUpdates[selectedLearner.id] = learnerUpdates;
+  localStorage.setItem("camaiModuleUpdates", JSON.stringify(moduleUpdates));
+}
+
+function setCompletedFromStatus(moduleId, status) {
+  const current = new Set(learnerCompletedIds());
+  if (status === "completed") current.add(moduleId);
+  else current.delete(moduleId);
+  completedModules[selectedLearner.id] = Array.from(current);
+  localStorage.setItem("camaiCompletedModules", JSON.stringify(completedModules));
+}
+
+function moduleType(module) {
+  if (module.format.includes("Praktijk") || module.format.includes("simulatie")) return "Course";
+  if (module.format.includes("Workflow") || module.format.includes("Policy")) return "Path";
+  if (module.format.includes("Schrijf")) return "Other";
+  return "Article";
+}
+
+function moduleSourceLink(module) {
+  return `https://campai.eu.itglue.com/search?query=${encodeURIComponent(module.title)}`;
+}
+
+function statusLabel(status) {
+  if (status === "completed") return "Completed";
+  if (status === "progress") return "In progress";
+  return "To do";
+}
+
+function statusClass(status) {
+  if (status === "completed") return "completed";
+  if (status === "progress") return "progress";
+  return "todo";
+}
+
+function renderAcademy() {
+  const xp = learnerXp();
+  const level = learnerLevel(xp);
+  const completedCount = learnerCompletedIds().length;
+  const roleFit = roleScore(selectedLearner, selectedLearningRole);
+  const domainsWithGap = recommendedDomains();
+  const criticalGaps = domainsWithGap.filter((item) => item.gap >= 10).length;
+  const completedBadges = trainingModules.filter((module) => isModuleCompleted(module.id)).map((module) => module.badge);
+
+  $("#learnerName").textContent = selectedLearner.name;
+  $("#learnerAvatar").textContent = selectedLearner.id;
+  $("#learnerRole").textContent = `${selectedLearner.role} -> ${selectedLearningRole.name}`;
+  $("#learnerMeta").textContent = selectedLearner.meta;
+  $("#learnerLevel").textContent = `Level ${level}`;
+  $("#learnerXp").textContent = `${xp} XP`;
+  $("#learnerXpBar").style.width = `${Math.min(100, (xp % 250) / 2.5)}%`;
+  $("#academyQuickCards").innerHTML = renderAcademyQuickCards(completedCount, criticalGaps);
+  $("#academyKpis").innerHTML = `
+    <div><span class="label">Rolfit</span><strong>${roleFit}/100</strong></div>
+    <div><span class="label">Modules klaar</span><strong>${completedCount}/${trainingModules.length}</strong></div>
+    <div><span class="label">Badges</span><strong>${completedBadges.length}</strong></div>
+    <div><span class="label">Achterstanden</span><strong>${criticalGaps}</strong></div>
+  `;
+
+  $("#learningPath").innerHTML = domainsWithGap
+    .slice(0, 7)
+    .map((item) => {
+      const status = item.gap >= 12 ? "Achterstand" : item.gap > 0 ? "Oefenen" : "Op niveau";
+      const color = item.gap >= 12 ? "var(--risk)" : item.gap > 0 ? "var(--warn)" : "var(--cyan)";
+      return `
+        <article class="path-row">
+          <div>
+            <strong>${shortDomain(item.domain)}</strong>
+            <span>${item.current}/100 naar norm ${item.target}</span>
+          </div>
+          <div class="mini-track"><span class="mini-fill" style="width:${Math.min(100, item.current)}%; background:${color}"></span></div>
+          <em>${status}</em>
+        </article>
+      `;
+    })
+    .join("");
+
+  $("#academyTasks").innerHTML = renderAcademyTasks(domainsWithGap);
+
+  $("#badgeWall").innerHTML = trainingModules
+    .map((module) => {
+      const earned = isModuleCompleted(module.id);
+      return `
+        <article class="badge-card ${earned ? "earned" : ""}">
+          <div class="badge-icon">${earned ? "✓" : "+"}</div>
+          <div>
+            <strong>${module.badge}</strong>
+            <span>${shortDomain(module.domain)} / ${module.level}</span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  $("#moduleBoard").innerHTML = recommendedModules()
+    .map((module) => {
+      const status = moduleStatus(module.id);
+      const progress = moduleProgress(module.id);
+      const risk = !module.completed && module.gap >= 12;
+      return `
+        <tr class="${risk ? "module-risk-row" : ""}">
+          <td>
+            <button class="module-title-button" data-open-module="${module.id}">${module.title}</button>
+            <small>${module.proof}</small>
+          </td>
+          <td><span class="type-chip">${moduleType(module)}</span></td>
+          <td>${shortDomain(module.domain)}</td>
+          <td>
+            <div class="progress-cell">
+              <span>${progress}%</span>
+              <div class="mini-track"><span class="mini-fill" style="width:${progress}%"></span></div>
+            </div>
+          </td>
+          <td><span class="learning-status ${statusClass(status)}">${statusLabel(status)}</span></td>
+          <td><button class="ghost-button compact" data-open-module="${module.id}">Open</button></td>
+        </tr>
+      `;
+    })
+    .join("");
+  document.querySelectorAll("[data-open-module]").forEach((button) => {
+    button.addEventListener("click", () => openModuleModal(button.dataset.openModule));
+  });
+
+  $("#teamChallenge").innerHTML = `
+    <div>
+      <h3>${teamChallenge.title}</h3>
+      <p>${teamChallenge.goal}</p>
+      <div class="challenge-rules">${teamChallenge.rules.map((rule) => `<span>${rule}</span>`).join("")}</div>
+    </div>
+    <strong>${teamChallenge.reward}</strong>
+  `;
+}
+
+function renderAcademyQuickCards(completedCount, criticalGaps) {
+  const todoCount = trainingModules.length - completedCount;
+  const nextReview = criticalGaps > 2 ? "Plan senior review" : "Geen review gepland";
+  return [
+    ["Inbox", `${criticalGaps} skill alerts`, "Insights waiting for review"],
+    ["Next review", nextReview, "Coachmoment voor doelrol"],
+    ["Next 1:1", "30 min growth check", "Bespreek blockers en bewijs"],
+    ["Next steps", `${todoCount} modules`, "Assigned to you"]
+  ]
     .map(
-      (item) => `
-      <article class="draft-item">
+      ([title, value, copy]) => `
+      <article class="quick-card">
         <div>
-          <span class="label">${item.domain} / ${item.role}</span>
-          <h3>${item.prompt}</h3>
-          <p>${item.source}</p>
+          <strong>${title}</strong>
+          <span>${copy}</span>
         </div>
-        <span class="status-pill">Review nodig</span>
+        <em>${value}</em>
       </article>
     `
     )
     .join("");
-  $("#sourceOptions").innerHTML = sourceOptions
+}
+
+function renderAcademyTasks(domainsWithGap) {
+  const modules = recommendedModules().filter((module) => !module.completed).slice(0, 4);
+  const gap = domainsWithGap.find((item) => item.gap > 0);
+  const tasks = [
+    gap ? `Bespreek ${gap.domain} gap in de volgende 1:1` : "Houd het huidige rolpad actueel",
+    "Koppel minimaal een module aan een leerdoel",
+    ...modules.map((module) => `Rond af: ${module.title}`)
+  ].slice(0, 5);
+
+  return tasks
     .map(
-      ([title, copy]) => `
-      <article class="source-item">
+      (task, index) => `
+      <article class="academy-task">
+        <span>${index + 1}</span>
+        <p>${task}</p>
+      </article>
+    `
+    )
+    .join("");
+}
+
+function openModuleModal(moduleId) {
+  const module = trainingModules.find((item) => item.id === moduleId);
+  if (!module) return;
+  activeModuleId = moduleId;
+  const update = getModuleUpdate(moduleId);
+  $("#moduleModalMeta").textContent = `${module.domain} / ${module.level} / ${module.xp} XP`;
+  $("#moduleModalTitle").textContent = module.title;
+  $("#moduleModalDescription").textContent = module.proof;
+  $("#moduleModalProof").textContent = `Bewijs: ${module.proof}. Gebruik deze module om praktijkervaring vast te leggen, niet alleen om kennis af te vinken.`;
+  $("#moduleStatusSelect").value = moduleStatus(moduleId);
+  $("#moduleComment").value = update.comment || "";
+  $("#moduleModalLink").href = moduleSourceLink(module);
+  $("#moduleModalLink").textContent = "Open IT Glue / bron";
+  $("#moduleModalType").textContent = moduleType(module);
+  $("#moduleTimeline").innerHTML = renderModuleTimeline(module, update);
+  $("#moduleModal").classList.add("show");
+  $("#moduleModal").setAttribute("aria-hidden", "false");
+}
+
+function closeModuleModal() {
+  $("#moduleModal").classList.remove("show");
+  $("#moduleModal").setAttribute("aria-hidden", "true");
+  activeModuleId = "";
+}
+
+function saveModuleUpdate() {
+  if (!activeModuleId) return;
+  const status = $("#moduleStatusSelect").value;
+  const comment = $("#moduleComment").value.trim();
+  setModuleUpdate(activeModuleId, { status, comment });
+  setCompletedFromStatus(activeModuleId, status);
+  const module = trainingModules.find((item) => item.id === activeModuleId);
+  recordAudit("Learning update opgeslagen", `${selectedLearner.name} / ${module?.title || activeModuleId} / ${statusLabel(status)}`);
+  renderAcademy();
+  openModuleModal(activeModuleId);
+  toast("Learning update opgeslagen.");
+}
+
+function renderModuleTimeline(module, update) {
+  const entries = [
+    ["Aangemaakt", "Campai Skills Academy", "Seedmodule uit MSP-skillmatrix"],
+    update.updatedAt ? ["Laatste update", formatAuditTime(update.updatedAt), statusLabel(update.status || "todo")] : null,
+    update.comment ? ["Comment", selectedLearner.name, update.comment] : null
+  ].filter(Boolean);
+
+  return entries
+    .map(
+      ([title, meta, copy]) => `
+      <article>
         <strong>${title}</strong>
+        <span>${meta}</span>
         <p>${copy}</p>
       </article>
     `
@@ -933,23 +1500,127 @@ function renderQuestionFactory() {
     .join("");
 }
 
-async function loadIdentity() {
-  const pill = $("#identityPill");
-  if (!pill) return;
+function renderQuestionFactory() {
+  $("#draftQuestions").innerHTML = draftQuestions
+    .map(
+      (item) => `
+      <article class="draft-item">
+        <div class="draft-copy">
+          <span class="label">${item.domain} / ${item.role}</span>
+          <h3>${item.prompt}</h3>
+          <p>${item.source}</p>
+        </div>
+        <span class="review-chip">Review nodig</span>
+      </article>
+    `
+    )
+    .join("");
+}
 
+function renderAdminPanel() {
+  $("#profileRolePill").textContent = currentUserProfile.role;
+  $("#profileAvatar").textContent = initials(currentUserProfile.name || currentUserProfile.email);
+  $("#profileName").textContent = currentUserProfile.name;
+  $("#profileEmail").textContent = currentUserProfile.email;
+  $("#profileMeta").innerHTML = `
+    <div><span class="label">Identity</span><strong>${currentUserProfile.source}</strong></div>
+    <div><span class="label">Approl</span><strong>${currentUserProfile.role}</strong></div>
+    <div><span class="label">Rechten</span><strong>${currentUserProfile.permissions.join(", ")}</strong></div>
+  `;
+
+  $("#roleMatrix").innerHTML = adminRoles
+    .map(
+      (role) => `
+      <article class="role-card ${role.name === currentUserProfile.role ? "active" : ""}">
+        <div>
+          <strong>${role.name}</strong>
+          <p>${role.scope}</p>
+        </div>
+        <span>${role.permissions.join(" / ")}</span>
+      </article>
+    `
+    )
+    .join("");
+
+  $("#documentationMap").innerHTML = documentationMap
+    .map(
+      ([subject, location, rule]) => `
+      <article class="documentation-item">
+        <strong>${subject}</strong>
+        <span>${location}</span>
+        <p>${rule}</p>
+      </article>
+    `
+    )
+    .join("");
+
+  $("#auditLog").innerHTML = auditLog.length
+    ? auditLog
+        .map(
+          (entry) => `
+        <article class="audit-item">
+          <time>${formatAuditTime(entry.at)}</time>
+          <strong>${entry.action}</strong>
+          <span>${entry.detail}</span>
+          <small>${entry.actor}</small>
+        </article>
+      `
+        )
+        .join("")
+    : `<p class="empty-state">Nog geen dashboardwijzigingen vastgelegd.</p>`;
+}
+
+function recordAudit(action, detail) {
+  auditLog.unshift({
+    at: new Date().toISOString(),
+    actor: currentUserProfile.email || currentUserProfile.name,
+    action,
+    detail
+  });
+  auditLog = auditLog.slice(0, 100);
+  localStorage.setItem("camaiAuditLog", JSON.stringify(auditLog));
+  renderAdminPanel();
+}
+
+function ensureInitialAuditEntry() {
+  if (auditLog.length) return;
+  recordAudit("Dashboard geopend", "Nieuwe lokale auditlog gestart");
+}
+
+function initials(value) {
+  const parts = String(value || "Campai gebruiker")
+    .replace(/@.*/, "")
+    .split(/[.\s_-]+/)
+    .filter(Boolean);
+  return (parts[0]?.[0] || "C").toUpperCase() + (parts[1]?.[0] || "P").toUpperCase();
+}
+
+function formatAuditTime(value) {
+  return new Intl.DateTimeFormat("nl-NL", {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
+async function loadIdentity() {
   try {
     const response = await fetch("/api/me", { headers: { Accept: "application/json" } });
     if (!response.ok) throw new Error("Identity endpoint niet beschikbaar");
     const identity = await response.json();
-    pill.querySelector("strong").textContent = identity.authenticated ? identity.name || identity.email : "Lokale testmodus";
+    currentUserProfile.name = identity.name || identity.email || currentUserProfile.name;
+    currentUserProfile.email = identity.email || currentUserProfile.email;
+    currentUserProfile.source = identity.authenticated ? "Entra ID" : "Lokale testmodus";
+    recordAudit("Profiel geladen", currentUserProfile.source);
   } catch {
-    pill.querySelector("strong").textContent = "Geen SSO-status";
+    currentUserProfile.source = "Niet beschikbaar";
+    renderAdminPanel();
   }
 }
 
 function buildReport() {
   return {
     usageMode: "campai-only",
+    reportType: "recruitment-assessment",
     candidate: selectedCandidate.name,
     candidateId: selectedCandidate.id,
     role: selectedRole.name,
@@ -960,6 +1631,33 @@ function buildReport() {
     answers,
     generatedAt: new Date().toISOString(),
     caveat: "Assessmentresultaat ondersteunt recruitmentreview, maar vervangt geen gestructureerd interview."
+  };
+}
+
+function buildTrainingReport() {
+  const completed = trainingModules.filter((module) => isModuleCompleted(module.id));
+  const gaps = recommendedDomains().slice(0, 5);
+  return {
+    usageMode: "campai-internal-training",
+    reportType: "skills-academy",
+    learner: selectedLearner.name,
+    learnerId: selectedLearner.id,
+    currentRole: selectedLearner.role,
+    targetRole: selectedLearningRole.name,
+    roleFit: roleScore(selectedLearner, selectedLearningRole),
+    xp: learnerXp(),
+    level: learnerLevel(),
+    badges: completed.map((module) => module.badge),
+    completedModules: completed.map((module) => ({
+      id: module.id,
+      title: module.title,
+      domain: module.domain,
+      xp: module.xp,
+      proof: module.proof
+    })),
+    priorityGaps: gaps,
+    generatedAt: new Date().toISOString(),
+    caveat: "Trainingdata ondersteunt ontwikkeling en coaching; gebruik dit niet als automatische HR-beoordeling."
   };
 }
 
@@ -979,8 +1677,10 @@ async function exportReport() {
 
   try {
     await saveReport(report);
+    recordAudit("Assessmentrapport opgeslagen", `${report.candidate} / ${report.role}`);
     toast("Assessmentrapport opgeslagen en geexporteerd als JSON.");
   } catch {
+    recordAudit("Assessmentrapport lokaal geexporteerd", `${report.candidate} / ${report.role}`);
     toast("Opslaan in database mislukt; JSON-export is wel gemaakt.");
   }
 
@@ -989,6 +1689,27 @@ async function exportReport() {
   const link = document.createElement("a");
   link.href = url;
   link.download = `${selectedCandidate.id}-${selectedRole.id}-assessmentrapport.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function exportTrainingReport() {
+  const report = buildTrainingReport();
+
+  try {
+    await saveReport(report);
+    recordAudit("Trainingrapport opgeslagen", `${report.learner} / ${report.targetRole}`);
+    toast("Trainingrapport opgeslagen en geexporteerd als JSON.");
+  } catch {
+    recordAudit("Trainingrapport lokaal geexporteerd", `${report.learner} / ${report.targetRole}`);
+    toast("Opslaan in database mislukt; trainingexport is wel gemaakt.");
+  }
+
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${selectedLearner.id}-${selectedLearningRole.id}-skills-academy.json`;
   link.click();
   URL.revokeObjectURL(url);
 }
