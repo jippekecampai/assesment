@@ -404,76 +404,109 @@ const testQuestions = [
     domain: "Microsoft 365",
     type: "Scenario",
     prompt: "Een gebruiker kan Outlook Web openen, maar niet inloggen op de Outlook desktop client na een security policy wijziging. Wat controleer je eerst?",
-    options: ["Alleen mailboxgrootte", "Conditional Access, sign-in logs, authenticatiemethode en client app policy", "Windows opnieuw installeren", "De gebruiker vragen van internetprovider te wisselen"],
+    options: ["Controleer uitsluitend de mailboxgrootte en het opslagquotum van de betrokken gebruiker.", "Controleer Conditional Access, sign-in logs, authenticatiemethode en client app policy.", "Herinstalleer eerst Windows volledig en zet daarna het complete Office-pakket opnieuw neer.", "Laat de gebruiker overstappen naar een andere internetprovider en test het daarna opnieuw."],
     answer: 1
   },
   {
     domain: "SharePoint / Azure Migrations",
     type: "Project",
     prompt: "Een klant wil een SharePoint migratie met minimale downtime. Welk migratieplan is het sterkst?",
-    options: ["Big bang copy zonder discovery", "Inventarisatie, rechtenreview, pilot, gefaseerde migratie, delta sync, communicatie en rollback", "Alleen de nieuwste bestanden kopiëren", "Gebruikers hun eigen data laten verplaatsen"],
+    options: ["Kopieer in één grote big-bang actie alles tegelijk over, zonder enige voorafgaande discovery.", "Doe discovery en rechtenreview, draai een pilot, migreer gefaseerd met delta sync en rollback.", "Kopieer uitsluitend de meest recente bestanden en negeer alle oudere data in de omgeving.", "Laat de gebruikers zelf hun eigen data verplaatsen, op een moment dat het hun het beste uitkomt."],
     answer: 1
   },
   {
     domain: "Kaseya Stack",
     type: "Stackkennis",
     prompt: "Welke onderdelen horen bij de Kaseya-stack die wij willen toetsen?",
-    options: ["Alleen Autotask", "Autotask, Datto RMM, IT Glue, EDR en BullPhish, inclusief hoe tickets, monitoring, documentatie en security-awareness samenhangen", "Alleen Microsoft Teams", "Alleen Fortigate en VoIP"],
+    options: ["Uitsluitend Autotask, want dat is in de praktijk het enige relevante onderdeel van de stack.", "Autotask, Datto RMM, IT Glue, EDR en BullPhish, inclusief hun onderlinge samenhang.", "Uitsluitend Microsoft Teams en de bijbehorende samenwerkings- en chatfunctionaliteit.", "Uitsluitend Fortigate en VoIP, omdat dat samen de kerninfrastructuur van de klant vormt."],
     answer: 1
   },
   {
     domain: "SharePoint / Teams",
     type: "Kennisdiepte",
     prompt: "Wat wil je minimaal weten om iemands SharePoint/Teams-kennis goed te beoordelen?",
-    options: ["Alleen of iemand bestanden kan uploaden", "Sitestructuur, Teams-kanalen, rechten, guests, sensitivity labels, lifecycle, governance en adoptie", "Alleen of iemand Teams kan bellen", "Alleen of SharePoint Online bestaat"],
+    options: ["Alleen of iemand losse bestanden kan uploaden naar een willekeurige documentbibliotheek.", "Sitestructuur, kanalen, rechten, guests, sensitivity labels, lifecycle en governance.", "Alleen of iemand met Teams kan bellen en daarnaast ook videovergaderingen kan opstarten.", "Alleen of SharePoint Online überhaupt wel beschikbaar is binnen de huidige klanttenant."],
     answer: 1
   },
   {
     domain: "SharePoint / Azure Migrations",
     type: "Migratiekennis",
     prompt: "Welke onderdelen tonen echte migratiekennis bij een SharePoint/Azure migratie?",
-    options: ["Alleen bestanden slepen", "Discovery, rechtenanalyse, toolingkeuze, pilot, delta sync, cutover, rollback, communicatie en nazorg", "Alleen een datum plannen", "Alleen licenties tellen"],
+    options: ["Het simpelweg slepen van losse bestanden van de ene naar de andere opslaglocatie binnen de tenant.", "Discovery, rechtenanalyse, toolingkeuze, pilot, delta sync, cutover, rollback en nazorg.", "Het enkel plannen van een concrete datum waarop de migratie uitgevoerd moet worden.", "Het vooraf tellen van alle benodigde licenties voor de uiteindelijke doelomgeving."],
     answer: 1
   },
   {
     domain: "Technical Account Manager",
     type: "Klantinschatting",
     prompt: "Tijdens een QBR blijken er herhaalde backup failures en unmanaged endpoints te zijn. Wat moet de TAM doen?",
-    options: ["Negeren omdat er geen open ticket is", "Risico concreet maken, owners afspreken, remediation prioriteren en besluiten opvolgen", "Alleen een groter contract proberen te verkopen", "Escaleren zonder context"],
+    options: ["Negeren zolang er nog geen open ticket of formele klacht over is binnengekomen bij de servicedesk.", "Maak het risico concreet, spreek owners af, prioriteer remediation en volg de besluiten op.", "De situatie vooral aangrijpen om bij de klant een groter contract te kunnen verkopen.", "Direct naar de klant escaleren zonder enige context of duidelijke vervolgafspraken."],
     answer: 1
   },
   {
     domain: "Inforcer",
     type: "Configuratie",
     prompt: "Je past een Inforcer baseline toe op een Microsoft 365 omgeving. Wat moet vóór deployment geborgd zijn?",
-    options: ["Niets, baselines zijn altijd veilig", "Baselineversie, uitzonderingen, rollout ring, rollback en audit approval", "Alleen het aantal licenties", "De browsercache van de gebruiker"],
+    options: ["Niets, want de Inforcer-baselines zijn nu eenmaal per definitie altijd volledig veilig.", "Baselineversie, uitzonderingen, rollout ring, rollback en audit approval.", "Alleen het aantal op dit moment beschikbare licenties binnen de klanttenant controleren.", "Alleen even de browsercache van de betrokken eindgebruiker legen en het opnieuw proberen."],
     answer: 1
   },
   {
     domain: "Werkhouding & Communicatie",
     type: "Gedrag",
     prompt: "Een collega draagt een ticket slecht over, waardoor jij extra werk hebt en de klant ontevreden is. Wat is de beste reactie?",
-    options: ["De collega publiek aanspreken in de groepschat", "Eerst de klant helpen, feiten vastleggen, de overdracht rustig met de collega bespreken en een structurele verbetering voorstellen", "Het ticket terugzetten zonder toelichting", "Niets doen, want het was niet jouw fout"],
+    options: ["De collega hierover publiekelijk aanspreken in de algemene groepschat van het hele team.", "Help eerst de klant, leg de feiten vast en bespreek de overdracht daarna rustig met de collega.", "Het ticket zonder enige toelichting of context simpelweg terugzetten bij de betrokken collega.", "Niets doen en het verder laten rusten, want het was tenslotte toch niet jouw eigen fout."],
     answer: 1
   },
   {
     domain: "Werkhouding & Communicatie",
     type: "Werkethiek",
     prompt: "Je ziet dat je planning volloopt en een klantissue waarschijnlijk niet op tijd wordt opgepakt. Wat doe je?",
-    options: ["Wachten tot iemand ernaar vraagt", "Prioriteit en impact bepalen, tijdig communiceren, hulp vragen en afspraken bijwerken", "Alleen de makkelijkste tickets sluiten", "Het ticket op pending zetten zonder uitleg"],
+    options: ["Rustig afwachten tot iemand er op een gegeven moment uit zichzelf naar komt vragen.", "Bepaal prioriteit en impact, communiceer tijdig, vraag hulp en werk de afspraken bij.", "Alleen de allermakkelijkste tickets sluiten om de aantallen er beter uit te laten zien.", "Het ticket op pending zetten zonder enige verdere uitleg, opvolging of communicatie."],
     answer: 1
   },
   {
     domain: "Engels",
     type: "English assessment",
     prompt: "Write the best short customer update in English after a Microsoft 365 incident where service is restored but monitoring continues.",
-    options: ["Fixed now.", "Service has been restored. We are monitoring the environment and will share a final update once we have confirmed stability.", "Problem gone maybe.", "You caused the issue and we fixed it."],
+    options: ["It's fixed now, so you can simply continue working exactly like you did before all of this.", "Service has been restored. We are monitoring the environment and will confirm stability soon.", "The problem seems to be gone now, probably, so we think it should all be okay from here on.", "You actually caused this whole issue yourselves, but we went ahead and fixed it for you anyway."],
     answer: 1
   }
 ];
 
+// Deterministische PRNG geseed op een string, zodat de optievolgorde per vraag
+// wisselt maar stabiel blijft over reloads (anders verspringt een autosaved index).
+function seededRandom(seedStr) {
+  let h = 1779033703 ^ seedStr.length;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+
+// Husselt question.options en remapt question.answer naar de nieuwe positie van
+// het juiste antwoord. Voorkomt dat het correcte antwoord altijd op positie b staat.
+function shuffleQuestionOptions(question) {
+  if (!Array.isArray(question.options)) return;
+  const rng = seededRandom(question.id || question.domain || "question");
+  const order = question.options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  question.options = order.map((i) => question.options[i]);
+  if (typeof question.answer === "number") {
+    question.answer = order.indexOf(question.answer);
+  }
+}
+
 testQuestions.forEach((question, index) => {
   question.id = `q-${index + 1}`;
+  shuffleQuestionOptions(question);
 });
 
 const unknownOptionLabel = "Dit onderwerp is mij niet bekend";
@@ -497,10 +530,10 @@ const fallbackQuestions = {
     isFallback: true,
     prompt: "Je kent de Kaseya-stack niet goed, maar je hebt mogelijk andere ITSM/RMM/PSA tooling gezien. Hoe zou je in algemene zin een monitoring alert omzetten naar ticket, documentatiecheck, securitycontrole en klantupdate?",
     options: [
-      "Ik zou alleen het alert sluiten als het groen wordt.",
-      "Ik zou impact bepalen, ticket aanmaken of bijwerken, relevante documentatie controleren, security/endpointstatus meenemen en de klant of collega duidelijk informeren.",
-      "Ik zou wachten tot de klant belt.",
-      "Ik zou alleen een screenshot maken."
+      "Ik zou het alert pas willen sluiten op het moment dat de status helemaal uit zichzelf weer groen kleurt.",
+      "Ik bepaal impact, maak of werk een ticket bij, check documentatie en security en informeer de klant.",
+      "Ik zou simpelweg rustig afwachten tot de klant er op een gegeven moment zelf over belt.",
+      "Ik zou er enkel een screenshot van maken en het verder gewoon daarbij laten zitten."
     ],
     answer: 1
   },
@@ -511,10 +544,10 @@ const fallbackQuestions = {
     isFallback: true,
     prompt: "Je kent SharePoint/Teams beperkt. Welke algemene punten controleer je bij een samenwerkingsomgeving met documenten, teams, gasten en rechten?",
     options: [
-      "Alleen of gebruikers kunnen chatten.",
-      "Eigenaarschap, rechten, gasttoegang, documentstructuur, lifecycle, dataclassificatie en adoptieafspraken.",
-      "Alleen opslagruimte.",
-      "Alleen of de app op de telefoon staat."
+      "Alleen of de gebruikers onderling met elkaar kunnen chatten binnen de samenwerkingsomgeving.",
+      "Eigenaarschap, rechten, gasttoegang, documentstructuur, lifecycle en dataclassificatie.",
+      "Alleen de totale hoeveelheid beschikbare opslagruimte binnen de gehele omgeving.",
+      "Alleen of de bijbehorende mobiele app netjes op de telefoon is geïnstalleerd."
     ],
     answer: 1
   },
@@ -525,10 +558,10 @@ const fallbackQuestions = {
     isFallback: true,
     prompt: "Je hebt weinig SharePoint/Azure migratiekennis. Welke algemene migratiestappen verwacht je minimaal bij een zakelijke IT-migratie?",
     options: [
-      "Direct alles kopiëren op vrijdagmiddag.",
-      "Inventarisatie, risicoanalyse, pilot, communicatie, planning, validatie, rollback en nazorg.",
-      "Alleen de data zippen.",
-      "Alleen na afloop controleren."
+      "Op vrijdagmiddag in één keer simpelweg alles in zijn geheel ineens proberen over te kopiëren.",
+      "Inventarisatie, risicoanalyse, pilot, communicatie, validatie, rollback en nazorg.",
+      "Alleen de betrokken data van tevoren netjes in een apart archiefbestand zippen.",
+      "Pas achteraf controleren of alles werkt nadat de migratie volledig is afgerond."
     ],
     answer: 1
   },
@@ -539,10 +572,10 @@ const fallbackQuestions = {
     isFallback: true,
     prompt: "Je kent Inforcer niet. Hoe zou je algemeen omgaan met het uitrollen van security baselines of tenant policies?",
     options: [
-      "Alles direct naar iedereen pushen.",
-      "Baselineversie vastleggen, uitzonderingen bepalen, gefaseerd uitrollen, rollback plannen en wijzigingen auditen.",
-      "Alleen de naam van de policy wijzigen.",
-      "Wachten tot Microsoft iets blokkeert."
+      "Alles in één keer direct naar alle gebruikers binnen de tenant tegelijk uitrollen.",
+      "Baselineversie vastleggen, uitzonderingen bepalen, gefaseerd uitrollen en auditen.",
+      "Alleen de naam van de betreffende policy aanpassen en verder eigenlijk helemaal niets.",
+      "Afwachten tot Microsoft uit zichzelf een keer iets in de omgeving gaat blokkeren."
     ],
     answer: 1
   },
@@ -553,14 +586,16 @@ const fallbackQuestions = {
     isFallback: true,
     prompt: "Dit specifieke onderwerp is onbekend. Hoe pak je een onbekend technisch probleem professioneel aan?",
     options: [
-      "Gokken en hopen dat het klopt.",
-      "Impact bepalen, informatie verzamelen, documentatie raadplegen, hulp vragen waar nodig, klantverwachting managen en bevindingen vastleggen.",
-      "Het ticket sluiten.",
-      "Alleen zoeken naar het eerste forumantwoord."
+      "Gewoon gokken en simpelweg hopen dat het gekozen antwoord uiteindelijk toevallig klopt.",
+      "Impact bepalen, informatie verzamelen, documentatie raadplegen, hulp vragen en vastleggen.",
+      "Het ticket direct sluiten en er gemakshalve van uitgaan dat het probleem vanzelf weggaat.",
+      "Alleen het allereerste forumantwoord opzoeken en dat vervolgens klakkeloos overnemen."
     ],
     answer: 1
   }
 };
+
+Object.values(fallbackQuestions).forEach(shuffleQuestionOptions);
 
 let activeTestQuestions = [...testQuestions];
 

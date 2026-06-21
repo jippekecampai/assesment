@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-06-21 (assessment-antwoordbias)
+
+### Changed
+
+- Antwoordopties van de assessmentvragen worden nu deterministisch per vraag gehusseld (`shuffleQuestionOptions`), zodat het juiste antwoord niet langer altijd op positie b staat. De volgorde is geseed op `question.id` en blijft daarom stabiel over reloads, zodat autosaved antwoorden niet verspringen.
+- Optieteksten van alle test- en fallbackvragen herschreven naar vergelijkbare lengte, zodat het juiste antwoord niet meer te herkennen is als "het langste antwoord".
+
+### Risk / Follow-up
+
+- De shuffle is deterministisch per `question.id`, dus de volgorde is gelijk voor alle kandidaten. Voor echte assessmentsecurity is per-kandidaat randomisatie beter; dat vereist het persisteren van de optievolgorde naast de antwoorden in `localStorage` (of server-side).
+- Reeds in `localStorage` opgeslagen antwoorden van vóór deze wijziging kunnen naar een andere optie verwijzen; voor het prototype is een schone testsessie voldoende.
+
 ## 2026-06-21
 
 ### Added
