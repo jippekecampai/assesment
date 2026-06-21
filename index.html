@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Campai Recruitment</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=20260621-academy-learned" />
+    <link rel="stylesheet" href="styles.css?v=20260621-sidebar-submenus" />
   </head>
   <body>
     <div class="app-shell">
@@ -14,30 +14,45 @@
           <span class="brand-mark"><img src="assets/campai-logo-white.png" alt="Campai" /></span>
         </a>
         <nav class="nav-list">
-          <button class="nav-item active" data-view="overview">
-            <span class="nav-icon">01</span>
-            Overzicht
-          </button>
-          <button class="nav-item" data-view="test">
-            <span class="nav-icon">02</span>
-            Kandidaattest
-          </button>
-          <button class="nav-item" data-view="academy">
-            <span class="nav-icon">03</span>
-            Skills Academy
-          </button>
-          <button class="nav-item" data-view="questions">
-            <span class="nav-icon">04</span>
-            Vragenbank
-          </button>
-          <button class="nav-item" data-view="governance">
-            <span class="nav-icon">05</span>
-            Beleid
-          </button>
-          <button class="nav-item" data-view="admin">
-            <span class="nav-icon">06</span>
-            Beheer
-          </button>
+          <details class="nav-group" open>
+            <summary>Dashboard</summary>
+            <button class="nav-item active" data-view="overview">
+              <span class="nav-icon">01</span>
+              Overzicht
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Recruitment</summary>
+            <button class="nav-item" data-view="test">
+              <span class="nav-icon">02</span>
+              Kandidaattest
+            </button>
+            <button class="nav-item" data-view="questions">
+              <span class="nav-icon">03</span>
+              Vragenbank
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Ontwikkeling</summary>
+            <button class="nav-item" data-view="academy">
+              <span class="nav-icon">04</span>
+              Skills Academy
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Governance</summary>
+            <button class="nav-item" data-view="governance">
+              <span class="nav-icon">05</span>
+              Beleid
+            </button>
+            <button class="nav-item" data-view="admin">
+              <span class="nav-icon">06</span>
+              Beheer
+            </button>
+          </details>
         </nav>
       </aside>
 
@@ -57,6 +72,45 @@
         </header>
 
         <section class="view active" id="overviewView" aria-label="Reviewer dashboard">
+          <div class="overview-stats panel" id="overviewStatsPanel"></div>
+
+          <div class="overview-people-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Recruitment pipeline</span>
+                  <h3>Kandidaten</h3>
+                </div>
+                <span class="status-pill" id="candidateCountPill">actief</span>
+              </div>
+              <div id="overviewCandidateCards" class="person-cards"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Interne ontwikkeling</span>
+                  <h3>Medewerkers</h3>
+                </div>
+                <span class="status-pill" id="learnerCountPill">actief</span>
+              </div>
+              <div id="overviewLearnerCards" class="person-cards"></div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="label">Alle personen × domeinen</span>
+                <h3>Domeindekking</h3>
+              </div>
+              <span class="mini-legend"><i class="good"></i> sterk <i class="warn"></i> aandacht <i class="risk"></i> risico</span>
+            </div>
+            <div id="domainHeatmap"></div>
+          </section>
+
+          <div class="section-divider" id="overviewDetailAnchor">Kandidaatdetail</div>
+
           <div class="candidate-strip panel">
             <div class="candidate-profile">
               <div class="avatar" id="candidateAvatar">AP</div>
@@ -509,6 +563,6 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=20260621-academy-learned"></script>
+    <script src="app.js?v=20260621-campai-ds"></script>
   </body>
 </html>

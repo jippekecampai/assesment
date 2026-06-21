@@ -4,6 +4,9 @@
 
 ### Added
 
+- Overzicht uitgebreid met stats strip, kandidaat-/medewerkerkaarten en domeindekking-heatmap.
+- `DATASTRUCTURE.md` toegevoegd als protocol voor nieuwe kandidaten, medewerkers, domeinen, rollen, modules en dashboardmodules.
+- `people[]` en `dashboardModules[]` toegevoegd als basis voor uitbreidbare dashboardstructuur.
 - Campai Skills Academy toegevoegd als interne trainingsmodus naast recruitment.
 - Leerprofielen, rolpaden, skill-gap analyse, XP, levels, badges en modulevoortgang toegevoegd.
 - Trainingsmodules toegevoegd voor Microsoft 365, Azure, Kaseya Stack, Fortigate, SharePoint/Teams, migraties, Inforcer, AI/Copilot, communicatie en Engels.
@@ -13,6 +16,7 @@
 
 ### Changed
 
+- Campai Design System styling toegepast met een vaste linker dashboardnavigatie.
 - Navigatie uitgebreid met `Skills Academy`.
 - Documentatiekaart uitgebreid met trainingresultaten.
 - README uitgebreid met Academy-scope, governance en gamification-uitgangspunten.

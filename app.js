@@ -564,6 +564,28 @@ const fallbackQuestions = {
 
 let activeTestQuestions = [...testQuestions];
 
+// Unified people array: recruitment kandidaten en interne learners delen hetzelfde
+// scoremodel, maar blijven expliciet gescheiden via type voor governance en UX.
+candidates.forEach((candidate) => {
+  candidate.type = "candidate";
+});
+learners.forEach((learner) => {
+  learner.type = "learner";
+});
+const people = [...candidates, ...learners];
+
+const dashboardModules = [
+  { id: "overview-stats", title: "Statistieken", view: "overview", dataSource: ["people", "domains", "trainingModules"], panel: "overviewStatsPanel" },
+  { id: "overview-candidates", title: "Kandidaten", view: "overview", dataSource: ["candidates", "roles"], panel: "overviewCandidateCards" },
+  { id: "overview-learners", title: "Medewerkers", view: "overview", dataSource: ["learners", "roles", "trainingModules"], panel: "overviewLearnerCards" },
+  { id: "overview-heatmap", title: "Domeindekking", view: "overview", dataSource: ["people", "domains"], panel: "domainHeatmap" },
+  { id: "candidate-detail", title: "Kandidaatdetail", view: "overview", dataSource: ["selectedCandidate", "selectedRole"], panel: "overviewDetailAnchor" },
+  { id: "academy", title: "Skills Academy", view: "academy", dataSource: ["selectedLearner", "selectedLearningRole", "trainingModules"], panel: "academyView" },
+  { id: "test", title: "Kandidaattest", view: "test", dataSource: ["testQuestions"], panel: "testView" },
+  { id: "questions", title: "Vragenbank", view: "questions", dataSource: ["draftQuestions"], panel: "questionsView" },
+  { id: "admin", title: "Beheer", view: "admin", dataSource: ["auditLog"], panel: "adminView" }
+];
+
 const draftQuestions = [
   {
     domain: "Servers",
@@ -822,7 +844,156 @@ function bindEvents() {
   });
 }
 
+function renderOverviewStats() {
+  const el = $("#overviewStatsPanel");
+  if (!el) return;
+  el.innerHTML = [
+    ["Kandidaten", candidates.length],
+    ["Medewerkers", learners.length],
+    ["Domeinen", domains.length],
+    ["Trainingsmodules", trainingModules.length]
+  ]
+    .map(
+      ([label, value]) => `
+        <div class="stat-card">
+          <span class="stat-num">${value}</span>
+          <span class="stat-label">${label}</span>
+        </div>
+      `
+    )
+    .join("");
+}
+
+function renderOverviewPeople() {
+  const candidateEl = $("#overviewCandidateCards");
+  const learnerEl = $("#overviewLearnerCards");
+  if (!candidateEl || !learnerEl) return;
+
+  candidateEl.innerHTML = candidates
+    .map((candidate) => {
+      const bestRole = [...roles].sort((a, b) => roleScore(candidate, b) - roleScore(candidate, a))[0];
+      const score = roleScore(candidate, bestRole);
+      return `
+        <button class="person-card${candidate.id === selectedCandidate.id ? " person-card--active" : ""}" data-candidate-id="${candidate.id}" type="button">
+          <span class="person-avatar">${candidate.id}</span>
+          <span class="person-info">
+            <strong>${candidate.name}</strong>
+            <span class="label">${bestRole.name} · ${scoreState(score, bestRole.threshold)}</span>
+          </span>
+          <span class="person-score">
+            <span class="score-badge ${scoreClass(score)}">${score}</span>
+            <span class="label">fit</span>
+          </span>
+        </button>
+      `;
+    })
+    .join("");
+
+  learnerEl.innerHTML = learners
+    .map((learner) => {
+      const targetRole = roles.find((role) => role.name === learner.targetRole) || roles[0];
+      const score = roleScore(learner, targetRole);
+      const completed = (completedModules[learner.id] || []).length;
+      return `
+        <button class="person-card person-card--learner${learner.id === selectedLearner.id ? " person-card--active" : ""}" data-learner-id="${learner.id}" type="button">
+          <span class="person-avatar person-avatar--learner">${learner.id}</span>
+          <span class="person-info">
+            <strong>${learner.name}</strong>
+            <span class="label">${learner.role} → ${learner.targetRole}</span>
+          </span>
+          <span class="person-score">
+            <span class="score-badge ${scoreClass(score)}">${score}</span>
+            <span class="label">${completed}/${trainingModules.length}</span>
+          </span>
+        </button>
+      `;
+    })
+    .join("");
+
+  document.querySelectorAll("[data-candidate-id]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const found = candidates.find((candidate) => candidate.id === card.dataset.candidateId);
+      if (!found) return;
+      selectedCandidate = found;
+      $("#candidateSelect").value = found.id;
+      recordAudit("Kandidaat geselecteerd via overzicht", found.name);
+      renderAll();
+      $("#overviewDetailAnchor")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  document.querySelectorAll("[data-learner-id]").forEach((card) => {
+    card.addEventListener("click", () => {
+      const found = learners.find((learner) => learner.id === card.dataset.learnerId);
+      if (!found) return;
+      selectedLearner = found;
+      selectedLearningRole = roles.find((role) => role.name === found.targetRole) || selectedLearningRole;
+      $("#learnerSelect").value = found.id;
+      $("#learningRoleSelect").value = selectedLearningRole.id;
+      recordAudit("Medewerker geselecteerd via overzicht", found.name);
+      document.querySelector('[data-view="academy"]')?.click();
+      renderAcademy();
+    });
+  });
+
+  $("#candidateCountPill").textContent = `${candidates.length} actief`;
+  $("#learnerCountPill").textContent = `${learners.length} actief`;
+}
+
+function renderDomainHeatmap() {
+  const el = $("#domainHeatmap");
+  if (!el) return;
+  const shortLabels = {
+    "Microsoft 365": "M365",
+    "Kaseya Stack": "Kaseya",
+    Fortigate: "FGT",
+    Servers: "Srv",
+    "SharePoint / Teams": "SPT",
+    "SharePoint / Azure Migrations": "Mig",
+    Inforcer: "Inf",
+    "Basic IT & Troubleshooting": "Basic",
+    "Werkhouding & Communicatie": "Werk",
+    "AI / Copilot": "AI"
+  };
+  const header = domains.map((domain) => `<th title="${domain}">${shortLabels[domain] || domain}</th>`).join("");
+  const row = (person) => {
+    const roleLabel = person.type === "learner" ? person.role : person.meta.split(" / ")[0];
+    const cells = domains
+      .map((domain) => {
+        const score = person.scores[domain] ?? 0;
+        const className = score >= 75 ? "hm-good" : score >= 60 ? "hm-warn" : "hm-risk";
+        return `<td class="hm-cell ${className}" title="${person.name} · ${domain}: ${score}">${score}</td>`;
+      })
+      .join("");
+    return `
+      <tr>
+        <td class="hm-name">
+          <span class="person-avatar person-avatar--sm${person.type === "learner" ? " person-avatar--learner" : ""}">${person.id}</span>
+          <span><strong>${person.name}</strong><small>${roleLabel}</small></span>
+        </td>
+        ${cells}
+      </tr>
+    `;
+  };
+  el.innerHTML = `
+    <div class="hm-scroll">
+      <table class="hm-table">
+        <thead><tr><th class="hm-name-col">Persoon</th>${header}</tr></thead>
+        <tbody>
+          <tr class="hm-separator"><td colspan="${domains.length + 1}">Kandidaten</td></tr>
+          ${people.filter((person) => person.type === "candidate").map(row).join("")}
+          <tr class="hm-separator"><td colspan="${domains.length + 1}">Medewerkers</td></tr>
+          ${people.filter((person) => person.type === "learner").map(row).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
 function renderAll() {
+  renderOverviewStats();
+  renderOverviewPeople();
+  renderDomainHeatmap();
   renderCandidate();
   renderRoles();
   renderRadar();
