@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-06-21 (unified-overview)
+
+### Added
+
+- `DATASTRUCTURE.md` toegevoegd: canonieke databoom met alle entiteiten, relaties, dashboard-modules en het protocol voor het toevoegen van nieuwe data.
+- `people[]` unified array toegevoegd: kandidaten en medewerkers samengevoegd met `type: "candidate"` / `type: "learner"`.
+- `dashboardModules[]` registry toegevoegd: elke module declareert id, title, view, dataSource en panel. Nieuwe modules hangen hier als eerste aan.
+- Stats strip aan het Overzicht: telkaarten voor kandidaten, medewerkers, domeinen en trainingsmodules.
+- People overview in het Overzicht: klikbare kaarten voor kandidaten (beste rol-fit) en medewerkers (doelrol-score + modulevoortgang).
+- Domeindekking heatmap in het Overzicht: matrix van alle personen × domeinen, kleurgecodeerd.
+- Scheidingslijn "Kandidaatdetail" als ankerpunt na klikken op een kandidaatkaart.
+
+### Changed
+
+- `renderAll()` roept nu eerst de drie nieuwe overview-renders aan.
+- Overzicht toont nu kandidaten én medewerkers op één pagina.
+
+### Risk / Follow-up
+
+- `people[]` is een computed view; mutaties na initialisatie vereisen expliciete her-initialisatie.
+- Click-handlers worden hergebonden bij elke `renderAll()`; productie vereist event delegation.
+
 ## 2026-06-21 (assessment-antwoordbias)
 
 ### Changed

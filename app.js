@@ -599,6 +599,25 @@ Object.values(fallbackQuestions).forEach(shuffleQuestionOptions);
 
 let activeTestQuestions = [...testQuestions];
 
+// Unified people array — candidates en learners getagd met type voor de overview.
+candidates.forEach(c => (c.type = "candidate"));
+learners.forEach(l => (l.type = "learner"));
+const people = [...candidates, ...learners];
+
+// Registry van alle dashboard-modules. Nieuw data hangt hier als eerste aan.
+// Zie DATASTRUCTURE.md voor het volledige protocol.
+const dashboardModules = [
+  { id: "overview-stats",      title: "Statistieken",     view: "overview",  dataSource: ["people", "domains", "trainingModules"],              panel: "overviewStatsPanel" },
+  { id: "overview-candidates", title: "Kandidaten",        view: "overview",  dataSource: ["candidates", "roles"],                               panel: "overviewCandidateCards" },
+  { id: "overview-learners",   title: "Medewerkers",       view: "overview",  dataSource: ["learners", "roles", "trainingModules"],               panel: "overviewLearnerCards" },
+  { id: "overview-heatmap",    title: "Domeindekking",     view: "overview",  dataSource: ["people", "domains"],                                  panel: "domainHeatmap" },
+  { id: "candidate-detail",    title: "Kandidaatdetail",   view: "overview",  dataSource: ["selectedCandidate", "selectedRole"],                  panel: "dashboard-grid" },
+  { id: "academy",             title: "Skills Academy",    view: "academy",   dataSource: ["selectedLearner", "selectedLearningRole", "trainingModules"], panel: "academyView" },
+  { id: "test",                title: "Kandidaattest",     view: "test",      dataSource: ["testQuestions"],                                      panel: "testView" },
+  { id: "questions",           title: "Vragenbank",        view: "questions", dataSource: ["draftQuestions"],                                     panel: "questionsView" },
+  { id: "admin",               title: "Beheer",            view: "admin",     dataSource: ["auditLog"],                                           panel: "adminView" },
+];
+
 const draftQuestions = [
   {
     domain: "Servers",
@@ -857,7 +876,150 @@ function bindEvents() {
   });
 }
 
+function renderOverviewStats() {
+  const el = $("#overviewStatsPanel");
+  if (!el) return;
+  el.innerHTML = `
+    <div class="stat-card">
+      <span class="stat-num">${candidates.length}</span>
+      <span class="stat-label">Kandidaten</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">${learners.length}</span>
+      <span class="stat-label">Medewerkers</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">${domains.length}</span>
+      <span class="stat-label">Domeinen</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">${trainingModules.length}</span>
+      <span class="stat-label">Trainingsmodules</span>
+    </div>
+  `;
+}
+
+function renderOverviewPeople() {
+  const candidateEl = $("#overviewCandidateCards");
+  const learnerEl = $("#overviewLearnerCards");
+  if (!candidateEl || !learnerEl) return;
+
+  candidateEl.innerHTML = candidates.map(c => {
+    const bestRole = [...roles].sort((a, b) => roleScore(c, b) - roleScore(c, a))[0];
+    const score = roleScore(c, bestRole);
+    const state = scoreState(score, bestRole.threshold);
+    const cls = scoreClass(score);
+    const isSelected = c.id === selectedCandidate.id;
+    return `
+      <div class="person-card${isSelected ? " person-card--active" : ""}" data-candidate-id="${c.id}" role="button" tabindex="0">
+        <div class="person-avatar">${c.id}</div>
+        <div class="person-info">
+          <strong>${c.name}</strong>
+          <span class="label">${c.meta.split(" / ")[0]}</span>
+        </div>
+        <div class="person-score">
+          <span class="score-badge ${cls}">${score}</span>
+          <span class="label">${state}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  learnerEl.innerHTML = learners.map(l => {
+    const targetRole = roles.find(r => r.name === l.targetRole) || roles[0];
+    const score = roleScore(l, targetRole);
+    const cls = scoreClass(score);
+    const completed = (completedModules[l.id] || []).length;
+    const isSelected = l.id === selectedLearner.id;
+    return `
+      <div class="person-card person-card--learner${isSelected ? " person-card--active" : ""}" data-learner-id="${l.id}" role="button" tabindex="0">
+        <div class="person-avatar person-avatar--learner">${l.id}</div>
+        <div class="person-info">
+          <strong>${l.name}</strong>
+          <span class="label">${l.role} → ${l.targetRole}</span>
+        </div>
+        <div class="person-score">
+          <span class="score-badge ${cls}">${score}</span>
+          <span class="label">${completed}/${trainingModules.length} modules</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll(".person-card[data-candidate-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const found = candidates.find(c => c.id === card.dataset.candidateId);
+      if (!found) return;
+      selectedCandidate = found;
+      const sel = $("#candidateSelect");
+      if (sel) sel.value = found.id;
+      renderAll();
+      $("#overviewDetailAnchor")?.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  document.querySelectorAll(".person-card[data-learner-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const found = learners.find(l => l.id === card.dataset.learnerId);
+      if (!found) return;
+      selectedLearner = found;
+      selectedLearningRole = roles.find(r => r.name === found.targetRole) || roles[0];
+      const sel = $("#learnerSelect");
+      if (sel) sel.value = found.id;
+      document.querySelector('[data-view="academy"]')?.click();
+    });
+  });
+
+  const candidatePill = $("#candidateCountPill");
+  const learnerPill = $("#learnerCountPill");
+  if (candidatePill) candidatePill.textContent = `${candidates.length} actief`;
+  if (learnerPill) learnerPill.textContent = `${learners.length} actief`;
+}
+
+function renderDomainHeatmap() {
+  const el = $("#domainHeatmap");
+  if (!el) return;
+  const short = {
+    "Microsoft 365": "M365", Azure: "Azure", "Kaseya Stack": "Kaseya",
+    Fortigate: "FGT", "AI / Copilot": "Copilot", VoIP: "VoIP",
+    Servers: "Servers", "SharePoint / Teams": "SP/Teams",
+    "SharePoint / Azure Migrations": "Migratie", Inforcer: "Inforcer",
+    "Basic IT & Troubleshooting": "Basic IT", "Werkhouding & Communicatie": "Werkhouding",
+    Engels: "Engels"
+  };
+  const thead = `<tr>
+    <th class="hm-name-col">Persoon</th>
+    ${domains.map(d => `<th class="hm-domain-col" title="${d}">${short[d] || d}</th>`).join("")}
+  </tr>`;
+  const makeRow = p => {
+    const typeLabel = p.type === "candidate" ? (p.meta || "").split(" / ")[0] : p.role || "Medewerker";
+    const cells = domains.map(d => {
+      const s = p.scores[d] ?? 0;
+      const c = s >= 75 ? "hm-good" : s >= 60 ? "hm-warn" : "hm-risk";
+      return `<td class="hm-cell ${c}" title="${d}: ${s}">${s}</td>`;
+    }).join("");
+    return `<tr>
+      <td class="hm-name">
+        <span class="person-avatar person-avatar--sm${p.type === "learner" ? " person-avatar--learner" : ""}">${p.id}</span>
+        <span class="hm-person-info"><strong>${p.name}</strong><span class="label">${typeLabel}</span></span>
+      </td>
+      ${cells}
+    </tr>`;
+  };
+  const groupRow = label => `<tr class="hm-separator"><td colspan="${domains.length + 1}" class="hm-group-label">${label}</td></tr>`;
+  el.innerHTML = `<div class="hm-scroll"><table class="hm-table">
+    <thead>${thead}</thead>
+    <tbody>
+      ${groupRow("Kandidaten")}${candidates.map(makeRow).join("")}
+      ${groupRow("Medewerkers")}${learners.map(makeRow).join("")}
+    </tbody>
+  </table></div>`;
+}
+
 function renderAll() {
+  renderOverviewStats();
+  renderOverviewPeople();
+  renderDomainHeatmap();
   renderCandidate();
   renderRoles();
   renderRadar();

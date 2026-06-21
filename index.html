@@ -57,6 +57,49 @@
         </header>
 
         <section class="view active" id="overviewView" aria-label="Reviewer dashboard">
+
+          <!-- Stats strip -->
+          <div class="overview-stats panel" id="overviewStatsPanel"></div>
+
+          <!-- People overview: kandidaten + medewerkers -->
+          <div class="overview-people-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Recruitment pipeline</span>
+                  <h3>Kandidaten</h3>
+                </div>
+                <span class="status-pill" id="candidateCountPill">actief</span>
+              </div>
+              <div id="overviewCandidateCards" class="person-cards"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="label">Interne ontwikkeling</span>
+                  <h3>Medewerkers</h3>
+                </div>
+                <span class="status-pill" id="learnerCountPill">actief</span>
+              </div>
+              <div id="overviewLearnerCards" class="person-cards"></div>
+            </section>
+          </div>
+
+          <!-- Domain heatmap: alle personen × domeinen -->
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <span class="label">Alle personen × domeinen</span>
+                <h3>Domeindekking</h3>
+              </div>
+              <span class="mini-legend"><i class="good"></i> sterk <i class="warn"></i> aandacht <i class="risk"></i> risico</span>
+            </div>
+            <div id="domainHeatmap"></div>
+          </section>
+
+          <!-- Scheidingslijn kandidaatdetail -->
+          <div class="section-divider" id="overviewDetailAnchor">Kandidaatdetail</div>
+
           <div class="candidate-strip panel">
             <div class="candidate-profile">
               <div class="avatar" id="candidateAvatar">AP</div>
