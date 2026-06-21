@@ -479,6 +479,7 @@ function init() {
   populateControls();
   bindEvents();
   restoreFallbackQuestions();
+  loadIdentity();
   renderAll();
   renderTest();
   renderQuestionFactory();
@@ -932,16 +933,57 @@ function renderQuestionFactory() {
     .join("");
 }
 
-function exportReport() {
-  const report = {
+async function loadIdentity() {
+  const pill = $("#identityPill");
+  if (!pill) return;
+
+  try {
+    const response = await fetch("/api/me", { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("Identity endpoint niet beschikbaar");
+    const identity = await response.json();
+    pill.querySelector("strong").textContent = identity.authenticated ? identity.name || identity.email : "Lokale testmodus";
+  } catch {
+    pill.querySelector("strong").textContent = "Geen SSO-status";
+  }
+}
+
+function buildReport() {
+  return {
     usageMode: "campai-only",
     candidate: selectedCandidate.name,
+    candidateId: selectedCandidate.id,
     role: selectedRole.name,
+    roleId: selectedRole.id,
     score: roleScore(selectedCandidate, selectedRole),
     status: scoreState(roleScore(selectedCandidate, selectedRole), selectedRole.threshold),
     domains: selectedCandidate.scores,
+    answers,
+    generatedAt: new Date().toISOString(),
     caveat: "Assessmentresultaat ondersteunt recruitmentreview, maar vervangt geen gestructureerd interview."
   };
+}
+
+async function saveReport(report) {
+  const response = await fetch("/api/results", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(report)
+  });
+
+  if (!response.ok) throw new Error("Opslaan mislukt");
+  return response.json();
+}
+
+async function exportReport() {
+  const report = buildReport();
+
+  try {
+    await saveReport(report);
+    toast("Assessmentrapport opgeslagen en geexporteerd als JSON.");
+  } catch {
+    toast("Opslaan in database mislukt; JSON-export is wel gemaakt.");
+  }
+
   const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -949,7 +991,6 @@ function exportReport() {
   link.download = `${selectedCandidate.id}-${selectedRole.id}-assessmentrapport.json`;
   link.click();
   URL.revokeObjectURL(url);
-  toast("Assessmentrapport geexporteerd als JSON.");
 }
 
 function toast(message) {
