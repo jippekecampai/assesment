@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node server.mjs",
     "start": "node server.mjs",
-    "check": "node --check app.js && node --check server.mjs"
+    "check": "node --check app.js && node --check server.mjs",
+    "doctor": "node scripts/spoke-doctor.mjs",
+    "test": "node --test"
   },
   "dependencies": {
     "@azure/data-tables": "^13.3.2"

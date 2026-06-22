@@ -1,0 +1,16 @@
+{
+  "key": "campai-assessment",
+  "name": "Campai Assessment & Skills Academy",
+  "type": "EXTERNAL",
+  "vendor": "HR / Recruitment",
+  "description": "Recruitment-assessment + interne Skills Academy. De Vragenfabriek voert geanonimiseerde MSP-casuistiek uit de hub aan voor senior-review.",
+  "url": "https://cmp-app-assessment-test-weu-001.azurewebsites.net/",
+  "route": null,
+  "icon": "clipboard-check",
+  "color": "#0bb4ed",
+  "modules": ["tickets", "devices", "live"],
+  "flags": [],
+  "scopes": ["companies:read", "mappings:read", "tickets:read", "devices:read", "live:read"],
+  "departments": ["hr", "management", "directie", "modernwork"],
+  "roles": []
+}
