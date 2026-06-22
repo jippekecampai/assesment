@@ -39,7 +39,8 @@ Databronnen" uit de README, binnen de hub-contracten.
 | App-type | `EXTERNAL` |
 | Hub-data lezen | Ja — t.b.v. de Vragenfabriek |
 | Bronnen/scopes | Autotask tickets, Datto RMM devices, live bron-data |
-| Launcher-toegang | HR/Recruitment, Management/TAM, Alle medewerkers |
+| Launcher-toegang (suggestie) | `hr`, `management`, `directie`, `modernwork` — **niet bindend** |
+| Definitieve afdelingen | Beheerder beslist bij goedkeuring (bron: hub Department-tabel ← `SG-Department-*` Entra-groepen) |
 | Interne app-roles | Assessment Admin, Reviewer, Question Author, Candidate (bestaand, via Entra) |
 
 ---
@@ -142,15 +143,21 @@ dus geen false positive.
   "modules": ["tickets", "devices", "live"],
   "flags": [],
   "scopes": ["companies:read", "mappings:read", "tickets:read", "devices:read", "live:read"],
-  "departments": ["hr", "recruitment", "management", "all"],
+  "departments": ["hr", "management", "directie", "modernwork"],
   "roles": []
 }
 ```
 
 - `companies:read` + `mappings:read` zijn nodig omdat live-data altijd een
   `companyId` vereist en je die companyId via de hub ophaalt (gouden regel).
-- `departments`-slugs worden door de beheerder bij goedkeuring bevestigd/gemapt;
-  `spoke-doctor` valideert ze niet, de hub wel.
+- **`departments` is een niet-bindende suggestie.** De leidende bron is de
+  Department-tabel in de hub-tenant, gevoed door de `SG-Department-*`
+  Entra-groepen. De beheerder mapt de app bij **App indienen** op de echte
+  `Department.key`-waarden (de hub matcht op key, `apps.service.ts:238`, en
+  negeert onbekende keys). `spoke-doctor` valideert `departments` niet; de
+  manifest-validatie eist alleen "is een lijst".
+- Roland's repo-seed (`sales`/`servicedesk`/`management`/`development`) is
+  **dummy-data** en NIET leidend voor onze afdelingen.
 - De interne app-roles (Assessment Admin/Reviewer/Question Author/Candidate)
   staan los van `roles[]` hier — dat zijn Entra-claims die de app zelf gebruikt
   voor RBAC binnen de app.
