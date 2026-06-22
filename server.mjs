@@ -2,6 +2,9 @@ import { createReadStream, existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
+import { createHubClient, HubError } from "./lib/hub.mjs";
+import { getUserToken } from "./lib/auth.mjs";
+import { buildSourceMaterial } from "./lib/source-material.mjs";
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
@@ -132,6 +135,15 @@ async function saveResult(payload, identity) {
   return entity;
 }
 
+function hubConfigured() {
+  return Boolean(process.env.HUB_BASE_URL && process.env.HUB_APP_TOKEN);
+}
+
+async function getHub() {
+  const userToken = await getUserToken();
+  return createHubClient({ userToken });
+}
+
 async function handleApi(request, response, url) {
   if (url.pathname === "/api/health") {
     sendJson(response, 200, { ok: true, mode: "campai-only" });
@@ -154,6 +166,34 @@ async function handleApi(request, response, url) {
       sendJson(response, 201, { id: entity.id, createdAt: entity.createdAt });
     } catch (error) {
       sendJson(response, 500, { error: "result_save_failed", message: error.message });
+    }
+    return true;
+  }
+
+  if (url.pathname === "/api/hub/companies" && request.method === "GET") {
+    if (!hubConfigured()) { sendJson(response, 503, { error: "hub_unconfigured" }); return true; }
+    try {
+      const hub = await getHub();
+      const companies = await hub.companies.list();
+      sendJson(response, 200, companies.map((c) => ({ id: c.id, name: c.name, city: c.city ?? null })));
+    } catch (error) {
+      const status = error instanceof HubError ? 502 : 500;
+      sendJson(response, status, { error: "hub_error", message: error.message });
+    }
+    return true;
+  }
+
+  if (url.pathname === "/api/hub/source-material" && request.method === "GET") {
+    if (!hubConfigured()) { sendJson(response, 503, { error: "hub_unconfigured" }); return true; }
+    const companyId = url.searchParams.get("companyId");
+    if (!companyId) { sendJson(response, 400, { error: "companyId_required" }); return true; }
+    try {
+      const hub = await getHub();
+      const items = await buildSourceMaterial(hub, companyId);
+      sendJson(response, 200, { items });
+    } catch (error) {
+      const status = error instanceof HubError ? 502 : 500;
+      sendJson(response, status, { error: "hub_error", message: error.message });
     }
     return true;
   }
