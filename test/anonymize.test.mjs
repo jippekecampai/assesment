@@ -27,6 +27,27 @@ test('anonymizeDevice dropt hostname en companyId', () => {
   assert.equal(d.os, 'Windows Server 2022');
 });
 
+test('scrubText vangt hostname, IPv6, telefoon en MAC', () => {
+  assert.ok(!scrubText('server KLANT-DC01 herstart').includes('KLANT-DC01'));
+  assert.ok(!scrubText('alert van srv-db01').includes('srv-db01'));
+  assert.ok(!scrubText('adres 2001:db8::ff00:42:8329 onbereikbaar').includes('2001:db8'));
+  assert.ok(!scrubText('bel 06-12345678 voor terugkoppeling').includes('06-12345678'));
+  assert.ok(!scrubText('mac 00:1A:2B:3C:4D:5E geblokkeerd').includes('00:1A:2B:3C:4D:5E'));
+});
+
+test('scrubText laat generieke technische termen en tijden staan', () => {
+  assert.equal(scrubText('M365-security baseline'), 'M365-security baseline');
+  assert.equal(scrubText('incident om 14:30:05 gemeld'), 'incident om 14:30:05 gemeld');
+  assert.equal(scrubText('Windows Server 2022 patchen'), 'Windows Server 2022 patchen');
+});
+
+test('anonymizeDevice scrubt PII in os/type/category', () => {
+  const d = anonymizeDevice({ os: 'Windows 11 op KLANT-LT07', type: 'Laptop van jan@klantbv.nl', category: 'Endpoint' });
+  assert.ok(!d.os.includes('KLANT-LT07'));
+  assert.ok(!d.type.includes('jan@klantbv.nl'));
+  assert.equal(d.category, 'Endpoint');
+});
+
 test('anonymizeLive scrubt strings diep en behoudt structuur', () => {
   const out = anonymizeLive({ configured: true, items: [{ note: 'reset wachtwoord voor piet@klantbv.nl' }] });
   assert.equal(out.configured, true);
