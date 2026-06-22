@@ -2,6 +2,24 @@
 
 Static prototype voor een Campai-only MSP recruitment assessment app.
 
+## UI/UX — rustige Campai-cockpit
+
+De interface is herontworpen tot een **rustige consultant/management-cockpit** binnen de
+Campai v2-huisstijl (Sora/Inter/JetBrains Mono, navy/lime/cyan). Kern:
+
+- **Eén conclusie per view.** Het Reviewdashboard opent met een kandidaat-cockpit: fit-ring,
+  risico-badge en één conclusie-zin (beste rol-fit + advies). Detail (radar, vraagbewijs,
+  topicmatrix) zit achter tabs — *progressive disclosure*, niet alles tegelijk.
+- **Scanbare heatmap.** De domeindekking gebruikt een 5-staps sequentiële kleurencoding met een
+  per-persoon "laagste domein"-signaal i.p.v. een plat pastelraster met kleine cijfers.
+- **Management aan de oppervlakte, engineer één klik dieper.** De bovenste laag is leesbaar
+  zonder technische ruis; engineers klikken door naar het bewijs.
+- **Behouden contract:** score-/wegings-/coveragelogica, `usageMode`-scheiding
+  (recruitment vs. internal-training), governance-gates en render-guard zijn ongewijzigd.
+
+Ontwerprationale en verificatie: zie `docs/00-design-diagnosis.md`, `docs/01-design-goal.md`,
+`docs/02-decisions.md` en `docs/99-judge-report.md`.
+
 ## Scope
 
 - Reviewdashboard voor Servicedesk Engineer, Cloud Engineer, Modern Work Consultant, Sales en Technical Account Manager.
@@ -62,13 +80,26 @@ Elke codewijziging hoort kort vastgelegd te worden in `CHANGELOG.md` met datum, 
 
 ## Starten
 
-Gebruik:
-
-```powershell
-npm run dev
+```bash
+npm install      # alleen nodig voor @azure/data-tables (server-side opslag)
+npm run dev      # start server.mjs
 ```
 
-Open daarna `http://127.0.0.1:4173`.
+Open daarna `http://127.0.0.1:4173`. De app draait ook zonder hub/Azure-config: de
+assessment- en Academy-views zijn self-contained; alleen de hub-bronmateriaal-knop in de
+Vragenfabriek vereist hub-config (geeft anders een nette melding).
+
+## Validatie
+
+```bash
+npm run check    # node --check op app.js + server.mjs
+npm test         # unit-tests (node --test) — 15 tests
+npm run doctor   # spoke-contract-check (huisstijl, geen vendor-calls, manifest)
+```
+
+Voor het UX-herontwerp is daarnaast geverifieerd dat de score-/wegingslogica byte-identieke
+output geeft vóór en ná de wijziging, en dat alle views/tabs renderen zonder fouten
+(zie `docs/99-judge-report.md`).
 
 ## Azure testomgeving
 

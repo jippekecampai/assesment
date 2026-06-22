@@ -1,5 +1,38 @@
 # Changelog
 
+## 2026-06-22 — UX-uplift: rustige Campai-cockpit (visueel & UX-herontwerp)
+
+- **Scope:** volledige presentatielaag herontworpen naar een rustige consultant/management-cockpit
+  binnen Campai v2-tokens. Aangeraakt: `styles.css` (volledig herschreven), `index.html`
+  (herstructureerd), `app.js` (alléén render-/bind-functies). **Niet** aangeraakt: datamodel,
+  score-/wegings-/coveragelogica, `usageMode`-scheiding, governance-gates, `server.mjs`, `lib/*`.
+- **Reden:** de app was overladen en slecht scanbaar (≈12 panelen tegelijk, geen hiërarchie,
+  heatmap als plat pastelraster, radar die botste met een scrollpaneel). Zie
+  `docs/00-design-diagnosis.md`.
+- **Design-systeem:** spacing-schaal (`--space-*`, 4px-grid) en typeschaal (`--fs-*`) toegevoegd;
+  paneel-/grid-/tab-primitieven; zware gradient-mesh-achtergrond verwijderd voor rust.
+- **Reviewdashboard (anker):** progressive disclosure in 3 lagen — conclusie-cockpit (fit-ring,
+  risico-badge, één conclusie-zin) → rol-fit-ranking + sterktes/aandacht → detail achter tabs
+  (competentieprofiel, scenario's, vraagbewijs, topicmatrix).
+- **Heatmap:** van 3 pastels naar een 5-staps sequentiële encoding (`heatClass()`) met
+  per-rij "laagste domein"-signaal en een leesbare smal-scherm-fallback.
+- **Radar:** herpositioneerd naar een eigen, ruimere tab — geen overlap meer met de
+  benchmark-tabel.
+- **Consistent uitgerold** over Kandidaattest, Skills Academy, Vragenfabriek, Governance en
+  Beheer (view-conclusie-strip + `mode-banner` voor de recruitment/internal-training-scheiding).
+- **Responsive:** inklapbare sidebar (`#navToggle`), 12-koloms-grid degradeert netjes, heatmap
+  valt terug op een lijst i.p.v. een onleesbaar mini-raster.
+- **UI-code verwijderd (mét reden):** de oude `.qualification-ring`/`#qualificationStatus`/
+  `#qualificationText`/`#decisionLabel`-blokken zijn weg — de fit-conclusie stond drie keer
+  versnipperd en is nu één keer prominent in de cockpit. De `.section-divider` is vervangen
+  door de cockpit-sectie (scroll-anchor `#overviewDetailAnchor` behouden).
+- **Risico/follow-up:** heatmap-ramp is geoptimaliseerd op lichtheidscontrast, nog niet formeel
+  colour-blind-safe. Academy/Vragenfabriek/Governance/Beheer kregen het systeem maar geen eigen
+  tab-gelaagdheid (waren minder overladen). Detail: `docs/02-decisions.md`,
+  `docs/99-judge-report.md`.
+- **Verificatie:** scoring-snapshot vóór/ná byte-identiek; jsdom-smoke-test (alle views/tabs)
+  PASS; `npm run doctor`/`check` groen; `npm test` 15/15.
+
 ## 2026-06-22 — Portal-spoke (EXTERNAL)
 - **Scope:** App omgevormd tot Campai Portal-spoke: `spoke.manifest.json`,
   `scripts/spoke-doctor.mjs`, `lib/hub.mjs`, `lib/auth.mjs`, `lib/anonymize.mjs`,

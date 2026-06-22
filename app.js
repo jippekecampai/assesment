@@ -1002,8 +1002,33 @@ function scoreClass(score) {
   return "score-risk";
 }
 
+// 5-staps sequentiële encoding voor de heatmap (echte lichtheidssprongen).
+function heatClass(score) {
+  if (score >= 80) return "hm-q4";
+  if (score >= 70) return "hm-q3";
+  if (score >= 60) return "hm-q2";
+  if (score >= 50) return "hm-q1";
+  return "hm-q0";
+}
+
+// Fit-state → kleur/encoding voor de cockpit (ring + risico-badge).
+function fitEncoding(state) {
+  switch (state) {
+    case "Sterke fit":
+      return { ring: "var(--good)", badge: "risk-strong", risk: "Laag risico" };
+    case "Geschikt":
+      return { ring: "var(--cyan)", badge: "risk-ok", risk: "Beperkt risico" };
+    case "Borderline":
+      return { ring: "var(--warn)", badge: "risk-watch", risk: "Aandacht nodig" };
+    default:
+      return { ring: "var(--risk)", badge: "risk-high", risk: "Hoog risico" };
+  }
+}
+
 function init() {
   bindNavigation();
+  bindNavToggle();
+  bindTabs();
   populateControls();
   bindEvents();
   resetStaleAssessmentState();
@@ -1028,6 +1053,15 @@ function resetStaleAssessmentState() {
   recordAudit("Assessmentvragen opnieuw gebalanceerd", assessmentSchemaVersion);
 }
 
+const viewTitles = {
+  overview: "Reviewdashboard",
+  test: "Kandidaattest",
+  questions: "Vragenfabriek",
+  academy: "Skills Academy",
+  governance: "Beleid",
+  admin: "Beheer"
+};
+
 function bindNavigation() {
   document.querySelectorAll(".nav-item").forEach((button) => {
     button.addEventListener("click", () => {
@@ -1036,6 +1070,31 @@ function bindNavigation() {
       const view = button.dataset.view;
       document.querySelectorAll(".view").forEach((section) => section.classList.remove("active"));
       $(`#${view}View`).classList.add("active");
+      const title = $("#topbarTitle");
+      if (title) title.textContent = viewTitles[view] || "Campai Assessment";
+      $("#sidebar")?.classList.remove("open");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+function bindNavToggle() {
+  $("#navToggle")?.addEventListener("click", () => $("#sidebar")?.classList.toggle("open"));
+}
+
+function bindTabs() {
+  document.querySelectorAll(".tabstrip").forEach((strip) => {
+    const tabs = Array.from(strip.querySelectorAll(".tab"));
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((other) => {
+          const active = other === tab;
+          other.classList.toggle("is-active", active);
+          other.setAttribute("aria-selected", active ? "true" : "false");
+          const panel = $(`#${other.dataset.tab}`);
+          if (panel) panel.classList.toggle("is-active", active);
+        });
+      });
     });
   });
 }
@@ -1308,36 +1367,66 @@ function renderDomainHeatmap() {
     "AI / Copilot": "AI"
   };
   const header = domains.map((domain) => `<th title="${domain}">${shortLabels[domain] || domain}</th>`).join("");
+  const lowestDomains = (person) =>
+    domains
+      .map((domain) => ({ domain, score: person.scores[domain] ?? 0 }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 2);
+  const roleLabelOf = (person) => (person.type === "learner" ? person.role : person.meta.split(" / ")[0]);
+
   const row = (person) => {
-    const roleLabel = person.type === "learner" ? person.role : person.meta.split(" / ")[0];
+    const low = lowestDomains(person)[0];
     const cells = domains
       .map((domain) => {
         const score = person.scores[domain] ?? 0;
-        const className = score >= 75 ? "hm-good" : score >= 60 ? "hm-warn" : "hm-risk";
-        return `<td class="hm-cell ${className}" title="${person.name} · ${domain}: ${score}">${score}</td>`;
+        return `<td class="hm-cell ${heatClass(score)}" title="${person.name} · ${domain}: ${score}">${score}</td>`;
       })
       .join("");
     return `
       <tr>
         <td class="hm-name">
           <span class="person-avatar person-avatar--sm${person.type === "learner" ? " person-avatar--learner" : ""}">${person.id}</span>
-          <span><strong>${person.name}</strong><small>${roleLabel}</small></span>
+          <span><strong>${person.name}</strong><small>${roleLabelOf(person)} · laag: ${shortDomain(low.domain)}</small></span>
         </td>
         ${cells}
       </tr>
     `;
   };
+
+  const fallbackRow = (person) => {
+    const lows = lowestDomains(person)
+      .map((item) => `<b>${shortDomain(item.domain)} ${item.score}</b>`)
+      .join(" · ");
+    const avg = Math.round(domains.reduce((total, domain) => total + (person.scores[domain] ?? 0), 0) / domains.length);
+    return `
+      <div class="hm-fallback-row">
+        <span class="person-avatar person-avatar--sm${person.type === "learner" ? " person-avatar--learner" : ""}">${person.id}</span>
+        <span class="gaps"><strong>${person.name}</strong><br />grootste gaten: ${lows}</span>
+        <span class="score-badge ${scoreClass(avg)}">${avg}</span>
+      </div>
+    `;
+  };
+
+  const candidatesList = people.filter((person) => person.type === "candidate");
+  const learnersList = people.filter((person) => person.type === "learner");
+
   el.innerHTML = `
     <div class="hm-scroll">
       <table class="hm-table">
         <thead><tr><th class="hm-name-col">Persoon</th>${header}</tr></thead>
         <tbody>
           <tr class="hm-separator"><td colspan="${domains.length + 1}">Kandidaten</td></tr>
-          ${people.filter((person) => person.type === "candidate").map(row).join("")}
+          ${candidatesList.map(row).join("")}
           <tr class="hm-separator"><td colspan="${domains.length + 1}">Medewerkers</td></tr>
-          ${people.filter((person) => person.type === "learner").map(row).join("")}
+          ${learnersList.map(row).join("")}
         </tbody>
       </table>
+    </div>
+    <div class="hm-fallback">
+      <span class="label">Kandidaten</span>
+      ${candidatesList.map(fallbackRow).join("")}
+      <span class="label" style="margin-top:8px;">Medewerkers</span>
+      ${learnersList.map(fallbackRow).join("")}
     </div>
   `;
 }
@@ -1359,14 +1448,41 @@ function renderAll() {
 function renderCandidate() {
   const score = roleScore(selectedCandidate, selectedRole);
   const state = scoreState(score, selectedRole.threshold);
+  const encoding = fitEncoding(state);
+
+  // Beste rol-fit (advies voor een mens) bovenaan, naast de geselecteerde rol.
+  const bestRole = [...roles]
+    .map((role) => ({ role, score: roleScore(selectedCandidate, role) }))
+    .sort((a, b) => b.score - a.score)[0];
+
+  const sorted = domains
+    .map((domain) => ({ domain, score: selectedCandidate.scores[domain] }))
+    .sort((a, b) => b.score - a.score);
+  const topStrength = sorted[0];
+  const topGap = sorted[sorted.length - 1];
+
   $("#candidateAvatar").textContent = selectedCandidate.id;
   $("#candidateName").textContent = selectedCandidate.name;
   $("#candidateMeta").textContent = selectedCandidate.meta;
-  $("#decisionLabel").textContent = state;
-  $("#qualificationStatus").textContent = state;
-  $("#qualificationText").textContent = `${score}/100 tegenover drempel ${selectedRole.threshold} voor ${selectedRole.name}.`;
-  $("#scoreRing").style.setProperty("--score", score);
-  $("#scoreRing span").textContent = score;
+
+  $("#cockpitConclusion").innerHTML =
+    `Beste rol-fit: <strong>${bestRole.role.name}</strong> · <span class="mono">${bestRole.score}</span>/100. ` +
+    `Geselecteerde rol ${selectedRole.name}: <span class="mono">${score}</span>/100 — advies <strong>${state.toLowerCase()}</strong> ` +
+    `(drempel ${selectedRole.threshold}).`;
+
+  $("#cockpitChips").innerHTML =
+    `<span class="chip chip--up">Sterkste: ${shortDomain(topStrength.domain)} <span class="mono">${topStrength.score}</span></span>` +
+    `<span class="chip chip--down">Aandacht: ${shortDomain(topGap.domain)} <span class="mono">${topGap.score}</span></span>`;
+
+  const ring = $("#scoreRing");
+  ring.style.setProperty("--score", score);
+  ring.style.setProperty("--ring-color", encoding.ring);
+  ring.querySelector("span").textContent = score;
+
+  const badge = $("#riskBadge");
+  badge.textContent = encoding.risk;
+  badge.className = `risk-badge ${encoding.badge}`;
+
   $("#fitPill").textContent = state;
 }
 
@@ -1392,9 +1508,9 @@ function renderRoles() {
 
 function renderRadar() {
   const svg = $("#radarChart");
-  const cx = 210;
-  const cy = 158;
-  const radius = 112;
+  const cx = 220;
+  const cy = 180;
+  const radius = 124;
   const points = domains.map((domain, index) => {
     const angle = (Math.PI * 2 * index) / domains.length - Math.PI / 2;
     const score = selectedCandidate.scores[domain];
@@ -1465,23 +1581,18 @@ function renderBenchmarkTable() {
 }
 
 function renderInspector() {
-  const score = roleScore(selectedCandidate, selectedRole);
   const sortedDomains = domains.map((domain) => ({ domain, score: selectedCandidate.scores[domain] })).sort((a, b) => b.score - a.score);
   const strengths = sortedDomains.slice(0, 3);
   const gaps = sortedDomains.slice(-3).reverse();
   $("#decisionInspector").innerHTML = `
-    <div class="decision-score">
-      <span class="label">Geselecteerde rol</span>
-      <strong>${selectedRole.name}</strong>
-      <div class="bar-track"><span class="bar-fill" style="width:${score}%"></span></div>
-      <small>${score}/100, drempel ${selectedRole.threshold}. ${scoreState(score, selectedRole.threshold)}.</small>
-    </div>
     <span class="label">Sterke punten</span>
-    <ul class="strength-list">${strengths.map((item) => `<li>${item.domain}: ${item.score}</li>`).join("")}</ul>
-    <span class="label">Aandachtspunten</span>
-    <ul class="gap-list">${gaps.map((item) => `<li>${item.domain}: ${item.score}</li>`).join("")}</ul>
-    <span class="label">Reviewernotitie</span>
-    <div class="decision-note">Gebruik dit als interviewbewijs, niet als automatische afwijzing. Valideer praktische gaten en werkhouding in een gesprek met een senior engineer, consultant of manager wanneer de kandidaat rond de drempel zit.</div>
+    <ul class="strength-list">${strengths
+      .map((item) => `<li><span>${shortDomain(item.domain)}</span><span class="mono">${item.score}</span></li>`)
+      .join("")}</ul>
+    <span class="label" style="margin-top:8px;">Aandachtspunten</span>
+    <ul class="gap-list">${gaps
+      .map((item) => `<li><span>${shortDomain(item.domain)}</span><span class="mono">${item.score}</span></li>`)
+      .join("")}</ul>
   `;
 }
 
@@ -1832,9 +1943,16 @@ function renderAcademy() {
   const criticalGaps = domainsWithGap.filter((item) => item.gap >= 10).length;
   const completedBadges = trainingModules.filter((module) => isModuleCompleted(module.id)).map((module) => module.badge);
 
+  const conclusion = $("#academyConclusion");
+  if (conclusion) {
+    conclusion.innerHTML =
+      `<strong>${selectedLearner.name}</strong> → ${selectedLearningRole.name}: rolfit <span class="mono">${roleFit}</span>/100, ` +
+      `${criticalGaps} kritieke ${criticalGaps === 1 ? "gap" : "gaten"}, level <span class="mono">${level}</span>.`;
+  }
+
   $("#learnerName").textContent = selectedLearner.name;
   $("#learnerAvatar").textContent = selectedLearner.id;
-  $("#learnerRole").textContent = `${selectedLearner.role} -> ${selectedLearningRole.name}`;
+  $("#learnerRole").textContent = `${selectedLearner.role} → ${selectedLearningRole.name}`;
   $("#learnerMeta").textContent = selectedLearner.meta;
   $("#learnerLevel").textContent = `Level ${level}`;
   $("#learnerXp").textContent = `${xp} XP`;
