@@ -90,6 +90,14 @@ Campai Console
 
 ## Protocol: nieuw data toevoegen
 
+### Hub-bronmateriaal → conceptvragen (spoke)
+1. De Vragenbank-knop "Bronmateriaal uit hub" roept `/api/hub/source-material?companyId=…`.
+2. `server.mjs` leest via `lib/hub.mjs` (gateway) tickets/devices/live-data, draait
+   die door `lib/anonymize.mjs` en bouwt kandidaten met `lib/source-material.mjs`.
+3. De kandidaten worden toegevoegd aan `draftQuestions[]` (vorm: domain, role, source,
+   prompt) — nooit automatisch aan `testQuestions[]`.
+4. Senior-review promoveert ze handmatig (bestaande flow). Documenteer in `CHANGELOG.md`.
+
 ### Nieuwe kandidaat
 1. Voeg een object toe aan `candidates[]` met `type: "candidate"` en alle domeinen in `scores{}`
 2. Het Overzicht toont de kandidaat automatisch in de kaartgrid en heatmap

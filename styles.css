@@ -15,15 +15,15 @@
   --accent-2: #003d6b;
   --lime: #cdd100;
   --lime-glow: #ddee21;
-  --cyan: #0bb1ef;
+  --cyan: #0bb4ed;
   --cyan-soft: #6cd6f4;
   --good: #16844f;
   --warn: #c88605;
   --risk: #e62a4f;
-  --ai: #0bb1ef;
+  --ai: #0bb4ed;
   --gradient-hero: linear-gradient(135deg, #003d6b 0%, #00213b 62%, #063b53 100%);
   --gradient-lime: linear-gradient(135deg, #cdd100, #ddee21);
-  --gradient-cyan: linear-gradient(135deg, #0bb1ef, #6cd6f4);
+  --gradient-cyan: linear-gradient(135deg, #0bb4ed, #6cd6f4);
   --gradient-mesh:
     radial-gradient(at 20% 10%, rgba(11, 177, 239, 0.16) 0, transparent 44%),
     radial-gradient(at 82% 4%, rgba(205, 209, 0, 0.12) 0, transparent 42%),
