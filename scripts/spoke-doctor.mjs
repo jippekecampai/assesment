@@ -39,7 +39,7 @@ if (!existsSync(manifestPath)) {
 }
 
 // --- 2. Bronbestanden scannen ---------------------------------------------
-const SRC_DIRS = ['app', 'lib', 'src', 'components', 'pages', 'scripts'].map((d) => join(ROOT, d)).filter(existsSync);
+const SRC_DIRS = ['app', 'lib', 'src', 'components', 'pages'].map((d) => join(ROOT, d)).filter(existsSync);
 const files = [];
 for (const dir of SRC_DIRS) walk(dir, files);
 // Scan ook losse root-bestanden (app.js, server.mjs).
