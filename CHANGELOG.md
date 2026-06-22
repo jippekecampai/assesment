@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-06-22 — Portal-spoke (EXTERNAL)
+- **Scope:** App omgevormd tot Campai Portal-spoke: `spoke.manifest.json`,
+  `scripts/spoke-doctor.mjs`, `lib/hub.mjs`, `lib/auth.mjs`, `lib/anonymize.mjs`,
+  `lib/source-material.mjs`, CI-workflow.
+- **Vragenfabriek:** nieuwe routes `/api/hub/companies` en `/api/hub/source-material`
+  lezen geanonimiseerde tickets/devices/live-data via de hub-gateway → `draftQuestions[]`.
+- **Huisstijl:** cyan `#0bb1ef` → `#0bb4ed` (Console-token).
+- **Reden:** opname in de Portal-launcher met door-de-hub-bestuurde toegang.
+- **Risico/follow-up:** OBO-token (`lib/auth.mjs`) is nog een stub; vullen bij de
+  Azure/Entra-uitrol. `departments` in het manifest bevestigt de beheerder.
+
 ## 2026-06-21
 
 ### Added
