@@ -1136,6 +1136,52 @@ function bindEvents() {
     renderQuestionFactory();
     toast("Conceptvraag toegevoegd voor review.");
   });
+  $("#hubLoadCompaniesBtn")?.addEventListener("click", async () => {
+    const hint = $("#hubSourceHint");
+    try {
+      const res = await fetch("/api/hub/companies");
+      if (res.status === 503) { hint.textContent = "Hub niet geconfigureerd (HUB_BASE_URL/HUB_APP_TOKEN ontbreekt)."; return; }
+      if (!res.ok) { hint.textContent = "Kon klanten niet laden."; return; }
+      const companies = await res.json();
+      $("#hubCompany").innerHTML = `<option value="">— kies klant —</option>` +
+        companies.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(c.name)}</option>`).join("");
+      hint.textContent = `${companies.length} klant(en) geladen.`;
+    } catch (error) {
+      hint.textContent = "Kon klanten niet laden.";
+    }
+  });
+
+  $("#hubSourceBtn")?.addEventListener("click", async () => {
+    const hint = $("#hubSourceHint");
+    const companyId = $("#hubCompany").value;
+    if (!companyId) { hint.textContent = "Kies eerst een klant."; return; }
+    hint.textContent = "Bezig met ophalen…";
+    try {
+      const res = await fetch(`/api/hub/source-material?companyId=${encodeURIComponent(companyId)}`);
+      if (res.status === 503) { hint.textContent = "Hub niet geconfigureerd."; return; }
+      if (!res.ok) { hint.textContent = "Ophalen mislukt."; return; }
+      const { items } = await res.json();
+      if (!items || !items.length) { hint.textContent = "Geen bronmateriaal gevonden."; return; }
+      for (const item of items.reverse()) {
+        draftQuestions.unshift({
+          domain: item.domain,
+          role: item.role,
+          type: "Scenario",
+          source: item.source,
+          prompt: item.prompt,
+          options: defaultDraftOptions({}),
+          answer: 1
+        });
+      }
+      activeDraftIndex = 0;
+      recordAudit("Hub-bronmateriaal opgehaald", `${items.length} concepten / klant ${companyId}`);
+      renderQuestionFactory();
+      hint.textContent = `${items.length} conceptvraag(en) toegevoegd voor review.`;
+      toast("Hub-bronmateriaal toegevoegd aan de Vragenbank.");
+    } catch (error) {
+      hint.textContent = "Ophalen mislukt.";
+    }
+  });
   $("#globalSearch").addEventListener("input", (event) => {
     selectedDomain = domains.find((domain) => domain.toLowerCase().includes(event.target.value.toLowerCase())) || "Alle domeinen";
     $("#domainSelect").value = selectedDomain;
