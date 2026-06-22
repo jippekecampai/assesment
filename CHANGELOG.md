@@ -18,6 +18,9 @@
 
 ### Changed
 
+- Kandidaattestvragen krijgen nu een gebalanceerde antwoordvolgorde en vergelijkbare optie-lengtes; lokale oude testantwoorden worden bij schemawijziging gereset.
+- Vragenbankconcepten zijn nu openklapbaar, bewerkbaar en kunnen vanuit de reviewlijst aan het assessment worden toegevoegd.
+- Beheer toont nu expliciet de datastructuur, browser-memory en actieve settings naast documentatie en auditlog.
 - Campai Design System styling toegepast met een vaste linker dashboardnavigatie.
 - Navigatie uitgebreid met `Skills Academy`.
 - Documentatiekaart uitgebreid met trainingresultaten.

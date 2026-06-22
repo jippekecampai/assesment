@@ -618,11 +618,94 @@ const testQuestions = [
   }
 ];
 
-testQuestions.forEach((question, index) => {
-  question.id = `q-${index + 1}`;
-});
+function seededRandom(seedStr) {
+  let h = 2166136261;
+  for (let i = 0; i < seedStr.length; i += 1) {
+    h ^= seedStr.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return function () {
+    h += h << 13;
+    h ^= h >>> 7;
+    h += h << 3;
+    h ^= h >>> 17;
+    h += h << 5;
+    return (h >>> 0) / 4294967296;
+  };
+}
+
+function shuffledIndices(length, seed) {
+  const rng = seededRandom(seed);
+  const order = Array.from({ length }, (_, index) => index);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+function prepareAssessmentQuestion(question, index) {
+  question.id = question.id || `q-${index + 1}`;
+  const originalOptions = question.options.map((text, optionIndex) => ({
+    text,
+    originalIndex: optionIndex
+  }));
+  const correct = originalOptions.find((option) => option.originalIndex === question.answer);
+  const distractors = originalOptions.filter((option) => option.originalIndex !== question.answer);
+  const distractorOrder = shuffledIndices(distractors.length, `${question.id}:distractors`).map((item) => distractors[item]);
+  const targetCorrectIndex = [2, 0, 3, 1][index % 4];
+  const prepared = [];
+
+  for (let optionIndex = 0; optionIndex < 4; optionIndex += 1) {
+    if (optionIndex === targetCorrectIndex) {
+      prepared.push(correct);
+    } else {
+      prepared.push(distractorOrder.shift());
+    }
+  }
+
+  question.options = prepared.map((option) => option.text);
+  question.answer = targetCorrectIndex;
+  question.options = balanceOptionLengths(question.options, question.answer, question.domain);
+  question.answerQuality = {
+    correctIndex: targetCorrectIndex,
+    correctLength: question.options[targetCorrectIndex].length,
+    maxDistractorLength: Math.max(...question.options.filter((_, optionIndex) => optionIndex !== targetCorrectIndex).map((option) => option.length))
+  };
+}
+
+function balanceOptionLengths(options, correctIndex, domain) {
+  const correctLength = options[correctIndex].length;
+  return options.map((option, index) => {
+    if (index === correctIndex) return option;
+    return expandDistractor(option, Math.max(58, correctLength - 8), domain);
+  });
+}
+
+function expandDistractor(option, targetLength, domain) {
+  if (option.length >= targetLength) return option;
+  const suffixes = [
+    " waarbij loganalyse, impactbepaling en vervolgactie niet aantoonbaar worden vastgelegd.",
+    " en daarbij scope, risico, rollback en klantcommunicatie onvoldoende worden meegenomen.",
+    ` waarbij de ${domain}-context, governance en auditspoor ontbreken.`,
+    " en pas achteraf beoordelen of dit bij het klantprobleem paste."
+  ];
+  let expanded = option;
+  for (const suffix of suffixes) {
+    if (expanded.length >= targetLength) break;
+    expanded += suffix;
+  }
+  return expanded;
+}
+
+function prepareAssessmentQuestions(questions) {
+  questions.forEach(prepareAssessmentQuestion);
+}
+
+prepareAssessmentQuestions(testQuestions);
 
 const unknownOptionLabel = "Dit onderwerp is mij niet bekend";
+const assessmentSchemaVersion = "20260622-balanced-options-v1";
 
 const knownSystemOptions = {
   "Kaseya Stack": ["TOPdesk", "HaloPSA", "NinjaOne", "N-able", "ConnectWise", "Freshservice", "Zendesk", "Microsoft Intune"],
@@ -707,6 +790,8 @@ const fallbackQuestions = {
     answer: 1
   }
 };
+
+prepareAssessmentQuestions(Object.values(fallbackQuestions));
 
 let activeTestQuestions = [...testQuestions];
 
@@ -873,6 +958,15 @@ const documentationMap = [
   ["Beleid", "Repository", "Thresholds, rubricversies, rolrechten"]
 ];
 
+const appSettingsMap = [
+  ["Tenantmodus", "Single-tenant prototype", "Voor Campai intern. Multi-tenant scheiding hoort in auth, opslag en deployment."],
+  ["Identity", "Entra ID met lokale fallback", "Profiel en rol komen uit de omgeving zodra de app achter Azure auth draait."],
+  ["Assessmentbeleid", "Human review verplicht", "Geen automatische afwijzing zonder reviewercontrole."],
+  ["Bronbeleid", "Geanonimiseerd", "Geen klantnamen, domeinen, IP-adressen of credentials in kandidaatvragen."],
+  ["Opslagrichting", "Azure Table Storage-ready", "Prototype gebruikt lokale state; productiestate hoort tenantgescheiden te worden opgeslagen."],
+  ["Vraagstructuur", assessmentSchemaVersion, "Antwoordvolgorde en optie-lengtes worden bij schemawijziging opnieuw voorbereid."]
+];
+
 let selectedCandidate = candidates[0];
 let selectedRole = roles[1];
 let selectedDomain = "Alle domeinen";
@@ -884,6 +978,7 @@ let auditLog = JSON.parse(localStorage.getItem("camaiAuditLog") || "[]");
 let completedModules = JSON.parse(localStorage.getItem("camaiCompletedModules") || "{}");
 let moduleUpdates = JSON.parse(localStorage.getItem("camaiModuleUpdates") || "{}");
 let activeModuleId = "";
+let activeDraftIndex = 0;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -911,6 +1006,7 @@ function init() {
   bindNavigation();
   populateControls();
   bindEvents();
+  resetStaleAssessmentState();
   restoreFallbackQuestions();
   loadIdentity();
   ensureInitialAuditEntry();
@@ -919,6 +1015,17 @@ function init() {
   renderAcademy();
   renderQuestionFactory();
   renderAdminPanel();
+}
+
+function resetStaleAssessmentState() {
+  if (localStorage.getItem("camaiAssessmentSchemaVersion") === assessmentSchemaVersion) return;
+  answers = {};
+  currentQuestion = 0;
+  activeTestQuestions = [...testQuestions];
+  localStorage.setItem("camaiAssessmentSchemaVersion", assessmentSchemaVersion);
+  localStorage.removeItem("camaiAnswers");
+  localStorage.removeItem("camaiQuestionIndex");
+  recordAudit("Assessmentvragen opnieuw gebalanceerd", assessmentSchemaVersion);
 }
 
 function bindNavigation() {
@@ -1017,9 +1124,13 @@ function bindEvents() {
     draftQuestions.unshift({
       domain: $("#authorDomain").value,
       role: $("#authorRole").value,
+      type: $("#authorType").value,
       source: $("#authorSource").value || "Handmatige Campai-bron",
-      prompt: $("#authorPrompt").value || "Conceptvraag wacht op senior review."
+      prompt: $("#authorPrompt").value || "Conceptvraag wacht op senior review.",
+      options: defaultDraftOptions({}),
+      answer: 1
     });
+    activeDraftIndex = 0;
     recordAudit("Conceptvraag toegevoegd", `${$("#authorDomain").value} / ${$("#authorRole").value}`);
     event.target.reset();
     renderQuestionFactory();
@@ -1868,15 +1979,187 @@ function renderModuleTimeline(module, update) {
 
 function renderQuestionFactory() {
   $("#draftQuestions").innerHTML = draftQuestions
-    .map(
-      (item) => `
-      <article class="draft-item">
+    .map((item, index) => {
+      const isActive = index === activeDraftIndex;
+      const options = item.options || defaultDraftOptions(item);
+      const answer = Number.isInteger(item.answer) ? item.answer : 1;
+      return `
+      <article class="draft-item ${isActive ? "draft-item--active" : ""}" data-draft-index="${index}">
         <div class="draft-copy">
-          <span class="label">${item.domain} / ${item.role}</span>
-          <h3>${item.prompt}</h3>
-          <p>${item.source}</p>
+          <span class="label">${escapeHtml(item.domain)} / ${escapeHtml(item.role)}${item.type ? ` / ${escapeHtml(item.type)}` : ""}</span>
+          <button class="draft-title" type="button" data-draft-title-open="${index}">
+            ${escapeHtml(item.prompt)}
+          </button>
+          <p>${escapeHtml(item.source)}</p>
+          ${
+            isActive
+              ? `
+                <div class="draft-editor">
+                  <label>Bron
+                    <input data-draft-field="source" value="${escapeAttr(item.source)}" />
+                  </label>
+                  <label>Conceptvraag
+                    <textarea data-draft-field="prompt" rows="4">${escapeHtml(item.prompt)}</textarea>
+                  </label>
+                  <div class="draft-options-editor">
+                    ${options
+                      .map(
+                        (option, optionIndex) => `
+                          <label>
+                            <span>Optie ${String.fromCharCode(65 + optionIndex)}</span>
+                            <input data-draft-option="${optionIndex}" value="${escapeAttr(option)}" />
+                          </label>
+                        `
+                      )
+                      .join("")}
+                  </div>
+                  <label>Correct antwoord
+                    <select data-draft-field="answer">
+                      ${options
+                        .map((_, optionIndex) => `<option value="${optionIndex}" ${answer === optionIndex ? "selected" : ""}>${String.fromCharCode(65 + optionIndex)}</option>`)
+                        .join("")}
+                    </select>
+                  </label>
+                  <div class="draft-actions">
+                    <button class="ghost-button" type="button" data-draft-save="${index}">Wijziging opslaan</button>
+                    <button class="primary-button" type="button" data-draft-promote="${index}">Toevoegen aan assessment</button>
+                  </div>
+                </div>
+              `
+              : ""
+          }
         </div>
-        <span class="review-chip">Review nodig</span>
+        <button class="review-chip" type="button" data-draft-open="${index}">${isActive ? "Open" : "Openen"}</button>
+      </article>
+    `;
+    })
+    .join("");
+
+  document.querySelectorAll("[data-draft-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeDraftIndex = Number(button.dataset.draftOpen);
+      renderQuestionFactory();
+    });
+  });
+  document.querySelectorAll("[data-draft-title-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeDraftIndex = Number(button.dataset.draftTitleOpen);
+      renderQuestionFactory();
+    });
+  });
+  document.querySelectorAll("[data-draft-save]").forEach((button) => {
+    button.addEventListener("click", () => {
+      saveDraftFromEditor(Number(button.dataset.draftSave));
+      renderQuestionFactory();
+      toast("Conceptvraag bijgewerkt.");
+    });
+  });
+  document.querySelectorAll("[data-draft-promote]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.draftPromote);
+      saveDraftFromEditor(index);
+      promoteDraftToAssessment(index);
+      renderQuestionFactory();
+      renderTest();
+      toast("Conceptvraag toegevoegd aan kandidaattest.");
+    });
+  });
+}
+
+function defaultDraftOptions(item) {
+  return [
+    "Alleen een losse technische actie uitvoeren zonder impact of communicatie.",
+    "Impact bepalen, relevante logs of brondata controleren, herstelstap kiezen en opvolging vastleggen.",
+    "De vraag direct escaleren zonder eigen analyse of context.",
+    "Wachten tot de klant of collega opnieuw contact opneemt."
+  ];
+}
+
+function saveDraftFromEditor(index) {
+  const article = document.querySelector(`[data-draft-index="${index}"]`);
+  if (!article) return;
+  const item = draftQuestions[index];
+  const source = article.querySelector('[data-draft-field="source"]')?.value.trim();
+  const prompt = article.querySelector('[data-draft-field="prompt"]')?.value.trim();
+  const answer = Number(article.querySelector('[data-draft-field="answer"]')?.value || 1);
+  const options = Array.from(article.querySelectorAll("[data-draft-option]")).map((input) => input.value.trim() || "Nog uitwerken");
+  item.source = source || item.source;
+  item.prompt = prompt || item.prompt;
+  item.options = options;
+  item.answer = answer;
+  recordAudit("Conceptvraag bijgewerkt", `${item.domain} / ${item.role}`);
+}
+
+function promoteDraftToAssessment(index) {
+  const item = draftQuestions[index];
+  const nextQuestion = {
+    id: `q-custom-${Date.now()}`,
+    domain: item.domain,
+    type: item.type || "Conceptvraag",
+    prompt: item.prompt,
+    options: item.options || defaultDraftOptions(item),
+    answer: Number.isInteger(item.answer) ? item.answer : 1
+  };
+  prepareAssessmentQuestion(nextQuestion, testQuestions.length);
+  testQuestions.push(nextQuestion);
+  activeTestQuestions = [...testQuestions];
+  currentQuestion = activeTestQuestions.length - 1;
+  localStorage.setItem("camaiQuestionIndex", currentQuestion);
+  recordAudit("Conceptvraag toegevoegd aan assessment", `${item.domain} / ${item.role}`);
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value = "") {
+  return escapeHtml(value).replaceAll("`", "&#096;");
+}
+
+function dataStructureItems() {
+  return [
+    ["people[]", `${people.length} personen`, "Unified array met kandidaten en medewerkers via type candidate/learner."],
+    ["candidates[]", `${candidates.length} kandidaten`, "Recruitmentprofielen met scores, assessmentstatus en rol-fit."],
+    ["learners[]", `${learners.length} medewerkers`, "Interne ontwikkelprofielen met doelrol, XP, badges en modulevoortgang."],
+    ["domains[]", `${domains.length} domeinen`, "MSP-domeinen voor scoring, heatmap, competentiekaart en vragen."],
+    ["roles[]", `${roles.length} rollen`, "Doelrollen met domeingewichten, thresholds en advieslogica."],
+    ["trainingModules[]", `${trainingModules.length} modules`, "Skills Academy registry voor artikel, course, path en practice."],
+    ["testQuestions[]", `${testQuestions.length} vragen`, "Gebalanceerde assessmentvragen met antwoordindex en domeinkoppeling."],
+    ["draftQuestions[]", `${draftQuestions.length} concepten`, "Vragenbankconcepten die bewerkt en naar het assessment gepromoveerd kunnen worden."],
+    ["dashboardModules[]", `${dashboardModules.length} views`, "Dashboardregistry die navigatie, panels en databronnen bij elkaar houdt."],
+    ["DATASTRUCTURE.md", "Canoniek protocol", "Toevoegen van kandidaat, medewerker, domein, rol of module volgt dit document."]
+  ];
+}
+
+function memoryItems() {
+  const localAnswers = Object.keys(answers).length;
+  const completedCount = Object.keys(completedModules).length;
+  const updateCount = Object.values(moduleUpdates).reduce((total, updates) => total + (Array.isArray(updates) ? updates.length : 0), 0);
+  return [
+    ["camaiAnswers", `${localAnswers} antwoorden`, "Autosave voor kandidaatantwoorden in de browser."],
+    ["camaiQuestionIndex", `Vraag ${currentQuestion + 1}`, "Laatste positie in de adaptieve kandidaatflow."],
+    ["camaiAssessmentSchemaVersion", assessmentSchemaVersion, "Reset oude antwoorden wanneer de vraagstructuur wijzigt."],
+    ["camaiCompletedModules", `${completedCount} modules`, "Lokale voortgang voor Skills Academy modules."],
+    ["camaiModuleUpdates", `${updateCount} updates`, "Comments/statusupdates per trainingsmodule."],
+    ["camaiAuditLog", `${auditLog.length} events`, "Laatste 100 beheer- en dashboardacties."]
+  ];
+}
+
+function renderAdminInfo(targetSelector, items) {
+  const target = $(targetSelector);
+  if (!target) return;
+  target.innerHTML = items
+    .map(
+      ([key, value, description]) => `
+      <article class="admin-info-item">
+        <span>${key}</span>
+        <strong>${value}</strong>
+        <p>${description}</p>
       </article>
     `
     )
@@ -1919,6 +2202,10 @@ function renderAdminPanel() {
     `
     )
     .join("");
+
+  renderAdminInfo("#dataStructureMap", dataStructureItems());
+  renderAdminInfo("#memoryMap", memoryItems());
+  renderAdminInfo("#settingsMap", appSettingsMap);
 
   $("#auditLog").innerHTML = auditLog.length
     ? auditLog
