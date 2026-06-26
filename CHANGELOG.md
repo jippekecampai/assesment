@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-06-26 — AI guard (@cmp/ai-guard) gevendord + Azure-deploy hersteld
+
+- **AI guard:** de Campai PII-pseudonimisatielaag uit Roland's hub-repo
+  (`tuxmanro/campai-portal-v2`, `packages/ai-guard` = private workspace-package)
+  is 1-op-1 gevendord als `src/lib/ai-guard.ts` (`PromptSanitizer`, zero deps).
+  Hub-contract: AI-prompts gaan altijd eerst door de guard zodat het model nooit
+  rauwe klant-PII ziet. De app roept nu nog geen LLM aan; de guard staat klaar
+  voor het moment dat er een Claude-call bijkomt (dan: sanitize() vóór, rehydrate()
+  na). Runtime geverifieerd (round-trip, geen PII-lek).
+- **Design system:** bevestigd dat Mantine (skill-forge) leidend blijft voor deze
+  spoke (i.t.t. de Console-look uit de hub-docs) — geen wijziging nodig.
+- **Azure-deploy hersteld:** `npm start` (node server.mjs) teruggezet en de deploy-
+  workflow bouwt nu `dist/` in CI; de app draait weer (achter Entra SSO).
+
 ## 2026-06-26 — Migratie naar React + Mantine afgerond (alle 6 schermen)
 
 - **Alle schermen gemigreerd** naar Mantine: Reviewdashboard (cockpit, fit-ring,
