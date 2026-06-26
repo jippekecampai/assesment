@@ -1,8 +1,13 @@
 # Campai Assessment & Skills Academy — Campai spoke (project-context)
 
 Dit is een **EXTERNAL spoke** voor het Campai Portal (Hub & Spoke). De hub levert
-identiteit (Entra SSO), RBAC en huisstijl. Deze app is vanilla (geen Next.js):
-`index.html` + `app.js` + `styles.css`, geserveerd door `server.mjs`.
+identiteit (Entra SSO), RBAC en huisstijl. Deze app is **React 19 + Mantine 9 +
+Vite** (zie `PROJECT.md`): UI in `src/` (`App.tsx` = AppShell, `src/views/*` =
+schermen, `src/lib/*` = data/scoring/theme). De Campai-theme staat in
+`src/lib/campai-theme.ts` (1-op-1 met referentie-repo `skill-forge`).
+`server.mjs` serveert de productiebuild (`dist/`) met SPA-fallback en proxyt
+`/api` naar hub/Azure. De vanilla-versie staat als git-tag
+`stable-vanilla-20260626` (+ `index.legacy.html`).
 
 ## Harde afspraken (spoke-doctor bewaakt dit — `npm run doctor`)
 1. **Autotask leidend.** Hub-data uitsluitend via `lib/hub.mjs` → `/hub/v1`. Geen
@@ -15,9 +20,11 @@ identiteit (Entra SSO), RBAC en huisstijl. Deze app is vanilla (geen Next.js):
    conceptvragen landen in `draftQuestions[]` voor verplichte senior-review.
 
 ## Commando's
-- `npm run dev` — lokaal op http://127.0.0.1:4173
+- `npm run dev` — Vite dev-server (HMR) op http://127.0.0.1:4173
+- `npm run build` — productiebuild naar `dist/`
+- `npm run server` — `node server.mjs` serveert `dist/` + `/api` (productie)
+- `npm run check` — TypeScript typecheck (`tsc --noEmit`)
 - `npm run doctor` — contract-check (moet groen zijn vóór indienen)
-- `npm run check` — syntax-check
 - `npm test` — unit-tests (`node --test`)
 
 ## Indienen

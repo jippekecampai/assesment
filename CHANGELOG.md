@@ -1,5 +1,38 @@
 # Changelog
 
+## 2026-06-26 — Migratie naar React + Mantine afgerond (alle 6 schermen)
+
+- **Alle schermen gemigreerd** naar Mantine: Reviewdashboard (cockpit, fit-ring,
+  radar, heatmap, detail-tabs), Skills Academy (XP/level, skill-gap, module-board
+  + modal), Kandidaattest (adaptief, autosave, onbekend-fallbackvragen, rolweging),
+  Vragenfabriek (concept-editor, hub-bron, promote naar assessment), Beleid, Beheer
+  (profiel, rollen, datastructuur, memory, auditlog).
+- **Logica behouden in `src/lib/`:** `data.ts` (alle data + assessment-prep),
+  `scoring.ts` (rolfit/encoding), `learning.ts` (XP, gaps, audit, localStorage),
+  `assessment.ts` (antwoorden + adaptieve fallbackvragen + gepromote concepten).
+- **Spoke-contract meeverhuisd:** `server.mjs` serveert nu de `dist/`-build met
+  SPA-fallback en behoudt alle `/api`-handlers (hub-proxy + Azure Table). Getest:
+  root 200, `/api/health` ok, SPA-fallback 200. `spoke-doctor` groen, `npm test`
+  15/15 groen, `tsc --noEmit` groen, productiebuild groen.
+- **Documentatie:** `CLAUDE.md` herschreven naar de React/Mantine/Vite-stack;
+  `spoke-doctor` huisstijl-check herkent nu `campai-theme.ts`.
+
+## 2026-06-26 — Start migratie naar React + Mantine (skill-forge-stack)
+
+- **[STABLE] snapshot:** de werkende vanilla HTML/JS-versie is vastgezet als
+  git-tag `stable-vanilla-20260626`. Volledig terugrolbaar via
+  `git checkout stable-vanilla-20260626`.
+- **Besluit:** app wordt omgebouwd van vanilla (`index.html` + `app.js` +
+  `styles.css` + `server.mjs`) naar **React 19 + Mantine 9 + TanStack Start +
+  Vite/bun**, identiek aan referentie-repo `skill-forge`. Zie `PROJECT.md`.
+- **Reden:** Mantine bestaat alleen binnen React; "dezelfde stack/theme/
+  componentconventies als skill-forge" vereist de React-stack. Eén Campai-
+  huisstijl en herbruikbare componenten over beide apps.
+- **Behouden (alleen verplaatst):** alle data, score-/wegingslogica, hub-
+  integratie, anonimisering, Entra-auth, autosave, RBAC, governance-gates.
+- **Aanpak:** scaffolding eerst, daarna per scherm migreren met een review-
+  checkpoint. Campai-theme 1-op-1 uit skill-forge.
+
 ## 2026-06-22 — UX-uplift: rustige Campai-cockpit (visueel & UX-herontwerp)
 
 - **Scope:** volledige presentatielaag herontworpen naar een rustige consultant/management-cockpit

@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Campai Assessment — Cockpit</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css?v=20260622-cockpit" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Hoofdnavigatie">
+        <a class="brand" href="#overview" aria-label="Campai assessment start">
+          <span class="brand-mark"><img src="assets/campai-logo-white.png" alt="Campai" /></span>
+        </a>
+        <nav class="nav-list">
+          <details class="nav-group" open>
+            <summary>Dashboard</summary>
+            <button class="nav-item active" data-view="overview">
+              <span class="nav-icon">01</span>
+              Reviewdashboard
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Recruitment</summary>
+            <button class="nav-item" data-view="test">
+              <span class="nav-icon">02</span>
+              Kandidaattest
+            </button>
+            <button class="nav-item" data-view="questions">
+              <span class="nav-icon">03</span>
+              Vragenfabriek
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Ontwikkeling</summary>
+            <button class="nav-item" data-view="academy">
+              <span class="nav-icon">04</span>
+              Skills Academy
+            </button>
+          </details>
+
+          <details class="nav-group" open>
+            <summary>Governance</summary>
+            <button class="nav-item" data-view="governance">
+              <span class="nav-icon">05</span>
+              Beleid
+            </button>
+            <button class="nav-item" data-view="admin">
+              <span class="nav-icon">06</span>
+              Beheer
+            </button>
+          </details>
+        </nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <button class="nav-toggle" id="navToggle" aria-label="Navigatie tonen">☰ Menu</button>
+            <div>
+              <p class="crumb">Campai · Assessment &amp; Skills Academy</p>
+              <h1 id="topbarTitle">Reviewdashboard</h1>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <label class="search">
+              <span>Zoeken op domein</span>
+              <input id="globalSearch" type="search" placeholder="bv. Azure, Fortigate, Engels" />
+            </label>
+            <button class="ghost-button" id="exportBtn">Rapport exporteren</button>
+          </div>
+        </header>
+
+        <!-- ============================ REVIEWDASHBOARD ============================ -->
+        <section class="view active" id="overviewView" aria-label="Reviewdashboard">
+          <div class="view-head">
+            <span class="mode-banner mode-recruitment">Recruitment · kandidaatbeoordeling</span>
+            <h2>Reviewdashboard</h2>
+            <p>Eén conclusie per kandidaat — rol-fit, risico en advies bovenaan. Domeindekking en bewijs staan klaar, detail op aanvraag.</p>
+          </div>
+
+          <div class="kpi-strip" id="overviewStatsPanel"></div>
+
+          <div class="overview-people-grid">
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Recruitment pipeline</span>
+                  <h3>Kandidaten</h3>
+                </div>
+                <span class="status-pill" id="candidateCountPill">actief</span>
+              </div>
+              <div id="overviewCandidateCards" class="person-cards"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Interne ontwikkeling</span>
+                  <h3>Medewerkers</h3>
+                </div>
+                <span class="status-pill" id="learnerCountPill">actief</span>
+              </div>
+              <div id="overviewLearnerCards" class="person-cards"></div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel__head">
+              <div>
+                <span class="label">Alle personen × domeinen — dekking</span>
+                <h3>Domeindekking</h3>
+              </div>
+              <span class="hm-legend">
+                risico
+                <span class="hm-ramp">
+                  <span style="background:#c0203f"></span>
+                  <span style="background:#e57a2e"></span>
+                  <span style="background:#f1c40f"></span>
+                  <span style="background:#5bb98c"></span>
+                  <span style="background:#11724a"></span>
+                </span>
+                sterk
+              </span>
+            </div>
+            <div id="domainHeatmap"></div>
+          </section>
+
+          <!-- ===== Kandidaat-cockpit: conclusie (laag 1) ===== -->
+          <section class="panel panel--feature" id="overviewDetailAnchor">
+            <div class="cockpit">
+              <div class="cockpit__id">
+                <div class="avatar" id="candidateAvatar">AP</div>
+                <div>
+                  <h2 id="candidateName">Arjun Patel</h2>
+                  <p id="candidateMeta">Cloud Engineer kandidaat</p>
+                </div>
+              </div>
+              <div class="cockpit__conclusion">
+                <p class="conclusion-line" id="cockpitConclusion"></p>
+                <div class="summary-chips" id="cockpitChips"></div>
+              </div>
+              <div class="fit-ring">
+                <div class="ring" id="scoreRing"><span>0</span><small>FIT</small></div>
+                <span class="risk-badge" id="riskBadge">—</span>
+              </div>
+            </div>
+
+            <div class="cockpit-controls">
+              <label>Kandidaat beoordelen <select id="candidateSelect"></select></label>
+              <label>Doelrol <select id="roleSelect"></select></label>
+              <label>Domeinfilter <select id="domainSelect"></select></label>
+            </div>
+
+            <p class="advice-note">
+              Best-fit is een advies voor een mens — geen automatisch oordeel. Valideer praktische gaten en
+              werkhouding in een gesprek met een senior wanneer de kandidaat rond de drempel zit.
+            </p>
+          </section>
+
+          <!-- ===== Ondersteuning (laag 2) ===== -->
+          <div class="grid">
+            <section class="panel col-7">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Beslisondersteuning</span>
+                  <h3>Rol-fit ranking</h3>
+                </div>
+                <span class="status-pill" id="fitPill">Sterke fit</span>
+              </div>
+              <div id="roleBars" class="role-bars"></div>
+            </section>
+
+            <aside class="panel col-5">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Profielsignaal</span>
+                  <h3>Sterktes &amp; aandacht</h3>
+                </div>
+              </div>
+              <div id="decisionInspector"></div>
+            </aside>
+          </div>
+
+          <!-- ===== Detail op aanvraag (laag 3) ===== -->
+          <section class="panel">
+            <div class="panel__head">
+              <div>
+                <span class="label">Detail op aanvraag — engineer-laag</span>
+                <h3>Bewijs &amp; competentieprofiel</h3>
+              </div>
+              <button class="text-button" id="resetViewBtn">Reset weergave</button>
+            </div>
+            <div class="tabstrip" role="tablist" aria-label="Detailweergave">
+              <button class="tab is-active" data-tab="tabCompetentie" role="tab" aria-selected="true">Competentieprofiel</button>
+              <button class="tab" data-tab="tabScenario" role="tab" aria-selected="false">Scenario's</button>
+              <button class="tab" data-tab="tabBewijs" role="tab" aria-selected="false">Vraagbewijs</button>
+              <button class="tab" data-tab="tabTopic" role="tab" aria-selected="false">Topicmatrix</button>
+            </div>
+
+            <div class="tabpanel is-active" id="tabCompetentie" role="tabpanel">
+              <div class="skill-detail">
+                <div class="radar-wrap">
+                  <svg id="radarChart" viewBox="0 0 440 360" role="img" aria-label="Radar voor competenties"></svg>
+                </div>
+                <div class="benchmark-table" id="benchmarkTable"></div>
+              </div>
+            </div>
+
+            <div class="tabpanel" id="tabScenario" role="tabpanel">
+              <div id="scenarioTimeline" class="scenario-timeline"></div>
+            </div>
+
+            <div class="tabpanel" id="tabBewijs" role="tabpanel">
+              <div class="panel__head" style="margin-bottom:16px;">
+                <span class="label">Audit trail · vraagbewijs</span>
+                <button class="ghost-button compact" id="showAllEvidenceBtn">Alle domeinen</button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Vraag</th>
+                      <th>Domein</th>
+                      <th>Type</th>
+                      <th>Score</th>
+                      <th>Bewijs</th>
+                    </tr>
+                  </thead>
+                  <tbody id="evidenceRows"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tabpanel" id="tabTopic" role="tabpanel">
+              <div class="panel__head" style="margin-bottom:16px;">
+                <span class="label">Vaardigheid × domein (afgeleid van domeinscore)</span>
+                <span class="mini-legend"><i class="good"></i> sterk <i class="warn"></i> aandacht <i class="risk"></i> risico</span>
+              </div>
+              <div id="topicMatrix" class="topic-matrix"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- ============================ KANDIDAATTEST ============================ -->
+        <section class="view" id="testView" aria-label="Kandidaattest">
+          <div class="view-head">
+            <span class="mode-banner mode-recruitment">Recruitment · kandidaattest</span>
+            <h2>Kandidaattest</h2>
+            <p>Adaptief Campai-assessment met lokale autosave. Eén vraag per keer; rolweging staat rechts.</p>
+          </div>
+          <div class="test-layout">
+            <section class="panel test-card">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Voortgang</span>
+                  <h3>Vraag</h3>
+                </div>
+                <span class="status-pill">Autosave</span>
+              </div>
+              <div class="progress-track"><span id="testProgress"></span></div>
+              <div id="testQuestion"></div>
+              <div class="test-actions">
+                <button class="ghost-button" id="prevQuestionBtn">Vorige</button>
+                <button class="primary-button" id="nextQuestionBtn">Opslaan en verder</button>
+              </div>
+            </section>
+            <aside class="panel test-side">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Context</span>
+                  <h3>Rolweging</h3>
+                </div>
+              </div>
+              <div id="testComposition"></div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============================ SKILLS ACADEMY ============================ -->
+        <section class="view" id="academyView" aria-label="Campai Skills Academy">
+          <div class="view-head">
+            <span class="mode-banner mode-academy">Interne training · ontwikkeldata (gescheiden van recruitment)</span>
+            <h2>Skills Academy</h2>
+            <p class="conclusion-line" id="academyConclusion">Leerprofiel</p>
+          </div>
+
+          <div class="academy-hero panel">
+            <div>
+              <span class="label">Doel van deze view</span>
+              <h2>Ontwikkeling richting doelrol</h2>
+              <p>Zelfde MSP-domeinen en rolwegingen als recruitment, maar gericht op leerpaden, praktijkbewijs, XP en coaching — nooit als automatische HR-beoordeling.</p>
+            </div>
+            <div class="academy-actions">
+              <label>Medewerker <select id="learnerSelect"></select></label>
+              <label>Groei richting <select id="learningRoleSelect"></select></label>
+              <button class="ghost-button" id="exportTrainingBtn">Training exporteren</button>
+            </div>
+          </div>
+
+          <div class="academy-home-grid">
+            <section class="academy-welcome">
+              <div class="academy-profile">
+                <div class="avatar" id="learnerAvatar">LV</div>
+                <div>
+                  <span class="label">Welkom</span>
+                  <h2 id="learnerName">Medewerker</h2>
+                  <p id="learnerMeta">Startprofiel</p>
+                </div>
+              </div>
+              <div class="academy-quick-grid" id="academyQuickCards"></div>
+            </section>
+
+            <aside class="panel academy-side-card">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Career plan</span>
+                  <h3 id="learnerRole">Servicedesk Engineer</h3>
+                </div>
+                <span class="status-pill" id="learnerLevel">Level 1</span>
+              </div>
+              <div class="xp-block">
+                <div class="xp-line">
+                  <span>Performance / XP</span>
+                  <strong id="learnerXp">0 XP</strong>
+                </div>
+                <div class="bar-track"><span class="bar-fill" id="learnerXpBar"></span></div>
+              </div>
+              <div class="academy-kpis" id="academyKpis"></div>
+            </aside>
+          </div>
+
+          <div class="academy-grid">
+            <section class="panel academy-path-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Doelrol</span>
+                  <h3>Skill gap naar doelrol</h3>
+                </div>
+              </div>
+              <div id="learningPath" class="learning-path"></div>
+            </section>
+
+            <section class="panel academy-task-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Next steps</span>
+                  <h3>Taken en coaching</h3>
+                </div>
+              </div>
+              <div id="academyTasks" class="academy-task-list"></div>
+            </section>
+
+            <section class="panel academy-badge-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Goals</span>
+                  <h3>Badges en leerdoelen</h3>
+                </div>
+              </div>
+              <div id="badgeWall" class="badge-wall"></div>
+            </section>
+
+            <section class="panel academy-modules-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Onboard &amp; Learn</span>
+                  <h3>Campai learning plan</h3>
+                </div>
+                <span class="mini-legend"><i class="good"></i> completed <i class="warn"></i> to do <i class="risk"></i> achterstand</span>
+              </div>
+              <div class="academy-table-wrap">
+                <table class="academy-table">
+                  <thead>
+                    <tr>
+                      <th>Naam</th>
+                      <th>Type</th>
+                      <th>Domein</th>
+                      <th>Progress</th>
+                      <th>Status</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="moduleBoard"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel academy-challenge-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Teamchallenge</span>
+                  <h3>MSP scenario van de week</h3>
+                </div>
+                <span class="status-pill">Samenwerking boven leaderboard</span>
+              </div>
+              <div id="teamChallenge" class="team-challenge"></div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ============================ VRAGENFABRIEK ============================ -->
+        <section class="view" id="questionsView" aria-label="Vragenfabriek">
+          <div class="view-head">
+            <span class="mode-banner mode-recruitment">Governance-gate · senior-review verplicht</span>
+            <h2>Vragenfabriek</h2>
+            <p>Concepten landen in de vragenbank en gaan pas na menselijke review naar het assessment. Geen klantnamen, IP's of credentials richting kandidaten.</p>
+          </div>
+          <div class="factory-grid">
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Nieuw</span>
+                  <h3>Conceptvraag</h3>
+                </div>
+              </div>
+              <form id="questionForm" class="question-form">
+                <label>Domein <select id="authorDomain"></select></label>
+                <label>Rolfocus <select id="authorRole"></select></label>
+                <label>Vraagtype
+                  <select id="authorType">
+                    <option>Scenario</option>
+                    <option>Kennischeck</option>
+                    <option>Troubleshooting</option>
+                    <option>Klantreactie</option>
+                    <option>Werkhouding</option>
+                    <option>Engelse taalvaardigheid</option>
+                    <option>Sales discovery</option>
+                  </select>
+                </label>
+                <label>Campai-bron
+                  <input id="authorSource" placeholder="Ticketthema, SOP, project, incident, vendor objective" />
+                </label>
+                <label>Conceptvraag
+                  <textarea id="authorPrompt" rows="4" placeholder="Beschrijf de opdracht voor de kandidaat"></textarea>
+                </label>
+                <button class="primary-button" type="submit">Conceptvraag toevoegen</button>
+              </form>
+              <div class="hub-source">
+                <span class="label">Hub-bronmateriaal</span>
+                <label>Klant
+                  <select id="hubCompany"><option value="">— kies klant —</option></select>
+                </label>
+                <button class="ghost-button" type="button" id="hubLoadCompaniesBtn">Klanten laden</button>
+                <button class="primary-button" type="button" id="hubSourceBtn">Bronmateriaal uit hub</button>
+                <p class="hub-source-hint" id="hubSourceHint">Haalt geanonimiseerde casuïstiek op voor senior-review.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Vragenbank</span>
+                  <h3>Concepten en reviewstatus</h3>
+                </div>
+              </div>
+              <div id="draftQuestions" class="draft-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ============================ GOVERNANCE ============================ -->
+        <section class="view" id="governanceView" aria-label="Beleid">
+          <div class="view-head">
+            <span class="mode-banner mode-recruitment">Governance · auditability</span>
+            <h2>Beleid</h2>
+            <p>De harde regels die scheiding van data, rechten en menselijke review borgen.</p>
+          </div>
+          <div class="governance-grid">
+            <section class="panel">
+              <div class="panel__head"><div><span class="label">Assessment</span><h3>Assessmentbeleid</h3></div></div>
+              <ul class="check-list">
+                <li>Kandidaten, rubrics, brondata en exports blijven binnen Campai recruitment.</li>
+                <li>Reviewerrechten zijn gescheiden van vraagbeheer en assessmentbeheer.</li>
+                <li>Rolthresholds worden versiebeheerd, goedgekeurd en vastgezet zodra een assessment start.</li>
+                <li>Geen automatische afwijzing zonder menselijke review.</li>
+              </ul>
+            </section>
+            <section class="panel">
+              <div class="panel__head"><div><span class="label">Data</span><h3>Dataregels</h3></div></div>
+              <ul class="check-list">
+                <li>Geen klantnamen, gebruikersnamen, domeinen, IP-adressen of credentials in kandidaatvragen.</li>
+                <li>Originele ticketreferenties blijven afgeschermd.</li>
+                <li>Broningestie loopt via app-based authenticatie waar mogelijk.</li>
+                <li>Log elke gegenereerde vraag, reviewwijziging, score-overrule en rapportexport.</li>
+              </ul>
+            </section>
+          </div>
+        </section>
+
+        <!-- ============================ BEHEER ============================ -->
+        <section class="view" id="adminView" aria-label="Beheer">
+          <div class="view-head">
+            <span class="mode-banner mode-recruitment">Beheer · app-rollen &amp; documentatie</span>
+            <h2>Beheer</h2>
+            <p>Approllen, registraties en het lokale wijzigingslog. Productie vereist server-side autorisatie via Entra ID.</p>
+          </div>
+          <div class="admin-grid">
+            <section class="panel profile-panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Gebruiker</span>
+                  <h3>Profiel</h3>
+                </div>
+                <span class="status-pill" id="profileRolePill">Reviewer</span>
+              </div>
+              <div class="profile-card">
+                <div class="avatar" id="profileAvatar">CP</div>
+                <div>
+                  <h2 id="profileName">Campai gebruiker</h2>
+                  <p id="profileEmail">local@campai.nl</p>
+                </div>
+              </div>
+              <div class="profile-meta" id="profileMeta"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Rollen</span>
+                  <h3>Rechten</h3>
+                </div>
+              </div>
+              <div class="role-matrix" id="roleMatrix"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Documentatie</span>
+                  <h3>Registraties</h3>
+                </div>
+              </div>
+              <div class="documentation-map" id="documentationMap"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Datastructuur</span>
+                  <h3>App-model</h3>
+                </div>
+              </div>
+              <div class="admin-info-grid" id="dataStructureMap"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Memory</span>
+                  <h3>Lokale state</h3>
+                </div>
+              </div>
+              <div class="admin-info-list" id="memoryMap"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Settings</span>
+                  <h3>Actieve regels</h3>
+                </div>
+              </div>
+              <div class="admin-info-list" id="settingsMap"></div>
+            </section>
+
+            <section class="panel wide">
+              <div class="panel__head">
+                <div>
+                  <span class="label">Wijzigingslog</span>
+                  <h3>Dashboardacties</h3>
+                </div>
+                <button class="ghost-button compact" id="clearAuditBtn">Log resetten</button>
+              </div>
+              <div class="audit-list" id="auditLog"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="moduleModal" aria-hidden="true">
+      <section class="module-modal" role="dialog" aria-modal="true" aria-labelledby="moduleModalTitle">
+        <button class="modal-close" id="moduleModalClose" aria-label="Sluiten">×</button>
+        <div class="module-modal-body">
+          <div class="module-modal-main">
+            <span class="label" id="moduleModalMeta">Module</span>
+            <h2 id="moduleModalTitle">Module</h2>
+            <p id="moduleModalDescription"></p>
+
+            <section class="module-modal-section">
+              <h3>My progress</h3>
+              <p id="moduleModalProof"></p>
+            </section>
+
+            <section class="module-modal-section">
+              <h3>Update</h3>
+              <label class="module-update-label">
+                Status
+                <select id="moduleStatusSelect">
+                  <option value="todo">To do</option>
+                  <option value="progress">In progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </label>
+              <label class="module-update-label">
+                Comment
+                <textarea id="moduleComment" rows="5" placeholder="Write your update"></textarea>
+              </label>
+              <button class="primary-button" id="moduleSaveBtn">Update opslaan</button>
+            </section>
+          </div>
+          <aside class="module-modal-side">
+            <button class="ghost-button" id="moduleConnectGoalBtn">Connect to goal</button>
+            <div>
+              <span class="label">Link</span>
+              <a id="moduleModalLink" href="#" target="_blank" rel="noreferrer">Open bron</a>
+            </div>
+            <div>
+              <span class="label">Content type</span>
+              <strong id="moduleModalType">Article</strong>
+            </div>
+            <div>
+              <span class="label">Timeline</span>
+              <div id="moduleTimeline" class="module-timeline"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js?v=20260622-cockpit"></script>
+  </body>
+</html>

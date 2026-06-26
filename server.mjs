@@ -1,4 +1,4 @@
-import { createReadStream, existsSync } from "node:fs";
+import { createReadStream, existsSync, statSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
@@ -12,11 +12,24 @@ const host = process.env.HOST || (process.env.WEBSITE_SITE_NAME ? "0.0.0.0" : "1
 const dataPath = join(root, "data", "assessment-results.json");
 const tableName = process.env.ASSESSMENT_TABLE || "AssessmentResults";
 
+// React/Vite-build (npm run build → dist/). server.mjs serveert de statische
+// build + SPA-fallback en proxyt /api naar de hub/Azure. In dev gebruik je
+// `npm run dev` (Vite dev-server met HMR) — deze server is voor productie.
+const distDir = join(root, "dist");
+
 const types = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8"
+  ".mjs": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".map": "application/json; charset=utf-8"
 };
 
 async function getTableClient() {
@@ -201,23 +214,33 @@ async function handleApi(request, response, url) {
   return false;
 }
 
+function serveFile(response, filePath) {
+  response.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" });
+  createReadStream(filePath).pipe(response);
+}
+
 createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://${host}:${port}`);
   if (url.pathname.startsWith("/api/") && await handleApi(request, response, url)) return;
 
-  const safePath = normalize(decodeURIComponent(url.pathname))
-    .replace(/^[/\\]+/, "")
-    .replace(/^(\.\.[/\\])+/, "");
-  const filePath = join(root, safePath === "" ? "index.html" : safePath);
-
-  if (!existsSync(filePath)) {
-    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end("Not found");
+  if (!existsSync(distDir)) {
+    response.writeHead(503, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("Build ontbreekt — draai eerst `npm run build` (of gebruik `npm run dev`).");
     return;
   }
 
-  response.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" });
-  createReadStream(filePath).pipe(response);
+  const safePath = normalize(decodeURIComponent(url.pathname))
+    .replace(/^[/\\]+/, "")
+    .replace(/^(\.\.[/\\])+/, "");
+  const filePath = join(distDir, safePath === "" ? "index.html" : safePath);
+
+  // Bestaand asset serveren; anders SPA-fallback naar index.html.
+  if (safePath !== "" && existsSync(filePath) && statSync(filePath).isFile()) {
+    serveFile(response, filePath);
+    return;
+  }
+
+  serveFile(response, join(distDir, "index.html"));
 }).listen(port, host, () => {
   console.log(`Campai Assessment running at http://${host}:${port}`);
 });

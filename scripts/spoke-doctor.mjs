@@ -74,13 +74,19 @@ for (const f of files) {
 if (files.length && !usesHub) warn('Geen import van de hub-client (lib/hub of @cmp/hub-sdk) gevonden — leest deze app wel hub-data?');
 
 // --- 3. Huisstijl (Console-tokens) ----------------------------------------
-const cssCandidates = [join(ROOT, 'styles.css'), join(ROOT, 'app', 'globals.css')].filter(existsSync);
+// React/Mantine: tokens leven in de campai-theme; vanilla: in styles.css.
+const cssCandidates = [
+  join(ROOT, 'src', 'lib', 'campai-theme.ts'),
+  join(ROOT, 'src', 'global.css'),
+  join(ROOT, 'styles.css'),
+  join(ROOT, 'app', 'globals.css'),
+].filter(existsSync);
 if (cssCandidates.length) {
   const c = cssCandidates.map((p) => readFileSync(p, 'utf8')).join('\n');
-  if (!/--cmp-navy|--navy|#003d6b/i.test(c)) warn('CSS mist de Console-tokens (navy #003d6b e.d.).');
-  if (/#0bb1ef/i.test(c)) fail('CSS gebruikt cyan #0bb1ef — Console-token is #0bb4ed.');
+  if (!/--cmp-navy|--navy|campaiNavy|#003d6[ab]/i.test(c)) warn('Huisstijl mist de Console/Campai navy-tokens (campaiNavy / #003d6a).');
+  if (/#0bb1ef/i.test(c)) fail('Huisstijl gebruikt cyan #0bb1ef — Console-token is #0bb4ed / campaiCyan.');
 } else {
-  warn('Geen stylesheet gevonden — gebruik je de Console-huisstijl?');
+  warn('Geen theme/stylesheet gevonden — gebruik je de Campai-huisstijl (campai-theme.ts)?');
 }
 
 function rel(p) { return p.replace(ROOT + '/', '').replace(ROOT + '\\', ''); }
