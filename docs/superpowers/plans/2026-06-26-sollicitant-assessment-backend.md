@@ -415,14 +415,19 @@ git commit -m "feat(assessment): niet-ambigue toegangscodes"
 
 ### Task 5: Kandidaat-store (`lib/candidate-store.mjs`)
 
-Persistente opslag voor sollicitanten + resultaten. Azure Table indien geconfigureerd, anders een lokaal JSON-bestand. **Pad injecteerbaar** zodat tests een temp-bestand gebruiken.
+Persistente opslag voor sollicitanten + resultaten. **Azure Table als
+`AZURE_STORAGE_CONNECTION_STRING` gezet is** (productie; mirror van de bestaande
+`/api/results`-aanpak in `server.mjs`), anders een lokaal JSON-bestand
+(dev/tests). **Pad én connection string injecteerbaar** zodat tests de
+file-fallback met een temp-bestand gebruiken. Let op: op Azure (run-from-package)
+is de bestandsmap read-only, dus productie vereist de Azure-tak.
 
 **Files:**
 - Create: `lib/candidate-store.mjs`
 - Test: `test/candidate-store.test.mjs`
 
 **Interfaces:**
-- Produces: `createStore({ filePath })` → object met async methodes:
+- Produces: `createStore({ filePath, connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING, tableName = 'AssessmentCandidates' })` → object met async methodes:
   - `createCandidate({ naam, email, functie, code, aangemaaktDoor })` → `candidate` (incl. `id`, `status: 'uitgenodigd'`, `aangemaaktOp`).
   - `getByCode(code)` → `candidate | null`.
   - `listCandidates()` → `candidate[]` (nieuwste eerst).
@@ -480,7 +485,11 @@ Expected: FAIL.
 
 - [ ] **Step 3: Implementeer `lib/candidate-store.mjs`**
 
-Lokaal: één JSON-bestand `{ candidates: [], results: {} }`. (Azure Table-pad is een dunne variant met dezelfde interface; voor nu volstaat file-fallback + de Azure-tak als optionele uitbreiding — markeer met een `TODO Azure`-commentaar maar laat de file-fallback de geteste code zijn.)
+Twee implementaties achter dezelfde interface: **file** (geen connection string;
+dev/tests) en **Azure Table** (connection string gezet; productie). De Azure-tak
+bewaart de hele candidate/result als JSON in een `data`-kolom met `code` als losse,
+querybare kolom; partitiekeys `candidate` en `result`. Beide takken delen de
+`buildCandidate`-helper voor identieke vorm.
 
 ```javascript
 // lib/candidate-store.mjs
@@ -488,54 +497,94 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
-async function load(filePath) {
-  try { return JSON.parse(await readFile(filePath, 'utf8')); }
-  catch { return { candidates: [], results: {} }; }
-}
-async function persist(filePath, data) {
-  await mkdir(dirname(filePath), { recursive: true });
-  await writeFile(filePath, JSON.stringify(data, null, 2));
+function buildCandidate({ naam, email = null, functie, code, aangemaaktDoor }) {
+  return {
+    id: randomUUID(), naam, email, functie, code,
+    status: 'uitgenodigd', aangemaaktDoor,
+    aangemaaktOp: new Date().toISOString(), gestartOp: null, ingediendOp: null,
+  };
 }
 
-export function createStore({ filePath }) {
+// --- file-fallback (dev/tests) ---
+function fileStore(filePath) {
+  async function load() {
+    try { return JSON.parse(await readFile(filePath, 'utf8')); }
+    catch { return { candidates: [], results: {} }; }
+  }
+  async function persist(data) {
+    await mkdir(dirname(filePath), { recursive: true });
+    await writeFile(filePath, JSON.stringify(data, null, 2));
+  }
   return {
-    async createCandidate({ naam, email = null, functie, code, aangemaaktDoor }) {
-      const data = await load(filePath);
-      const candidate = {
-        id: randomUUID(), naam, email, functie, code,
-        status: 'uitgenodigd', aangemaaktDoor,
-        aangemaaktOp: new Date().toISOString(), gestartOp: null, ingediendOp: null,
-      };
-      data.candidates.unshift(candidate);
-      await persist(filePath, data);
+    async createCandidate(input) {
+      const data = await load(); const candidate = buildCandidate(input);
+      data.candidates.unshift(candidate); await persist(data); return candidate;
+    },
+    async getByCode(code) { return (await load()).candidates.find((c) => c.code === code) || null; },
+    async listCandidates() { return (await load()).candidates; },
+    async updateCandidate(id, patch) {
+      const data = await load(); const c = data.candidates.find((x) => x.id === id);
+      if (!c) throw new Error(`onbekende kandidaat: ${id}`);
+      Object.assign(c, patch); await persist(data); return c;
+    },
+    async saveResult(candidateId, result) {
+      const data = await load(); data.results[candidateId] = result; await persist(data);
+    },
+    async getResult(candidateId) { return (await load()).results[candidateId] || null; },
+  };
+}
+
+// --- Azure Table (productie) ---
+function azureStore(connectionString, tableName) {
+  let clientPromise;
+  async function client() {
+    if (!clientPromise) {
+      clientPromise = (async () => {
+        const { TableClient } = await import('@azure/data-tables');
+        const c = TableClient.fromConnectionString(connectionString, tableName);
+        await c.createTable().catch((e) => { if (e.statusCode !== 409) throw e; });
+        return c;
+      })();
+    }
+    return clientPromise;
+  }
+  return {
+    async createCandidate(input) {
+      const c = await client(); const candidate = buildCandidate(input);
+      await c.createEntity({ partitionKey: 'candidate', rowKey: candidate.id, code: candidate.code, data: JSON.stringify(candidate) });
       return candidate;
     },
     async getByCode(code) {
-      const data = await load(filePath);
-      return data.candidates.find((c) => c.code === code) || null;
+      const c = await client();
+      const it = c.listEntities({ queryOptions: { filter: `PartitionKey eq 'candidate' and code eq '${code}'` } });
+      for await (const e of it) return JSON.parse(e.data);
+      return null;
     },
     async listCandidates() {
-      const data = await load(filePath);
-      return data.candidates;
+      const c = await client(); const out = [];
+      for await (const e of c.listEntities({ queryOptions: { filter: `PartitionKey eq 'candidate'` } })) out.push(JSON.parse(e.data));
+      return out.sort((a, b) => String(b.aangemaaktOp).localeCompare(String(a.aangemaaktOp)));
     },
     async updateCandidate(id, patch) {
-      const data = await load(filePath);
-      const c = data.candidates.find((x) => x.id === id);
-      if (!c) throw new Error(`onbekende kandidaat: ${id}`);
-      Object.assign(c, patch);
-      await persist(filePath, data);
-      return c;
+      const c = await client(); const e = await c.getEntity('candidate', id);
+      const candidate = { ...JSON.parse(e.data), ...patch };
+      await c.updateEntity({ partitionKey: 'candidate', rowKey: id, code: candidate.code, data: JSON.stringify(candidate) }, 'Replace');
+      return candidate;
     },
     async saveResult(candidateId, result) {
-      const data = await load(filePath);
-      data.results[candidateId] = result;
-      await persist(filePath, data);
+      const c = await client();
+      await c.upsertEntity({ partitionKey: 'result', rowKey: candidateId, data: JSON.stringify(result) }, 'Replace');
     },
     async getResult(candidateId) {
-      const data = await load(filePath);
-      return data.results[candidateId] || null;
+      const c = await client();
+      try { return JSON.parse((await c.getEntity('result', candidateId)).data); }
+      catch (e) { if (e.statusCode === 404) return null; throw e; }
     },
   };
+}
+
+export function createStore({ filePath, connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING, tableName = 'AssessmentCandidates' } = {}) {
+  return connectionString ? azureStore(connectionString, tableName) : fileStore(filePath);
 }
 ```
 
