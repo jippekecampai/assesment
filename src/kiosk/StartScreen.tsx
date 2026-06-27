@@ -15,8 +15,11 @@ export function StartScreen({ onStarted }: { onStarted: (code: string, data: Sta
       const data = await startAssessment(code.trim().toUpperCase());
       onStarted(code.trim().toUpperCase(), data);
     } catch (e) {
-      const err = e as ApiError;
-      setError(err.code === "already_done" ? "Deze test is al ingeleverd." : "Ongeldige code. Controleer en probeer opnieuw.");
+      const message =
+        e instanceof ApiError && e.code === "already_done"
+          ? "Deze test is al ingeleverd."
+          : "Ongeldige code. Controleer en probeer opnieuw.";
+      setError(message);
     } finally { setBusy(false); }
   }
 
