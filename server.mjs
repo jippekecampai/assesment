@@ -10,6 +10,7 @@ import { startAssessment, submitAssessment, AssessmentError } from './lib/assess
 import { generateCode } from './lib/codes.mjs';
 import { roles, domains, testQuestions } from './lib/assessment-content.mjs';
 import { createQuestionBank } from './lib/question-bank.mjs';
+import { generateQuestions, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
@@ -233,11 +234,26 @@ async function handleApi(request, response, url) {
     if (!requireStaff(request, response)) return true;
     const body = await readRequestBody(request);
     if (!body.naam || !roles.some((r) => r.id === body.functie)) { sendJson(response, 400, { error: 'naam_en_functie_vereist' }); return true; }
+    const domeinen = Array.isArray(body.domeinen) ? body.domeinen.filter((d) => domains.includes(d)) : null;
     const code = generateCode();
     const identity = readIdentity(request);
-    const candidate = await candidateStore.createCandidate({ naam: body.naam, email: body.email || null, functie: body.functie, code, aangemaaktDoor: identity.email || identity.name });
+    const candidate = await candidateStore.createCandidate({ naam: body.naam, email: body.email || null, functie: body.functie, code, aangemaaktDoor: identity.email || identity.name, domeinen: domeinen && domeinen.length ? domeinen : null });
     const { serverQuestions, ...safe } = candidate;
     sendJson(response, 201, { candidate: safe, code }); return true;
+  }
+  if (url.pathname === '/api/questions/generate' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const b = await readRequestBody(request);
+    if (!domains.includes(b.domain)) { sendJson(response, 400, { error: 'ongeldig_domein' }); return true; }
+    if (!aiConfigured()) { sendJson(response, 503, { error: 'ai_not_configured' }); return true; }
+    try {
+      const count = Math.min(10, Math.max(1, Number(b.count) || 5));
+      const concepts = await generateQuestions({ domain: b.domain, count });
+      sendJson(response, 200, concepts);
+    } catch (e) {
+      sendJson(response, e instanceof AiError && e.code === 'not_configured' ? 503 : 502, { error: e.code || 'ai_error' });
+    }
+    return true;
   }
   if (url.pathname === '/api/assessment/start' && request.method === 'POST') {
     const body = await readRequestBody(request);
