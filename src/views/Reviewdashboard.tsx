@@ -40,6 +40,7 @@ function scoreColor(score: number): string {
 
 function roleFitColor(state: string): string {
   const s = state.toLowerCase();
+  if (s.includes("niet")) return "campaiRed";
   if (s.includes("geschikt") || s.includes("sterk")) return "campaiLime";
   if (s.includes("borderline") || s.includes("twijfel")) return "yellow";
   return "campaiRed";
