@@ -42,3 +42,9 @@ test('toClientQuestion verwijdert de antwoordsleutel', () => {
   const qs = selectQuestionsForRole('servicedesk', []);
   if (qs.length) { const c = toClientQuestion(qs[0]); assert.ok(!('answer' in c)); }
 });
+
+test('selectQuestionsForRole respecteert domains-override', () => {
+  const approved = Array.from({ length: 6 }, (_, i) => ({ id: `a${i}`, domain: 'VoIP', type: 'S', prompt: `vraag ${i} over voip`, options: ['a','b','c','d'], answer: 1 }));
+  const qs = selectQuestionsForRole('cloud', approved, { domains: ['VoIP'], minPerDomain: 5 });
+  assert.ok(qs.length >= 5 && qs.every((q) => q.domain === 'VoIP'));
+});

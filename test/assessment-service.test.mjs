@@ -76,6 +76,15 @@ test('start op afgeronde code gooit already_done', async () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('startAssessment gebruikt candidate.domeinen als override', async () => {
+  const { store, dir } = fresh();
+  try {
+    await store.createCandidate({ naam: 'A', functie: 'cloud', code: 'ABC234', aangemaaktDoor: 'r@c.nl', domeinen: ['Werkhouding & Communicatie'] });
+    const { questions } = await startAssessment(store, 'ABC234', fakeBank([]));
+    assert.ok(questions.length > 0 && questions.every((q) => q.domain === 'Werkhouding & Communicatie'));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test('startAssessment betrekt goedgekeurde vragen', async () => {
   const { store, dir } = fresh();
   try {
