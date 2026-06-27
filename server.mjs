@@ -250,6 +250,15 @@ async function handleApi(request, response, url) {
     return true;
   }
 
+  const m = url.pathname.match(/^\/api\/candidates\/([^/]+)\/result$/);
+  if (m && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const result = await candidateStore.getResult(decodeURIComponent(m[1]));
+    if (!result) { sendJson(response, 404, { error: 'not_found' }); return true; }
+    sendJson(response, 200, result);
+    return true;
+  }
+
   return false;
 }
 

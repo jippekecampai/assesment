@@ -48,6 +48,22 @@ test('submit scoort, slaat op, zet afgerond en geeft GEEN roleFit terug', async 
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('submit slaat per-vraag-details op (reviewer-bewijs)', async () => {
+  const { store, dir } = fresh();
+  try {
+    await store.createCandidate({ naam: 'A', functie: 'cloud', code: 'ABC234', aangemaaktDoor: 'r@c.nl' });
+    const { questions } = await startAssessment(store, 'ABC234');
+    await submitAssessment(store, 'ABC234', questions.map((q, i) => ({ questionId: q.id, choice: i % 4 })));
+    const c = await store.getByCode('ABC234');
+    const saved = await store.getResult(c.id);
+    assert.ok(Array.isArray(saved.details) && saved.details.length === questions.length);
+    for (const d of saved.details) {
+      assert.ok('questionId' in d && 'prompt' in d && 'chosenIndex' in d && 'correctIndex' in d && typeof d.correct === 'boolean');
+    }
+    assert.ok(saved.roleFit); // reviewer-data behoudt de fit
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test('start op afgeronde code gooit already_done', async () => {
   const { store, dir } = fresh();
   try {
