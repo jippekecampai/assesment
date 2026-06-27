@@ -29,6 +29,26 @@ async function get<T>(path: string): Promise<T> {
 export const startAssessment = (code: string) => post<StartResponse>("/api/assessment/start", { code });
 export const submitAssessment = (code: string, answers: { questionId: string; choice: number }[]) =>
   post<SubmitResponse>("/api/assessment/submit", { code, answers });
+export type GradeDetail = {
+  questionId: string;
+  domain: string;
+  prompt: string;
+  options: string[];
+  chosenIndex: number;
+  correctIndex: number;
+  correct: boolean;
+};
+
+export type CandidateResult = {
+  functie: string;
+  domeinScores: Record<string, number>;
+  totaalScore: number;
+  roleFit: { score: number; state: string };
+  details: GradeDetail[];
+  ingediendOp: string;
+};
+
 export const listCandidates = () => get<Candidate[]>("/api/candidates");
 export const createCandidate = (input: { naam: string; email?: string; functie: string }) =>
   post<{ candidate: Candidate; code: string }>("/api/candidates", input);
+export const getCandidateResult = (id: string) => get<CandidateResult>(`/api/candidates/${id}/result`);
