@@ -29,7 +29,19 @@ import {
 } from "@tabler/icons-react";
 
 import { getMe, getLearningProgress, saveLearningProgress, type MeProfile } from "../lib/api";
-import { domains, learners, roles, teamChallenge, trainingModules, type TrainingModule } from "../lib/data";
+import {
+  coachingMoments,
+  developmentGoals,
+  domains,
+  learners,
+  performanceLoopModules,
+  reviewTemplates,
+  roles,
+  surveyThemes,
+  teamChallenge,
+  trainingModules,
+  type TrainingModule,
+} from "../lib/data";
 import { roleScore } from "../lib/scoring";
 import {
   formatAuditTime,
@@ -206,6 +218,13 @@ export function SkillsAcademy({
   })();
 
   const activeModule = trainingModules.find((m) => m.id === openModuleId) ?? null;
+
+  // Performance-loop seed (per medewerker). Voor een via SSO ingelogd profiel zonder
+  // gekoppelde data tonen we nette lege staten.
+  const myGoals = developmentGoals.filter((g) => g.learnerId === learner.id);
+  const myCoaching = coachingMoments.filter((c) => c.learnerId === learner.id);
+  const surveyStateColor = (state: string) =>
+    state === "good" ? "campaiLime" : state === "warn" ? "yellow" : "campaiRed";
 
   return (
     <>
@@ -426,6 +445,217 @@ export function SkillsAcademy({
             </Card>
           </Grid.Col>
         </Grid>
+
+        {/* Ontwikkeldoelen + coaching (per medewerker) */}
+        <Grid>
+          <Grid.Col span={{ base: 12, lg: 7 }}>
+            <Card withBorder padding="lg" radius="md" h="100%">
+              <Box mb="md">
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                  Goals
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Ontwikkeldoelen
+                </Title>
+              </Box>
+              {myGoals.length === 0 ? (
+                <Text size="sm" c="dimmed">
+                  Nog geen ontwikkeldoelen gekoppeld aan dit profiel.
+                </Text>
+              ) : (
+                <Stack gap="md">
+                  {myGoals.map((goal) => (
+                    <Box key={goal.id}>
+                      <Group justify="space-between" mb={4} wrap="nowrap" align="flex-start">
+                        <Box>
+                          <Text size="sm" fw={600} c="campaiNavy.8">
+                            {goal.title}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {goal.metric}
+                          </Text>
+                        </Box>
+                        <Group gap={6} wrap="nowrap">
+                          <Badge variant="light" color="gray" radius="sm" size="sm">
+                            {shortDomain(goal.linkedDomain)}
+                          </Badge>
+                          <Badge variant="light" color={statusColor(goal.status)} radius="sm" size="sm">
+                            {statusLabel(goal.status)}
+                          </Badge>
+                        </Group>
+                      </Group>
+                      <Group gap="sm" wrap="nowrap">
+                        <Progress flex={1} value={goal.progress} size="sm" radius="xl" color="campaiCyan" />
+                        <Text size="xs" ff="monospace" w={36} ta="right">
+                          {goal.progress}%
+                        </Text>
+                        <Badge variant="outline" color="campaiNavy" radius="sm" size="sm">
+                          {goal.due}
+                        </Badge>
+                      </Group>
+                    </Box>
+                  ))}
+                </Stack>
+              )}
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 5 }}>
+            <Card withBorder padding="lg" radius="md" h="100%">
+              <Box mb="md">
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                  1:1s &amp; reviews
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Coachmomenten
+                </Title>
+              </Box>
+              {myCoaching.length === 0 ? (
+                <Text size="sm" c="dimmed">
+                  Geen coachmomenten gepland voor dit profiel.
+                </Text>
+              ) : (
+                <Stack gap="sm">
+                  {myCoaching.map((moment, index) => (
+                    <Card key={index} withBorder padding="sm" radius="md">
+                      <Group justify="space-between" wrap="nowrap" mb={2}>
+                        <Badge
+                          variant="light"
+                          color={moment.type === "Review" ? "campaiNavy" : "campaiCyan"}
+                          radius="sm"
+                          size="sm"
+                        >
+                          {moment.type}
+                        </Badge>
+                        <Text size="xs" c="dimmed" ff="monospace">
+                          {moment.date}
+                        </Text>
+                      </Group>
+                      <Text size="sm" fw={600} c="campaiNavy.8">
+                        {moment.title}
+                      </Text>
+                      <Text size="xs" c="dimmed" mt={2}>
+                        Focus: {moment.focus}
+                      </Text>
+                      <Text size="xs" c="gray.7" mt={2}>
+                        Actie: {moment.action}
+                      </Text>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
+            </Card>
+          </Grid.Col>
+        </Grid>
+
+        {/* Review-templates + survey-thema's */}
+        <Grid>
+          <Grid.Col span={{ base: 12, lg: 6 }}>
+            <Card withBorder padding="lg" radius="md" h="100%">
+              <Box mb="md">
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                  Reviews
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Review-templates
+                </Title>
+              </Box>
+              <Stack gap="sm">
+                {reviewTemplates.map((tmpl) => (
+                  <Card key={tmpl.id} withBorder padding="sm" radius="md">
+                    <Group justify="space-between" mb={4}>
+                      <Text size="sm" fw={700} c="campaiNavy.7">
+                        {tmpl.title}
+                      </Text>
+                      <Badge variant="light" color="gray" radius="sm" size="sm">
+                        {tmpl.cadence}
+                      </Badge>
+                    </Group>
+                    <Stack gap={2}>
+                      {tmpl.questions.map((q, i) => (
+                        <Text key={i} size="xs" c="gray.7">
+                          • {q}
+                        </Text>
+                      ))}
+                    </Stack>
+                  </Card>
+                ))}
+              </Stack>
+            </Card>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, lg: 6 }}>
+            <Card withBorder padding="lg" radius="md" h="100%">
+              <Box mb="md">
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                  Surveys · alleen geaggregeerd
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Team-signalen
+                </Title>
+                <Text size="xs" c="dimmed" mt={4}>
+                  Pulse-metingen op teamniveau — nooit gekoppeld aan individuele beoordeling of
+                  recruitment.
+                </Text>
+              </Box>
+              <Stack gap="md">
+                {surveyThemes.map((theme) => (
+                  <Box key={theme.title}>
+                    <Group justify="space-between" mb={4}>
+                      <Text size="sm" fw={600}>
+                        {theme.title}
+                      </Text>
+                      <Text size="sm" fw={700} ff="monospace" c={`${surveyStateColor(theme.state)}.7`}>
+                        {theme.score}
+                      </Text>
+                    </Group>
+                    <Progress value={theme.score} size="sm" radius="xl" color={surveyStateColor(theme.state)} mb={2} />
+                    <Text size="xs" c="dimmed">
+                      {theme.signal}
+                    </Text>
+                  </Box>
+                ))}
+              </Stack>
+            </Card>
+          </Grid.Col>
+        </Grid>
+
+        {/* Performance-loop overzicht */}
+        <Card withBorder padding="lg" radius="md">
+          <Box mb="md">
+            <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+              Hoe het werkt
+            </Text>
+            <Title order={3} fz="lg" c="campaiNavy.7">
+              Performance loop
+            </Title>
+            <Text size="sm" c="dimmed" mt={4}>
+              De onderdelen van de Skills Academy en hoe Campai ze inzet — ontwikkeling, nooit als
+              automatische HR-beoordeling.
+            </Text>
+          </Box>
+          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="sm">
+            {performanceLoopModules.map((mod) => (
+              <Card key={mod.id} withBorder padding="sm" radius="md" bg="gray.0">
+                <Group justify="space-between" mb={4} wrap="nowrap">
+                  <Text size="sm" fw={700} c="campaiNavy.7">
+                    {mod.title}
+                  </Text>
+                  <Badge variant="light" color="campaiNavy" radius="sm" size="xs">
+                    {mod.status}
+                  </Badge>
+                </Group>
+                <Text size="xs" c="gray.7">
+                  {mod.purpose}
+                </Text>
+                <Text size="10px" c="dimmed" mt={4}>
+                  Campai: {mod.campaiUse}
+                </Text>
+                <Text size="10px" c="dimmed" mt={4}>
+                  Eigenaar: {mod.owner}
+                </Text>
+              </Card>
+            ))}
+          </SimpleGrid>
+        </Card>
 
         {/* Badges */}
         <Card withBorder padding="lg" radius="md">
