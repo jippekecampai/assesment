@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Anchor,
   Badge,
@@ -28,6 +28,7 @@ import {
   IconTargetArrow,
 } from "@tabler/icons-react";
 
+import { getMe, getLearningProgress, saveLearningProgress, type MeProfile } from "../lib/api";
 import { domains, learners, roles, teamChallenge, trainingModules, type TrainingModule } from "../lib/data";
 import { roleScore } from "../lib/scoring";
 import {
@@ -65,15 +66,51 @@ export function SkillsAcademy({
   learnerId: string;
   setLearnerId: (id: string) => void;
 }) {
-  const learner = learners.find((l) => l.id === learnerId) ?? learners[0];
-  const [learningRoleId, setLearningRoleId] = useState(learningRoleFor(learner).id);
+  // SSO state
+  const [me, setMe] = useState<MeProfile | null>(null);
+  const [serverCompleted, setServerCompleted] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    getMe().then(setMe).catch(() => setMe({ authenticated: false }));
+  }, []);
+
+  useEffect(() => {
+    if (me?.authenticated === true) {
+      getLearningProgress()
+        .then((p) => setServerCompleted(p.completedModules))
+        .catch(() => setServerCompleted([]));
+    }
+  }, [me]);
+
+  const isSso = me?.authenticated === true;
+
+  // Effective learner: SSO-synthetic or mock
+  const mockLearner = learners.find((l) => l.id === learnerId) ?? learners[0];
+  const ssoLearner = isSso
+    ? {
+        id: (me as Extract<MeProfile, { authenticated: true }>).entraOid || "sso",
+        name:
+          (me as Extract<MeProfile, { authenticated: true }>).name ||
+          (me as Extract<MeProfile, { authenticated: true }>).email ||
+          "Ingelogde medewerker",
+        role: (me as Extract<MeProfile, { authenticated: true }>).jobTitle || "—",
+        targetRole: "",
+        meta: (me as Extract<MeProfile, { authenticated: true }>).department || "Interne medewerker",
+        scores: {} as Record<string, number>,
+        type: "learner" as const,
+      }
+    : null;
+  const learner = isSso ? ssoLearner! : mockLearner;
+
+  const [learningRoleId, setLearningRoleId] = useState(learningRoleFor(mockLearner).id);
   const learningRole = roles.find((r) => r.id === learningRoleId) ?? roles[1];
 
-  // Leerstate (localStorage), per learner. Bump om re-render te forceren na opslaan.
+  // Leerstate (localStorage for demo, server for SSO). Bump om re-render te forceren na opslaan.
   const [tick, setTick] = useState(0);
   const completedIds = useMemo(
-    () => loadCompleted()[learner.id] || [],
-    [learner.id, tick],
+    () => (isSso ? serverCompleted ?? [] : loadCompleted()[learner.id] || []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isSso, serverCompleted, learner.id, tick],
   );
   const updates = useMemo<Record<string, ModuleUpdate>>(
     () => loadUpdates()[learner.id] || {},
@@ -91,9 +128,11 @@ export function SkillsAcademy({
   };
 
   function persist(nextCompleted: string[], nextUpdates: Record<string, ModuleUpdate>) {
-    const allCompleted = loadCompleted();
-    allCompleted[learner.id] = nextCompleted;
-    saveCompleted(allCompleted);
+    if (!isSso) {
+      const allCompleted = loadCompleted();
+      allCompleted[learner.id] = nextCompleted;
+      saveCompleted(allCompleted);
+    }
     const allUpdates = loadUpdates();
     allUpdates[learner.id] = nextUpdates;
     saveUpdates(allUpdates);
@@ -108,12 +147,19 @@ export function SkillsAcademy({
     const set = new Set(completedIds);
     if (status === "completed") set.add(moduleId);
     else set.delete(moduleId);
+    const nextCompleted = Array.from(set);
     const module = trainingModules.find((m) => m.id === moduleId);
     recordAudit(
       "Learning update opgeslagen",
       `${learner.name} / ${module?.title || moduleId} / ${statusLabel(status)}`,
     );
-    persist(Array.from(set), nextUpdates);
+    if (isSso) {
+      setServerCompleted(nextCompleted);
+      saveLearningProgress(nextCompleted).catch(() => {
+        notifications.show({ message: "Opslaan mislukt", color: "red" });
+      });
+    }
+    persist(nextCompleted, nextUpdates);
     notifications.show({ message: "Learning update opgeslagen.", color: "campaiNavy" });
   }
 
@@ -192,21 +238,23 @@ export function SkillsAcademy({
               </Text>
             </Box>
             <Group gap="md" wrap="wrap" align="flex-end">
-              <Select
-                label="Medewerker"
-                data={learners.map((l) => ({ value: l.id, label: l.name }))}
-                value={learnerId}
-                onChange={(v) => {
-                  if (!v) return;
-                  setLearnerId(v);
-                  const next = learners.find((l) => l.id === v);
-                  if (next) setLearningRoleId(learningRoleFor(next).id);
-                }}
-                radius="md"
-                size="sm"
-                w={200}
-                allowDeselect={false}
-              />
+              {!isSso && (
+                <Select
+                  label="Medewerker"
+                  data={learners.map((l) => ({ value: l.id, label: l.name }))}
+                  value={learnerId}
+                  onChange={(v) => {
+                    if (!v) return;
+                    setLearnerId(v);
+                    const next = learners.find((l) => l.id === v);
+                    if (next) setLearningRoleId(learningRoleFor(next).id);
+                  }}
+                  radius="md"
+                  size="sm"
+                  w={200}
+                  allowDeselect={false}
+                />
+              )}
               <Select
                 label="Groei richting"
                 data={roles.map((r) => ({ value: r.id, label: r.name }))}
@@ -317,6 +365,11 @@ export function SkillsAcademy({
                   Skill gap naar doelrol
                 </Title>
               </Box>
+              {isSso && Object.keys(learner.scores).length === 0 ? (
+                <Text size="sm" c="dimmed">
+                  Nog geen assessmentscores gekoppeld aan dit profiel.
+                </Text>
+              ) : (
               <Stack gap="md">
                 {domainsWithGap.slice(0, 7).map((item) => {
                   const status = item.gap >= 12 ? "Achterstand" : item.gap > 0 ? "Oefenen" : "Op niveau";
@@ -341,6 +394,7 @@ export function SkillsAcademy({
                   );
                 })}
               </Stack>
+              )}
             </Card>
           </Grid.Col>
           <Grid.Col span={{ base: 12, lg: 5 }}>
