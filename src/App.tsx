@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
   TextInput,
-  ThemeIcon,
 } from "@mantine/core";
 import {
   IconBook2,
@@ -32,6 +31,7 @@ import { MedewerkerOverview } from "./views/MedewerkerOverview";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
 import { Sollicitanten } from "./views/Sollicitanten";
+import campaiLogo from "./assets/campai-logo.svg";
 
 export type ViewId =
   | "employeeOverview"
@@ -89,19 +89,7 @@ export function App() {
       <AppShell.Header>
         <Group h="100%" px="lg" justify="space-between" wrap="nowrap" gap="md">
           <Group gap="sm" wrap="nowrap">
-            <ThemeIcon variant="filled" color="campaiNavy" radius="md" size={32}>
-              <Text fw={800} ff="heading" size="sm" c="white">
-                C
-              </Text>
-            </ThemeIcon>
-            <Stack gap={0}>
-              <Text fw={800} ff="heading" size="sm" c="campaiNavy.6">
-                Campai
-              </Text>
-              <Text size="10px" tt="uppercase" c="dimmed" lts={1}>
-                Assessment &amp; Skills Academy
-              </Text>
-            </Stack>
+            <Box component="img" src={campaiLogo} alt="Campai" h={34} style={{ display: "block" }} />
           </Group>
           <TextInput
             placeholder="Zoeken op domein, module of kandidaat"

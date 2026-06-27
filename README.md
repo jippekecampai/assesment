@@ -24,11 +24,11 @@ Ontwerprationale en verificatie: zie `docs/00-design-diagnosis.md`, `docs/01-des
 
 - Reviewdashboard voor Servicedesk Engineer, Cloud Engineer, Modern Work Consultant, Sales en Technical Account Manager.
 - Kandidaattest met lokale autosave.
-- Campai Skills Academy voor interne training met medewerker-home, career plan, leerpaden, modulevoortgang, XP, badges en teamchallenges.
+- Medewerkerflow met SSO-profiel, Mijn overview, career path en een aparte Skills Academy voor leren, oefenen en toetsen.
 - Technische domeinen, werkhouding, klantcommunicatie, samenwerking en Engelse taalvaardigheid.
 - Vragenfabriek voor het omzetten van Campai-bronmateriaal naar gereviewde assessmentvragen.
 - Governance-view voor auditability, rubricversies, brondataregels en menselijke review.
-- Profiel- en adminpaneel met approllen, documentatiekaart en lokaal wijzigingslog.
+- Beheerweergave met SSO-profielstatus, approllen, documentatiekaart, datamodel en lokaal wijzigingslog.
 
 ## Aanbevolen Campai Databronnen
 
@@ -52,20 +52,20 @@ Vraaggeneratie moet altijd human-approved zijn. Toon geen klantnamen, gebruikers
 
 ## Admin en wijzigingsdocumentatie
 
-Deze app is voor nu single-tenant en Campai-only. Het dashboard bevat een profiel- en adminpaneel voor:
+Deze app is voor nu single-tenant en Campai-only. Medewerkers komen via Microsoft Entra ID/App Service Authentication binnen; demo-persona's zoals Lotte/Daan/Noa zijn geen medewerkerbron voor de actieve flow. Het dashboard bevat een Beheerweergave voor:
 
-- Approllen: Assessment Admin, Reviewer, Question Author en Candidate.
+- Approllen: Assessment Admin, Reviewer, Question Author, Candidate en medewerkerrechten via SSO-profiel.
 - Documentatiekaart: wat wordt waar vastgelegd voor profiel, rollen, vragenbank, kandidaatresultaten, bronmateriaal, governancebesluiten en wijzigingen.
 - Wijzigingslog: dashboardacties worden lokaal vastgelegd met actor, tijdstip, actie en context.
 
 ## Campai Skills Academy
 
-De Academy gebruikt dezelfde domeinen en rolwegingen als recruitment, maar met een ander doel: interne ontwikkeling en coaching. Trainingrapporten krijgen `usageMode: campai-internal-training` en moeten gescheiden worden beoordeeld van kandidaatrapporten.
+De Academy gebruikt dezelfde MSP-domeinen als recruitment, maar met een ander doel: leren, oefenen, toetsen en coaching voor de ingelogde medewerker. Recruitmentdata en medewerkerontwikkeling blijven gescheiden. Trainingrapporten krijgen `usageMode: campai-internal-training` en moeten gescheiden worden beoordeeld van kandidaatrapporten.
 
-- Leerprofiel per medewerker met huidige rol, doelrol, XP, level en badges.
+- Leerprofiel op basis van het SSO-profiel met huidige rol, doelrol, XP, level en badges.
 - Skill-gap analyse naar doelrol op basis van bestaande rolwegingen.
-- Medewerker-home met inbox/next review/next 1:1/next steps, taken en coachingacties.
-- Career plan met actieve rol, doelrol, vorige rolcontext, performance/XP en gekoppelde leerdoelen.
+- `Mijn overview` als medewerker-home met profiel, ontwikkeling, career path en Academy-voortgang.
+- Skills Academy met uitklapbare profiel-/leercontext en subtabs voor leren, toetsen, coaching, reviews en team-signalen.
 - Onboard & Learn tabel met modules, type, domein, progress, status en een detailmodal voor link, statusupdate, comment en timeline.
 - Aanbevolen modules met praktijkbewijs, zoals Conditional Access triage, Azure restore, Datto RMM alertflow, Fortigate VPN, SharePoint governance en klantcommunicatie.
 - Uitgebreide modules en vragen op basis van gereviewde open-source inspiratie rond Azure Fundamentals, M365 security assessments, attack-path analyse, secure automation en security awareness. Zie `CONTENT_SOURCES.md`.

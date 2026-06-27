@@ -1303,14 +1303,12 @@ export const people: Person[] = [...(candidates as Person[]), ...(learners as Pe
 export const draftQuestions: DraftQuestion[] = [];
 
 export const dashboardModules = [
-  { id: "overview-stats", title: "Statistieken", view: "overview" },
-  { id: "overview-candidates", title: "Kandidaten", view: "overview" },
-  { id: "overview-learners", title: "Medewerkers", view: "overview" },
-  { id: "overview-heatmap", title: "Domeindekking", view: "overview" },
-  { id: "candidate-detail", title: "Kandidaatdetail", view: "overview" },
+  { id: "employee-overview", title: "Mijn overview", view: "employeeOverview" },
   { id: "academy", title: "Skills Academy", view: "academy" },
-  { id: "test", title: "Kandidaattest", view: "test" },
+  { id: "sollicitanten", title: "Sollicitanten", view: "sollicitanten" },
+  { id: "candidate-reviews", title: "Kandidaat reviews", view: "candidateReviews" },
   { id: "questions", title: "Vragenbank", view: "questions" },
+  { id: "governance", title: "Beleid", view: "governance" },
   { id: "admin", title: "Beheer", view: "admin" },
 ];
 
@@ -1327,13 +1325,14 @@ export const adminRoles = [
   { name: "Reviewer", scope: "Kandidaatbeoordeling", permissions: ["Dashboard", "Kandidaatrapport", "Export"] },
   { name: "Question Author", scope: "Vraagbeheer", permissions: ["Vragenbank", "Conceptvragen", "Bronregistratie"] },
   { name: "Candidate", scope: "Assessmentflow", permissions: ["Kandidaattest", "Eigen autosave"] },
+  { name: "Medewerker", scope: "Eigen ontwikkeling", permissions: ["Mijn overview", "Skills Academy", "Eigen learning-progress"] },
 ];
 
 export const documentationMap: Array<[string, string, string]> = [
-  ["Profiel en rol", "Entra ID", "Naam, e-mail, approl"],
+  ["Medewerkerprofiel", "/api/me", "Naam, e-mail, functie, afdeling en entraOid via Entra SSO"],
   ["Vragenbank", "Dashboard", "Domein, rol, type, bron, reviewstatus"],
   ["Kandidaatresultaat", "Azure Table Storage", "Score, antwoorden, rolfit, exportmoment"],
-  ["Trainingresultaat", "Azure Table Storage", "Medewerker, leerpad, XP, badges, modulebewijs"],
+  ["Learning-progress", "/api/learning/me", "Modulevoortgang per entraOid; lokale state alleen fallback"],
   ["Bronmateriaal", "Afgeschermde opslag", "Geanonimiseerde bronpakketten"],
   ["Open source inspiratie", "CONTENT_SOURCES.md", "Repo, licentie, gebruikstype en Campai-afleiding"],
   ["Wijzigingen", "Auditlog", "Actor, tijdstip, actie, context"],
@@ -1342,9 +1341,9 @@ export const documentationMap: Array<[string, string, string]> = [
 
 export const appSettingsMap: Array<[string, string, string]> = [
   ["Tenantmodus", "Single-tenant prototype", "Voor Campai intern. Multi-tenant scheiding hoort in auth, opslag en deployment."],
-  ["Identity", "Entra ID met lokale fallback", "Profiel en rol komen uit de omgeving zodra de app achter Azure auth draait."],
+  ["Identity", "Entra ID / App Service Auth", "Medewerkerprofiel komt uit SSO; demo-persona's zijn geen actieve medewerkerbron."],
   ["Assessmentbeleid", "Human review verplicht", "Geen automatische afwijzing zonder reviewercontrole."],
   ["Bronbeleid", "Geanonimiseerd", "Geen klantnamen, domeinen, IP-adressen of credentials in kandidaatvragen."],
-  ["Opslagrichting", "Azure Table Storage-ready", "Prototype gebruikt lokale state; productiestate hoort tenantgescheiden te worden opgeslagen."],
+  ["Opslagrichting", "Server-side per profiel", "Learning-progress loopt via /api/learning/me; browserstate is fallback/prototype."],
   ["Vraagstructuur", assessmentSchemaVersion, "Antwoordvolgorde en optie-lengtes worden bij schemawijziging opnieuw voorbereid."],
 ];

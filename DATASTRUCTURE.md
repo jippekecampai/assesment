@@ -30,6 +30,11 @@ Campai Console
 ├── domains[]                   string[] — MSP-kennisdomeinen
 ├── domainDetails{}             domain → beschrijving
 │
+├── /api/learning/me             voortgang per ingelogde medewerker
+│   ├── entraOid
+│   ├── completedModules[]
+│   └── updatedAt
+│
 ├── trainingModules[]
 │   ├── id, title, domain       domain ∈ domains[]
 │   ├── level, xp, format
@@ -66,7 +71,8 @@ Campai Console
 | `roles.weights` sleutels | ∈ `domains[]` |
 | `trainingModules.domain` | ∈ `domains[]` |
 | `testQuestions.domain` | ∈ `domains[]` |
-| `learner.role` / `learner.targetRole` | = `role.name` uit `roles[]` |
+| SSO `entraOid` | sleutel voor `/api/learning/me` en persoonlijke modulevoortgang |
+| `learner.role` / `learner.targetRole` | legacy seeddata; actieve rol komt uit SSO `jobTitle` of gekozen groeirol |
 | `dashboardModules.view` | = `data-view` attribuut in `index.html` |
 | `dashboardModules.panel` | = HTML `id` attribuut |
 
@@ -76,15 +82,13 @@ Campai Console
 
 | Module | View | Data | Render |
 |--------|------|------|--------|
-| Statistieken | overview | people, domains, trainingModules | `renderOverviewStats()` |
-| Kandidaten | overview | candidates, roles | `renderOverviewPeople()` |
-| Medewerkers | overview | learners, roles, trainingModules | `renderOverviewPeople()` |
-| Domeindekking | overview | people, domains | `renderDomainHeatmap()` |
-| Kandidaatdetail | overview | selectedCandidate, selectedRole | `renderCandidate()` etc. |
-| Skills Academy | academy | selectedLearner, selectedLearningRole, trainingModules | `renderAcademy()` |
-| Kandidaattest | test | testQuestions | `renderTest()` |
-| Vragenbank | questions | draftQuestions | `renderQuestionFactory()` |
-| Beheer | admin | currentUserProfile, auditLog | `renderAdminPanel()` |
+| Mijn overview | employeeOverview | /api/me, /api/learning/me, trainingModules | React `MedewerkerOverview` |
+| Sollicitanten | sollicitanten | candidates | React `Sollicitanten` |
+| Kandidaat reviews | candidateReviews | candidates, roles, results | React `Reviewdashboard` |
+| Skills Academy | academy | /api/me, /api/learning/me, roles, trainingModules | React `SkillsAcademy` |
+| Kandidaattest | test | testQuestions | React kiosk |
+| Vragenbank | questions | draftQuestions, approved questions | React `Vragenfabriek` |
+| Beheer | admin | /api/me, appSettingsMap, auditLog | React `Beheer` |
 
 ---
 

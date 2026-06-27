@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-06-27 — Medewerkerflow, SSO-profiel en Campai-logo
+
+- **Navigatie:** medewerkerflow gescheiden van recruitment: `Mijn overview` + `Skills Academy` onder Medewerker, `Sollicitanten` + `Kandidaat reviews` + `Vragenbank` onder Recruitment.
+- **SSO-profiel:** medewerker-overview en Skills Academy gebruiken het ingelogde profiel als bron; demo-persona's zijn uit de zichtbare medewerkerflow gehaald.
+- **Skills Academy:** profiel en Academy-onderdelen staan uitklapbaar met subtabs voor profiel, career path, voortgang, leren, toetsen, coaching, reviews en team-signalen.
+- **Beheer:** toont nu SSO-profielstatus en maakt expliciet dat medewerkers via Entra ID komen en learning-progress per profiel loopt.
+- **Branding:** header gebruikt het aangeleverde Campai SVG-logo in plaats van het blauwe C-blok met losse tekst.
+- **Risico/follow-up:** SSO-profielvelden hangen af van wat App Service Authentication/hub doorgeeft; server-side autorisatie voor beheerrechten blijft productievoorwaarde.
+
 ## 2026-06-27 — Werkende sollicitant-assessmentflow (Plan 1 + Plan 2)
 
 - **Backend (Plan 1):** gedeelde vragen-/rol-content (`lib/assessment-content.mjs`),

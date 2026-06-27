@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Badge,
   Box,
@@ -23,8 +23,6 @@ import {
   documentationMap,
   domains,
   draftQuestions,
-  learners,
-  people,
   roles,
   testQuestions,
   trainingModules,
@@ -32,6 +30,7 @@ import {
 } from "../lib/data";
 import { initials } from "../lib/scoring";
 import { clearAudit, formatAuditTime, loadAudit, recordAudit, type AuditEntry } from "../lib/learning";
+import { getMe, type MeProfile } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 function readCount(key: string): number {
@@ -67,11 +66,26 @@ function InfoGrid({ items }: { items: Array<[string, string, string]> }) {
 
 export function Beheer() {
   const [audit, setAudit] = useState<AuditEntry[]>(() => loadAudit());
+  const [me, setMe] = useState<MeProfile | null>(null);
+
+  useEffect(() => {
+    getMe().then(setMe).catch(() => setMe({ authenticated: false }));
+  }, []);
+
+  const profile = me?.authenticated
+    ? {
+        name: me.name || me.email || "Campai gebruiker",
+        email: me.email || "",
+        role: "Medewerker",
+        source: "Microsoft Entra ID / App Service Authentication",
+        permissions: ["profile:read", "learning:read", "learning:update"],
+      }
+    : currentUserProfile;
 
   const dataStructureItems: Array<[string, string, string]> = [
-    ["people[]", `${people.length} personen`, "Unified array met kandidaten en medewerkers via type candidate/learner."],
+    ["/api/me", me?.authenticated ? "SSO actief" : "fallback", "Medewerkerprofiel komt uit Microsoft Entra ID; geen Lotte/Daan/Noa in de medewerkerflow."],
     ["candidates[]", `${candidates.length} kandidaten`, "Recruitmentprofielen met scores, assessmentstatus en rol-fit."],
-    ["learners[]", `${learners.length} medewerkers`, "Interne ontwikkelprofielen met doelrol, XP, badges en modulevoortgang."],
+    ["learning/me", "per SSO-profiel", "Modulevoortgang wordt aan de ingelogde gebruiker gekoppeld; lokale opslag is alleen fallback/prototype."],
     ["domains[]", `${domains.length} domeinen`, "MSP-domeinen voor scoring, heatmap, competentiekaart en vragen."],
     ["roles[]", `${roles.length} rollen`, "Doelrollen met domeingewichten, thresholds en advieslogica."],
     ["trainingModules[]", `${trainingModules.length} modules`, "Skills Academy registry voor artikel, course, path en practice."],
@@ -122,26 +136,26 @@ export function Beheer() {
                   </Title>
                 </Box>
                 <Badge variant="light" color="campaiNavy" radius="sm">
-                  {currentUserProfile.role}
+                  {profile.role}
                 </Badge>
               </Group>
               <Group gap="md" mb="md">
                 <ThemeIcon variant="light" color="campaiNavy" radius="md" size={48}>
                   <Text fw={800} ff="heading">
-                    {initials(currentUserProfile.name || currentUserProfile.email)}
+                    {initials(profile.name || profile.email)}
                   </Text>
                 </ThemeIcon>
                 <Box>
-                  <Text fw={700}>{currentUserProfile.name}</Text>
+                  <Text fw={700}>{profile.name}</Text>
                   <Text size="sm" c="dimmed">
-                    {currentUserProfile.email}
+                    {profile.email || "Geen e-mail beschikbaar"}
                   </Text>
                 </Box>
               </Group>
               <Stack gap={6}>
-                <InfoRow label="Identity" value={currentUserProfile.source} />
-                <InfoRow label="Approl" value={currentUserProfile.role} />
-                <InfoRow label="Rechten" value={currentUserProfile.permissions.join(", ")} />
+                <InfoRow label="Identity" value={profile.source} />
+                <InfoRow label="Approl" value={profile.role} />
+                <InfoRow label="Rechten" value={profile.permissions.join(", ")} />
               </Stack>
             </Card>
           </Grid.Col>
@@ -164,7 +178,7 @@ export function Beheer() {
                     padding="sm"
                     radius="md"
                     style={
-                      role.name === currentUserProfile.role
+                      role.name === profile.role
                         ? { borderColor: "var(--mantine-color-campaiNavy-6)", background: "var(--mantine-color-campaiNavy-0)" }
                         : undefined
                     }
