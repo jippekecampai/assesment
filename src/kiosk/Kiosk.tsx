@@ -1,15 +1,30 @@
 // src/kiosk/Kiosk.tsx
-import { Center, Stack, Text, ThemeIcon } from "@mantine/core";
-import { IconClipboardCheck } from "@tabler/icons-react";
+import { useState } from "react";
+import { Text } from "@mantine/core";
+import { StartScreen } from "./StartScreen";
+import type { StartResponse } from "../lib/api";
 
 export default function Kiosk() {
-  return (
-    <Center mih="100vh" bg="campaiNavy.0">
-      <Stack align="center" gap="md">
-        <ThemeIcon size={56} radius="md" color="campaiNavy"><IconClipboardCheck size={32} /></ThemeIcon>
-        <Text fw={800} ff="heading" c="campaiNavy.7">Campai Assessment</Text>
-        <Text c="dimmed" size="sm">Kiosk — wordt gevuld in de volgende stap.</Text>
-      </Stack>
-    </Center>
-  );
+  const [phase, setPhase] = useState<'start' | 'running' | 'done'>('start');
+  const [code, setCode] = useState<string>("");
+  const [startData, setStartData] = useState<StartResponse | null>(null);
+  const [result, setResult] = useState<unknown>(null);
+
+  if (phase === 'start') {
+    return (
+      <StartScreen
+        onStarted={(c, d) => {
+          setCode(c);
+          setStartData(d);
+          setPhase('running');
+        }}
+      />
+    );
+  }
+
+  if (phase === 'running') {
+    return <Text>Assessment wordt geladen… (Task 4)</Text>;
+  }
+
+  return <Text>Assessment afgerond. (Task 4)</Text>;
 }
