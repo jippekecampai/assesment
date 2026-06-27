@@ -65,6 +65,9 @@ export type ApprovedQuestion = {
   approvedAt: string;
 };
 
+export type DomainCoverage = Record<string, { seed: number; approved: number; total: number }>;
+
+export const getCoverage = () => get<DomainCoverage>("/api/questions/coverage");
 export const listQuestions = () => get<ApprovedQuestion[]>("/api/questions");
 export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
   post<ApprovedQuestion>("/api/questions", q);

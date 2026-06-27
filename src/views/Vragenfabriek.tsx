@@ -19,7 +19,7 @@ import { IconChevronDown, IconCloudDownload, IconPlus } from "@tabler/icons-reac
 
 import { domains, draftQuestions as seedDrafts, roles, type DraftQuestion } from "../lib/data";
 import { recordAudit } from "../lib/learning";
-import { addQuestion, listQuestions, type ApprovedQuestion } from "../lib/api";
+import { addQuestion, getCoverage, listQuestions, type ApprovedQuestion, type DomainCoverage } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 interface Draft extends DraftQuestion {
@@ -51,6 +51,7 @@ export function Vragenfabriek() {
   const [drafts, setDrafts] = useState<Draft[]>(() => seedDrafts.map((d) => ({ ...d })));
   const [activeIndex, setActiveIndex] = useState(0);
   const [approvedQuestions, setApprovedQuestions] = useState<ApprovedQuestion[]>([]);
+  const [coverage, setCoverage] = useState<DomainCoverage>({});
 
   async function refreshApproved() {
     try {
@@ -61,8 +62,18 @@ export function Vragenfabriek() {
     }
   }
 
+  async function refreshCoverage() {
+    try {
+      const cov = await getCoverage();
+      setCoverage(cov);
+    } catch {
+      // silently ignore — server may not be running in dev
+    }
+  }
+
   useEffect(() => {
     refreshApproved();
+    refreshCoverage();
   }, []);
 
   // Nieuw-concept formulier
@@ -119,6 +130,7 @@ export function Vragenfabriek() {
       recordAudit("Conceptvraag goedgekeurd naar server-bank", `${d.domain} / ${d.role}`);
       notifications.show({ message: "Vraag toegevoegd aan goedgekeurde bank.", color: "campaiLime" });
       await refreshApproved();
+      await refreshCoverage();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Onbekende fout";
       notifications.show({ message: `Opslaan mislukt: ${msg}`, color: "red" });
@@ -183,7 +195,7 @@ export function Vragenfabriek() {
 
   return (
     <>
-      <ViewHead mode="recruitment" banner="senior-review verplicht" title="Vragenfabriek">
+      <ViewHead mode="recruitment" banner="senior-review verplicht" title="Vragenbank">
         Concepten landen in de vragenbank en gaan pas na menselijke review naar het assessment. Geen
         klantnamen, IP's of credentials richting kandidaten.
       </ViewHead>
@@ -259,21 +271,22 @@ export function Vragenfabriek() {
           <Card withBorder padding="lg" radius="md" mb="lg">
             <Box mb="md">
               <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
-                Goedgekeurde bank
+                Dekking per domein
               </Text>
               <Title order={3} fz="lg" c="campaiNavy.7">
-                Aantal per domein
+                Seed + goedgekeurd
               </Title>
             </Box>
             <Stack gap="xs">
               {domains.map((domain) => {
-                const count = approvedQuestions.filter((q) => q.domain === domain).length;
-                const low = count < 5;
+                const cov = coverage[domain];
+                const total = cov ? cov.total : approvedQuestions.filter((q) => q.domain === domain).length;
+                const low = total < 5;
                 return (
                   <Group key={domain} justify="space-between" align="center">
                     <Text size="sm">{domain}</Text>
                     <Badge color={low ? "red" : "campaiLime"} variant="filled" radius="sm">
-                      {count}
+                      {total}
                     </Badge>
                   </Group>
                 );

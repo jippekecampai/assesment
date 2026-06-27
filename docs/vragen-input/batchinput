@@ -1,0 +1,514 @@
+
+[
+  {
+    "domain": "Fortigate",
+    "type": "Scenario",
+    "prompt": "Een medewerker meldt dat hij vanuit het buitenland geen verbinding kan maken met de SSL-VPN van het bedrijf. De technicus controleert de instellingen op de Fortigate en ziet dat alles correct geconfigureerd lijkt. Wat is de meest logische eerste diagnosestap?",
+    "options": [
+      "De SSL-VPN-tunnel opnieuw aanmaken en de gebruiker een nieuw certificaat uitsturen",
+      "Controleren of de gebruiker lid is van de juiste SSL-VPN-gebruikersgroep op de Fortigate",
+      "De Fortigate firmware updaten naar de nieuwste versie om mogelijke bugs op te lossen",
+      "De firewall-policy voor SSL-VPN tijdelijk uitschakelen om te testen of de policy het probleem veroorzaakt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Fortigate",
+    "type": "Scenario",
+    "prompt": "Een klant meldt dat er 's ochtends geen internetverbinding was. Na onderzoek blijkt dat de Fortigate-firewall een automatische firmware-update heeft uitgevoerd en daarna tijdelijk niet bereikbaar was. De klant vraagt of automatische updates uitgeschakeld moeten worden. Wat is het beste advies?",
+    "options": [
+      "Automatische updates volledig uitschakelen, want stabiliteit is altijd belangrijker dan actuele firmware",
+      "Automatische updates laten staan, maar een onderhoudsvenster instellen zodat updates buiten kantooruren plaatsvinden",
+      "Overstappen op een andere firewall-leverancier die geen automatische updates uitvoert",
+      "Automatische updates uitschakelen en firmware alleen handmatig bijwerken als er een kritieke CVE is gepubliceerd"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Fortigate",
+    "type": "Scenario",
+    "prompt": "Een monitoring-alert meldt dat een VPN-tunnel naar een vestiging volledig onbereikbaar is (ping faalt 10/10 keer). De Fortigate op de hoofdlocatie is online en reageert. Wat is de meest efficiënte eerste stap om de oorzaak te achterhalen?",
+    "options": [
+      "Direct een nieuwe VPN-tunnel aanmaken tussen de twee locaties als tijdelijke workaround",
+      "Controleren of de Fortigate of het netwerkapparaat op de externe vestiging stroom heeft en online is",
+      "De VPN-configuratie op de hoofdlocatie volledig verwijderen en opnieuw opbouwen",
+      "Een ticket aanmaken bij de internetprovider van de hoofdlocatie voor een lijnstoring"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Fortigate",
+    "type": "Scenario",
+    "prompt": "Een gebruiker wil tijdelijk vanuit een land werken dat normaal geblokkeerd is door de geo-IP-policy op de Fortigate. De manager heeft goedkeuring gegeven. Wat is de meest gecontroleerde aanpak?",
+    "options": [
+      "De geo-IP-policy permanent aanpassen zodat het betreffende land altijd toegang heeft",
+      "De gebruiker een persoonlijk VPN-abonnement laten aanschaffen om de geo-blokkering te omzeilen",
+      "Tijdelijk een uitzondering instellen voor de specifieke gebruiker of het IP-adres, met een geplande taak om de toegang op de einddatum automatisch in te trekken",
+      "De volledige geo-IP-filtering uitschakelen voor de duur van de reis om problemen te voorkomen"
+    ],
+    "answer": 2,
+    "source": "Thread"
+  },
+  {
+    "domain": "Fortigate",
+    "type": "Scenario",
+    "prompt": "Na een Fortigate-firmware-update meldt een klant dat de memory-usage structureel hoog is en de firewall traag reageert. De vorige firmware had dit probleem niet. Wat is de juiste aanpak?",
+    "options": [
+      "De Fortigate vervangen door een model met meer RAM, want de hardware is verouderd",
+      "De memory-conserving-instellingen in de Fortigate aanpassen en eventueel terugkeren naar de vorige stabiele firmware als het probleem aanhoudt",
+      "Alle IPS- en applicatiecontrole-profielen uitschakelen om het geheugengebruik te verlagen",
+      "De Fortigate een factory reset geven en de configuratie opnieuw handmatig invoeren"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Azure",
+    "type": "Scenario",
+    "prompt": "Een externe auditor vraagt om leesrechten in de Azure Entra-omgeving van een klant. De technicus overweegt de Global Reader-rol toe te kennen. Wat is de meest verantwoorde aanpak?",
+    "options": [
+      "De Global Reader-rol direct toekennen, want het is een read-only rol en dus inherent veilig",
+      "De auditor een tijdelijk gastaccount geven met Global Reader-rol en dit na de audit direct intrekken",
+      "De risico's van Global Reader bespreken met de klant, een alternatief aanbieden (gerichte data-export) en de beslissing afstemmen met de verantwoordelijke accountmanager",
+      "De auditor toegang geven via een gedeeld beheerdersaccount zodat er geen extra licentie nodig is"
+    ],
+    "answer": 2,
+    "source": "Thread"
+  },
+  {
+    "domain": "Azure",
+    "type": "Scenario",
+    "prompt": "Microsoft kondigt aan dat Azure Blueprints wordt uitgefaseerd. Een klant gebruikt Blueprints actief voor resource-governance en deny-assignments. Wat is de aanbevolen migratiestrategie?",
+    "options": [
+      "Wachten tot de retirement-datum en dan pas actie ondernemen, want bestaande resources worden niet verwijderd",
+      "Overstappen naar Azure Policy voor alle governance-taken, want Blueprints en Policy zijn functioneel identiek",
+      "Migreren naar Azure Deployment Stacks voor resource-groepering en deny-assignments, en blueprint-definities opslaan als template specs of in Git",
+      "De Blueprints exporteren als ARM-templates en handmatig uitvoeren via de Azure CLI bij elke deployment"
+    ],
+    "answer": 2,
+    "source": "Thread"
+  },
+  {
+    "domain": "Azure",
+    "type": "Scenario",
+    "prompt": "Een klant heeft meerdere Azure Reserved VM Instances (RI's) voor oudere VM-series. Microsoft meldt dat aankoop en verlenging van deze RI's binnenkort niet meer mogelijk zijn. Wat is het grootste risico als de klant geen actie onderneemt?",
+    "options": [
+      "De bestaande VM's worden automatisch uitgeschakeld zodra de RI verloopt",
+      "De VM-workloads worden na het verlopen van de RI's gefactureerd tegen pay-as-you-go-tarieven, ook als auto-renew is ingesteld",
+      "De klant verliest alle opgeslagen data op de VM's omdat de schijven worden verwijderd",
+      "De RI's worden automatisch omgezet naar een nieuwere VM-serie zonder extra kosten"
+    ],
+    "
+
+    [
+  {
+    "domain": "Basic IT & Troubleshooting",
+    "type": "Scenario",
+    "prompt": "Een gebruiker meldt dat Outlook niet meer synchroniseert, maar dat OWA (webmail) wél correct werkt. De technicus heeft al geprobeerd een nieuw Outlook-profiel aan te maken, maar krijgt een foutmelding. Wat is de meest logische vervolgstap?",
+    "options": [
+      "De M365-licentie van de gebruiker intrekken en opnieuw toewijzen om de mailbox te resetten",
+      "De opgeslagen credentials in Windows Referentiebeheer verwijderen en opnieuw inloggen; als dat niet werkt, overstappen op Outlook Classic",
+      "De volledige Office-suite verwijderen en opnieuw installeren via de Microsoft 365-portal",
+      "Een nieuwe mailbox aanmaken voor de gebruiker en de oude mailbox als gedeelde mailbox instellen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Basic IT & Troubleshooting",
+    "type": "Scenario",
+    "prompt": "Een RDS-server reageert traag voor alle gebruikers tegelijk. CPU-gebruik is hoog, maar er is geen specifiek proces als boosdoener te identificeren. Gebruikers kunnen doorwerken maar ondervinden vertraging. Wat is de snelste en minst risicovolle eerste actie?",
+    "options": [
+      "Direct alle gebruikerssessies beëindigen en de server opnieuw opstarten zonder overleg",
+      "Alle gebruikers laten weten dat ze hun werk opslaan, daarna de server gecontroleerd herstarten na bevestiging",
+      "De server uitbreiden met extra RAM via de hypervisor-console als tijdelijke maatregel",
+      "Een nieuw RDS-profiel aanmaken voor elke gebruiker om sessiecorruptie uit te sluiten"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Basic IT & Troubleshooting",
+    "type": "Scenario",
+    "prompt": "Een laptop verlaat automatisch de slaapstand, ook als hij in een tas zit. De gebruiker meldt dat dit al langer speelt op Windows 11. Wat is de meest gerichte diagnosestap?",
+    "options": [
+      "De laptop direct resetten naar fabrieksinstellingen, want dit is een hardwareprobleem",
+      "Controleren welke wake-timers actief zijn via powercfg en de energiebeheerinstellingen aanpassen om ongewenste wake-events te blokkeren",
+      "De batterij vervangen, want een defecte batterij kan slaapstandproblemen veroorzaken",
+      "Windows 11 downgraden naar Windows 10, want slaapstandproblemen zijn een bekend Windows 11-issue"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Basic IT & Troubleshooting",
+    "type": "Scenario",
+    "prompt": "Een gebruiker meldt grafische problemen in een technische applicatie na een recente Windows-update. De applicatie werkt niet meer correct. Wat is de juiste aanpak?",
+    "options": [
+      "De Windows-update terugdraaien via systeemherstel, want updates veroorzaken altijd grafische problemen",
+      "De grafische drivers bijwerken via de GPU-beheertool en de juiste GPU (dedicated vs. geïntegreerd) toewijzen aan de applicatie in de driver-instellingen",
+      "De applicatie verwijderen en opnieuw installeren zonder verdere diagnose",
+      "De monitor vervangen, want het probleem zit in de beeldschermhardware"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Basic IT & Troubleshooting",
+    "type": "Scenario",
+    "prompt": "Een monitoring-alert meldt een onverwachte server-shutdown (BSOD-event) op een productieserver. De server is inmiddels weer online en alles lijkt te werken. Wat is de juiste vervolgactie?",
+    "options": [
+      "Het alert sluiten omdat de server vanzelf hersteld is en er geen gebruikersklachten zijn",
+      "De Windows Event Viewer en minidump-bestanden analyseren om de oorzaak te achterhalen en herhaling te voorkomen",
+      "De server direct opnieuw opstarten om eventuele geheugenproblemen te verhelpen",
+      "De server vervangen, want een BSOD op een productieserver betekent altijd hardwarefalen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Microsoft 365",
+    "type": "Scenario",
+    "prompt": "Een gebruiker meldt dat hij vanuit een land dat als risicovol is aangemerkt geen toegang heeft tot zijn e-mail via Outlook. De manager heeft goedkeuring gegeven voor tijdelijke toegang. Wat is de meest gecontroleerde aanpak?",
+    "options": [
+      "Het Conditional Access-beleid volledig uitschakelen voor de duur van de reis",
+      "De gebruiker toevoegen aan een uitsluitingsgroep van de betreffende Conditional Access-policy en een geplande taak instellen om hem op de einddatum te verwijderen",
+      "Een nieuw M365-account aanmaken voor de gebruiker zonder Conditional Access-restricties",
+      "De gebruiker adviseren een persoonlijk apparaat te gebruiken dat niet onder het bedrijfsbeleid valt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Microsoft 365",
+    "type": "Scenario",
+    "prompt": "Een klant meldt dat e-mails vanuit hun domein regelmatig in de spambox van ontvangers belanden. Bij analyse blijkt dat SPF correct is, maar DKIM en DMARC ontbreken. Wat is de juiste volgorde van acties?",
+    "options": [
+      "Eerst DMARC instellen op p=reject, daarna DKIM activeren en tot slot SPF aanpassen",
+      "DKIM activeren in de M365-beheerportal, de DKIM-records publiceren in DNS, daarna een DMARC-record toevoegen met een monitoring-policy (p=none) en geleidelijk aanscherpen",
+      "Het SPF-record uitbreiden met alle mogelijke mailservers en DKIM en DMARC negeren",
+      "De domeinnaam wijzigen zodat de slechte reputatie van het huidige domein geen rol meer speelt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Microsoft 365",
+    "type": "Scenario",
+    "prompt": "Een gebruiker vraagt om een bericht uit quarantaine vrij te geven. De technicus ziet in het Security Center dat de gebruiker zelf een release-verzoek heeft ingediend. Wat is de juiste werkwijze?",
+    "options": [
+      "Het bericht altijd direct vrijgeven, want de gebruiker heeft het zelf aangevraagd",
+      "Het bericht beoordelen op basis van de headers, afzender en inhoud voordat het wordt vrijgegeven; bij twijfel blokkeren en de gebruiker informeren",
+      "De volledige quarantaine-instelling uitschakelen zodat gebruikers geen last meer hebben van geblokkeerde berichten",
+      "Het bericht vrijgeven en de afzender direct op de whitelist zetten om herhaling te voorkomen"
+    ],
+    "answer": 1,
+    "source": "Thread
+
+    [
+  {
+    "domain": "VoIP",
+    "type": "Scenario",
+    "prompt": "Een klant belt dat bellers buiten kantooruren een foutmelding horen ('Deze actie kan niet worden voltooid') in plaats van een vriendelijk voicemailbericht. De technicus kijkt in de telefooncentrale. Wat is de meest waarschijnlijke oorzaak?",
+    "options": [
+      "De SIP-trunk is uitgevallen waardoor inkomende gesprekken niet worden gerouteerd",
+      "Het tijdschema in de telefooncentrale staat op een verkeerd tijdstip ingesteld, waardoor de overloop te vroeg of te laat activeert",
+      "De voicemailbox is vol en accepteert geen nieuwe berichten meer",
+      "De internetverbinding van de klant is te traag voor VoIP-verkeer buiten kantooruren"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "VoIP",
+    "type": "Scenario",
+    "prompt": "Een klant heeft drie belgroepen. Oproepen die via het keuzemenu direct bij belgroep 3 binnenkomen, worden bij geen gehoor niet doorgeschakeld naar belgroep 1. Wat is de juiste oplossing?",
+    "options": [
+      "Een apart inbelnummer aanmaken voor belgroep 3 zodat de routing onafhankelijk werkt",
+      "Een overflow-instelling toevoegen aan belgroep 3 die na een ingesteld aantal seconden doorschakelt naar belgroep 1",
+      "Belgroep 3 samenvoegen met belgroep 1 zodat alle oproepen altijd bij dezelfde groep terechtkomen",
+      "De wachttijd in belgroep 3 verlengen zodat er meer tijd is om op te nemen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "VoIP",
+    "type": "Scenario",
+    "prompt": "Een klant wil het algemene telefoonnummer tijdelijk doorschakelen naar een intern toestelnummer omdat de receptie afwezig is. Wat is de snelste en meest gecontroleerde aanpak?",
+    "options": [
+      "Het algemene nummer opheffen en een nieuw nummer aanmaken dat direct naar het interne toestel belt",
+      "De doorschakeling instellen in de telefooncentrale en bevestigen bij de klant dat het werkt; bij een tijdelijke situatie ook een einddatum afspreken",
+      "De klant instrueren om zelf de doorschakeling in te stellen via de Webex-app op zijn telefoon",
+      "Een automatisch antwoordapparaat instellen dat bezoekers vraagt later terug te bellen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "VoIP",
+    "type": "Scenario",
+    "prompt": "Na een herstructurering bij een klant zijn veel contactpersonen en toestelnummers gewijzigd in het VoIP-platform. De klant vraagt of medewerkers dit zelf kunnen bijwerken. Wat is het juiste antwoord?",
+    "options": [
+      "Ja, elke medewerker kan zijn eigen contactgegevens aanpassen via de gebruikersapp",
+      "Nee, contactgegevens en toestelnummers worden centraal beheerd door de MSP via het beheersysteem en worden gesynchroniseerd naar alle gebruikers",
+      "Nee, de klant moet een nieuw VoIP-contract afsluiten om wijzigingen door te voeren",
+      "Ja, maar alleen de IT-beheerder van de klant heeft toegang tot de beheeromgeving"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "VoIP",
+    "type": "Scenario",
+    "prompt": "Een klant vraagt om de voicemail eenmalig twee uur eerder te activeren vanwege vroege sluiting. Wat is de professionele werkwijze?",
+    "options": [
+      "De klant uitleggen dat eenmalige aanpassingen niet mogelijk zijn en een vast schema adviseren",
+      "Het tijdschema in de telefooncentrale tijdelijk aanpassen voor die dag en de klant bevestigen dat de wijziging actief is",
+      "De voicemail permanent twee uur eerder instellen zodat dit in de toekomst niet meer gevraagd hoeft te worden",
+      "De klant instrueren om zelf de voicemail in te schakelen via de app op het moment dat ze willen sluiten"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Kaseya Stack",
+    "type": "Scenario",
+    "prompt": "Een monitoring-alert meldt dat een Datto-backup op meerdere servers mislukt met de fout 'Backup failed because backup image files have not been decrypted'. De fout herhaalt zich al meerdere dagen. Wat is de meest gerichte eerste actie?",
+    "options": [
+      "Alle servers opnieuw opstarten en wachten of de backup de volgende nacht slaagt",
+      "De Datto-encryptiesleutel controleren en resetten in de Datto-beheerconsole, en een ticket openen bij de leverancier als het probleem aanhoudt",
+      "De backup-agent verwijderen en opnieuw installeren op alle betrokken servers",
+      "De backup-policy verwijderen en een nieuwe aanmaken met dezelfde instellingen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Kaseya Stack",
+    "type": "Scenario",
+    "prompt": "Bij een onboarding-verzoek ziet een technicus in het PSA-systeem de melding: 'Bekijk in IT Glue OOK de SOP procedure voor de klant specifieke Onboarding!' Waarom is dit belangrijk?",
+    "options": [
+      "IT Glue bevat de inloggegevens van de nieuwe medewerker die je nodig hebt om het account aan te maken",
+      "Elke klant kan afwijkende onboarding-stappen hebben (specifieke apps, netwerkmappen, licenties) die niet in de standaard workflow zitten maar wel in de klantspecifieke SOP in IT Glue gedocumenteerd zijn",
+      "IT Glue stuurt automatisch een welkomstmail naar de nieuwe medewerker zodra je de SOP opent",
+      "De SOP in IT Glue vervangt het onboarding-formulier en moet worden ingevuld in plaats van het standaard formulier"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Kaseya Stack",
+    "type": "Scenario",
+    "prompt": "Een technicus krijgt een alert dat een medewerker een automatische e-mailforwardingregel heeft aangemaakt naar een extern adres. Wat is de juiste eerste reactie?",
+    "options": [
+      "De forwardingregel direct verwijderen omdat externe doorstuurregels altijd een beveiligingsrisico zijn",
+      "Contact opnemen met de medewerker om te verifiëren of de regel bewust is aangemaakt; pas ingrijpen als dit niet het geval is of als er andere verdachte signalen zijn",
+      "Het account van de medewerker direct blokkeren en een wachtwoordreset forceren",
+      "De alert negeren omdat forwardingregel-alerts altijd false positives zijn"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+[
+  {
+    "domain": "Kaseya Stack",
+    "type": "Scenario",
+    "prompt": "Een RMM-monitoring meldt dat de Windows Firewall is uitgeschakeld op meerdere werkstations bij een klant. De alerts komen elke dag terug op dezelfde devices. Wat is de meest structurele oplossing?",
+    "options": [
+      "Elke dag handmatig de firewall inschakelen via de RMM remote-acties totdat de klant een nieuwe pc koopt",
+      "Onderzoeken waarom de firewall steeds wordt uitgeschakeld (conflicterende software of GPO), en een RMM-policy of GPO instellen die de firewall geforceerd actief houdt",
+      "De monitoring-alert uitschakelen zodat de meldingen niet meer binnenkomen",
+      "De devices opnieuw enrollen in het RMM-platform zodat de agent opnieuw wordt geïnstalleerd"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Kaseya Stack",
+    "type": "Scenario",
+    "prompt": "Een technicus ziet in het RMM-dashboard dat een device al 5 patches mist en dat er een actieve high-severity CVE is voor een veelgebruikte browser. De klant is telefonisch niet bereikbaar. Wat is de juiste aanpak?",
+    "options": [
+      "Wachten tot de klant bereikbaar is voordat er actie wordt ondernomen, want patches mogen nooit zonder toestemming worden uitgerold",
+      "De kritieke browser-patch direct uitrollen via het RMM conform het patchbeleid, het device documenteren in IT Glue en de klant achteraf informeren",
+      "Het device offline halen totdat de klant toestemming geeft voor de patch",
+      "Alle 5 ontbrekende patches tegelijk uitrollen en de server daarna direct herstarten"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Werkhouding & Communicatie",
+    "type": "Scenario",
+    "prompt": "Een klant stuurt een boze e-mail: hij heeft drie dagen geleden een verzoek ingediend en nog niets gehoord. Bij navraag blijkt het ticket correct is aangemaakt maar nooit is opgepakt. Hoe reageer je?",
+    "options": [
+      "Uitleggen dat de SLA drie werkdagen is en dat de klant dus nog geen recht heeft op een reactie",
+      "Excuses aanbieden voor het uitblijven van een reactie, het ticket direct oppakken, de klant proactief informeren over de voortgang en intern nazoeken waarom het ticket niet is opgepakt",
+      "Het ticket doorsturen naar een collega zonder de klant te informeren, zodat de klant vanzelf een reactie krijgt",
+      "De klant vragen het verzoek opnieuw in te dienen via het juiste kanaal zodat het deze keer wel goed geregistreerd wordt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Werkhouding & Communicatie",
+    "type": "Scenario",
+    "prompt": "Tijdens een drukke ochtend krijg je tegelijk een kritieke serveralert, een wachtwoordresetverzoek en een vraag van een collega over een lopend project. Hoe prioriteer je?",
+    "options": [
+      "Eerst de collega helpen omdat interne samenwerking altijd voorrang heeft boven klantvragen",
+      "Eerst de kritieke serveralert oppakken vanwege de potentiële bedrijfsimpact, daarna het wachtwoordreset afhandelen omdat de gebruiker geblokkeerd is, en de collega laten weten dat je later reageert",
+      "Alle drie tegelijk oppakken door snel te schakelen tussen de taken zodat niemand lang wacht",
+      "Eerst het wachtwoordreset doen omdat dat het snelste op te lossen is en je daarna meer tijd hebt voor de server"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Werkhouding & Communicatie",
+    "type": "Scenario",
+    "prompt": "Een klant vraagt via de chat of je even snel een DNS-wijziging wilt doorvoeren voor hun domein. Er is geen ticket aangemaakt en je hebt geen schriftelijke goedkeuring van de verantwoordelijke contactpersoon. Wat doe je?",
+    "options": [
+      "De wijziging direct doorvoeren omdat de klant het vraagt en snelheid belangrijk is",
+      "Aangeven dat je de wijziging graag uitvoert, maar eerst een ticket aanmaken en schriftelijke bevestiging vragen van de bevoegde contactpersoon voordat je de DNS aanpast",
+      "De wijziging weigeren omdat DNS-aanpassingen altijd door de klant zelf gedaan moeten worden",
+      "De wijziging doorvoeren en achteraf een ticket aanmaken zodat het gedocumenteerd is"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Werkhouding & Communicatie",
+    "type": "Scenario",
+    "prompt": "Je hebt een probleem opgelost voor een klant, maar je weet niet zeker of de oplossing ook op de lange termijn standhoudt. Hoe sluit je het ticket af?",
+    "options": [
+      "Het ticket direct sluiten en hopen dat het probleem niet terugkomt",
+      "Het ticket op 'opgelost' zetten, de klant informeren over wat er gedaan is en wat te doen als het terugkomt, en intern documenteren wat de oorzaak en oplossing was zodat collega's er ook van kunnen leren",
+      "Het ticket open laten staan totdat je 100% zeker weet dat het probleem definitief is opgelost",
+      "Het ticket overdragen aan een senior collega zodat die de verantwoordelijkheid overneemt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Werkhouding & Communicatie",
+    "type": "Scenario",
+    "prompt": "Een klant belt gefrustreerd omdat hij al voor de derde keer hetzelfde probleem meldt. Eerdere oplossingen waren telkens tijdelijk. Wat is de juiste reactie?",
+    "options": [
+      "Opnieuw de tijdelijke oplossing toepassen en de klant geruststellen dat het nu echt opgelost is",
+      "De frustratie erkennen, excuses aanbieden voor de herhaling, de eerdere tickets raadplegen om een patroon te vinden en een structurele oplossing voorstellen in plaats van opnieuw een tijdelijke fix",
+      "Uitleggen dat terugkerende problemen buiten de SLA vallen en een apart project vereisen",
+      "De klant doorverwijzen naar de leverancier van de software omdat het een applicatieprobleem is"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    
+  {
+    "domain": "Inforcer",
+    "type": "Scenario",
+    "prompt": "Een Inforcer Tenant Alignment Score van een klant staat op 72%, terwijl de norm 90% of hoger is. De compliance-score staat op 0%. Wat is de juiste eerste stap?",
+    "options": [
+      "De Inforcer-koppeling verwijderen en opnieuw instellen omdat een score van 0% altijd een technisch probleem is",
+      "De afwijkingen in het Inforcer-dashboard inzien, de specifieke beleidsitems identificeren die niet conform zijn, en een actieplan opstellen om de score boven de 90% te brengen",
+      "De klant informeren dat ze een nieuwe M365-tenant moeten aanvragen omdat de huidige niet meer te redden is",
+      "De baseline-norm tijdelijk verlagen naar 70% zodat de klant weer conform is zonder aanpassingen"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Inforcer",
+    "type": "Scenario",
+    "prompt": "Inforcer detecteert dat bij een klant de 'Require approved client app' Conditional Access-policy nog actief is, terwijl Microsoft deze control heeft uitgefaseerd. Wat is de juiste actie?",
+    "options": [
+      "De policy laten staan omdat bestaande policies blijven werken en aanpassen risico's met zich meebrengt",
+      "De policy migreren naar 'Require app protection policy' in Entra, zodat dezelfde databescherming behouden blijft met de nieuwe ondersteunde control",
+      "De volledige Conditional Access-policy verwijderen omdat de control toch niet meer werkt",
+      "Een nieuwe tenant aanmaken voor de klant zodat alle policies opnieuw correct worden ingesteld"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Inforcer",
+    "type": "Scenario",
+    "prompt": "Een klant vraagt voor een accountantscontrole om bewijs van het MFA-beleid, het onboardingproces en immutable backups. Waar vind je als MSP-technicus deze informatie het snelst?",
+    "options": [
+      "Door alle tickets van het afgelopen jaar handmatig door te zoeken op relevante termen",
+      "Via IT Glue voor de SOP-documentatie en beleidsartikelen, Inforcer voor de tenant compliance-rapportage en het backup-platform voor de retentie- en immutability-instellingen",
+      "Door de klant te vragen zelf een overzicht te maken van hun eigen IT-beleid",
+      "Via de Microsoft 365 Admin Center-exportfunctie die alle beleidsitems automatisch bundelt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Inforcer",
+    "type": "Scenario",
+    "prompt": "Inforcer meldt dat een gebruiker de Global Administrator-rol heeft gekregen. Het systeem adviseert contact op te nemen met de organisatiebeheerder. Wat is de juiste werkwijze?",
+    "options": [
+      "De Global Administrator-rol direct intrekken omdat niemand buiten de MSP deze rol mag hebben",
+      "Verifiëren bij de verantwoordelijke beheerder of de rolwijziging geautoriseerd was; bij twijfel de rol tijdelijk intrekken en een PIM-workflow instellen voor just-in-time toegang",
+      "De alert sluiten omdat Global Administrator-toewijzingen altijd door de klant zelf worden gedaan",
+      "Het account van de gebruiker direct blokkeren totdat de rolwijziging is goedgekeurd door de MSP"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "Inforcer",
+    "type": "Scenario",
+    "prompt": "Tijdens een periodieke compliance-review via Inforcer blijkt dat bij meerdere klanten de on- en offboarding SOP's in IT Glue niet meer actueel zijn. Wat is de juiste aanpak?",
+    "options": [
+      "De SOP's verwijderen uit IT Glue zodat technici geen verouderde informatie meer kunnen raadplegen",
+      "Een ticket aanmaken per klant om de SOP's te reviewen en bij te werken, steekproeven uitvoeren op recente on- en offboardings om te controleren of de praktijk overeenkomt met de documentatie, en de bevindingen loggen",
+      "De klanten informeren dat ze zelf verantwoordelijk zijn voor het bijhouden van hun SOP's",
+      "Wachten tot een klant een probleem meldt dat voortkomt uit een verouderde SOP voordat je actie onderneemt"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "SharePoint / Teams",
+    "type": "Scenario",
+    "prompt": "Een gebruiker meldt dat het synchroniseren van een Teams-kanaal met OneDrive niet werkt op een Intune-beheerde laptop. Wat is de snelste en minst ingrijpende eerste stap?",
+    "options": [
+      "De laptop uit Intune verwijderen en opnieuw enrollen om alle synchronisatieproblemen op te lossen",
+      "De laptop opnieuw opstarten en de OneDrive-synchronisatie handmatig opnieuw starten; als dat niet helpt, de OneDrive-client resetten",
+      "De gebruiker een nieuw M365-account geven omdat het huidige account corrupt is",
+      "De Teams-kanaalsite in SharePoint verwijderen en opnieuw aanmaken"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "SharePoint / Teams",
+    "type": "Scenario",
+    "prompt": "Een klant vraagt een nieuwe SharePoint-site aan voor een projectteam en wil deze ook zichtbaar maken op de intranetsite. De technicus die de intranetsite beheert is een collega. Wat is de juiste werkwijze?",
+    "options": [
+      "De nieuwe site aanmaken en zelf ook de intranetsitekoppeling proberen te maken zonder de collega te raadplegen",
+      "De nieuwe SharePoint-site aanmaken, de gevraagde gebruikers toegang geven, en de collega die de intranetsite beheert intern informeren en het ticket aan hem overdragen voor de intranetsitekoppeling",
+      "De klant vragen zelf de site aan te maken via de SharePoint-beheeromgeving",
+      "Wachten tot de collega beschikbaar is voordat je begint, zodat alles in één keer gedaan kan worden"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },
+  {
+    "domain": "SharePoint / Teams",
+    "type": "Scenario",
+    "prompt": "Een distributiegroep in Exchange stuurt e-mails naar meerdere adressen die niet meer bestaan omdat medewerkers uit dienst zijn. Afzenders krijgen bounce-berichten. Wat is de structurele oplossing?",
+    "options": [
+      "De distributiegroep verwijderen en een nieuwe aanmaken met alleen de actieve adressen",
+      "De niet-bestaande adressen uit de distributiegroep verwijderen, actieve medewerkers toevoegen indien nodig, en een proces afspreken om de groep bij elke offboarding bij te werken",
+      "De bounce-berichten negeren omdat distributiegroepen automatisch worden bijgewerkt na een offboarding",
+      "Alle medewerkers een nieuw e-mailadres geven zodat de oude adressen niet meer gebruikt worden"
+    ],
+    "answer": 1,
+    "source": "Thread"
+  },

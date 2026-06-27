@@ -8,7 +8,7 @@ import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
 import { generateCode } from './lib/codes.mjs';
-import { roles, domains } from './lib/assessment-content.mjs';
+import { roles, domains, testQuestions } from './lib/assessment-content.mjs';
 import { createQuestionBank } from './lib/question-bank.mjs';
 
 const root = process.cwd();
@@ -259,6 +259,18 @@ async function handleApi(request, response, url) {
     if (!result) { sendJson(response, 404, { error: 'not_found' }); return true; }
     sendJson(response, 200, result);
     return true;
+  }
+
+  if (url.pathname === '/api/questions/coverage' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const approved = await questionBank.listApproved();
+    const coverage = {};
+    for (const domain of domains) {
+      const seed = testQuestions.filter((q) => q.domain === domain).length;
+      const approvedCount = approved.filter((q) => q.domain === domain).length;
+      coverage[domain] = { seed, approved: approvedCount, total: seed + approvedCount };
+    }
+    sendJson(response, 200, coverage); return true;
   }
 
   if (url.pathname === '/api/questions' && request.method === 'GET') {
