@@ -90,3 +90,13 @@ BRONMATERIAAL (geanonimiseerd indien mogelijk; ik plak het hieronder):
 3. Voeg goedgekeurde vragen toe via de **Vragenfabriek** (die schrijft ze naar de
    goedgekeurde vragenbank). Voor Fase B automatiseren we deze ophaal-en-genereer-
    stap via de hub + AI-guard.
+
+---
+
+## In-app genereren of importeren (Fase B)
+- **Genereren:** kies in de **Vragenbank** een domein → **Genereer**. Dit vereist
+  de `AI_*`-env (`AI_ENDPOINT`/`AI_API_KEY`/`AI_MODEL`, zie `.env.example`).
+- **Importeren (zonder AI-config):** gebruik **Importeer** en plak de JSON-array
+  die je met deze prompt hebt laten genereren.
+- Beide leveren **concepten**; ze gaan pas live na senior-goedkeuring in de
+  Vragenbank.
