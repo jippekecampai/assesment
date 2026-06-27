@@ -7,6 +7,7 @@ import {
   Card,
   Grid,
   Group,
+  NumberInput,
   Select,
   Stack,
   Text,
@@ -15,11 +16,11 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconChevronDown, IconCloudDownload, IconPlus } from "@tabler/icons-react";
+import { IconChevronDown, IconPlus } from "@tabler/icons-react";
 
 import { domains, draftQuestions as seedDrafts, roles, type DraftQuestion } from "../lib/data";
 import { recordAudit } from "../lib/learning";
-import { addQuestion, getCoverage, listQuestions, type ApprovedQuestion, type DomainCoverage } from "../lib/api";
+import { addQuestion, ApiError, generateQuestions, getCoverage, listQuestions, type ApprovedQuestion, type DomainCoverage } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 interface Draft extends DraftQuestion {
@@ -83,10 +84,11 @@ export function Vragenfabriek() {
   const [fSource, setFSource] = useState("");
   const [fPrompt, setFPrompt] = useState("");
 
-  // Hub-bron
-  const [companies, setCompanies] = useState<Array<{ id: string; name: string }>>([]);
-  const [companyId, setCompanyId] = useState<string | null>(null);
-  const [hubHint, setHubHint] = useState("Haalt geanonimiseerde casuïstiek op voor senior-review.");
+  // Genereer of importeer
+  const [genDomain, setGenDomain] = useState(domains[0]);
+  const [genCount, setGenCount] = useState<number>(5);
+  const [genLoading, setGenLoading] = useState(false);
+  const [importJson, setImportJson] = useState("");
 
   function addDraft() {
     const next: Draft = {
@@ -137,60 +139,85 @@ export function Vragenfabriek() {
     }
   }
 
-  async function loadCompanies() {
+  async function handleGenerate() {
+    setGenLoading(true);
     try {
-      const res = await fetch("/api/hub/companies");
-      if (res.status === 503) {
-        setHubHint("Hub niet geconfigureerd (HUB_BASE_URL/HUB_APP_TOKEN ontbreekt).");
-        return;
+      const results = await generateQuestions(genDomain, genCount);
+      const newDrafts: Draft[] = results.map((r) => ({
+        domain: r.domain,
+        role: roles[0].name,
+        type: r.type,
+        source: r.source || "AI",
+        prompt: r.prompt,
+        options: r.options,
+        answer: r.answer,
+      }));
+      setDrafts((prev) => [...newDrafts, ...prev]);
+      setActiveIndex(0);
+      recordAudit("AI-vragen gegenereerd", `${results.length} concepten / domein ${genDomain}`);
+      notifications.show({ message: `${results.length} conceptvraag(en) toegevoegd voor review.`, color: "campaiNavy" });
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.code === "ai_not_configured") {
+        notifications.show({ message: "AI-endpoint niet ingesteld — gebruik import of stel AI_* in", color: "red" });
+      } else {
+        const msg = err instanceof Error ? err.message : "Onbekende fout";
+        notifications.show({ message: `Genereren mislukt: ${msg}`, color: "red" });
       }
-      if (!res.ok) {
-        setHubHint("Kon klanten niet laden.");
-        return;
-      }
-      const data = (await res.json()) as Array<{ id: string; name: string }>;
-      setCompanies(data);
-      setHubHint(`${data.length} klant(en) geladen.`);
-    } catch {
-      setHubHint("Kon klanten niet laden.");
+    } finally {
+      setGenLoading(false);
     }
   }
 
-  async function loadSourceMaterial() {
-    if (!companyId) {
-      setHubHint("Kies eerst een klant.");
+  function handleImport() {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(importJson);
+    } catch {
+      notifications.show({ message: "Ongeldige JSON — controleer de invoer.", color: "red" });
       return;
     }
-    setHubHint("Bezig met ophalen…");
-    try {
-      const res = await fetch(`/api/hub/source-material?companyId=${encodeURIComponent(companyId)}`);
-      if (res.status === 503) {
-        setHubHint("Hub niet geconfigureerd.");
-        return;
-      }
-      if (!res.ok) {
-        setHubHint("Ophalen mislukt.");
-        return;
-      }
-      const { items } = (await res.json()) as { items: Draft[] };
-      if (!items?.length) {
-        setHubHint("Geen bronmateriaal gevonden.");
-        return;
-      }
-      const newDrafts = items.map((item) => ({
-        ...item,
-        type: "Scenario",
-        options: defaultDraftOptions(),
-        answer: 1,
-      }));
-      setDrafts((prev) => [...newDrafts.reverse(), ...prev]);
-      setActiveIndex(0);
-      recordAudit("Hub-bronmateriaal opgehaald", `${items.length} concepten / klant ${companyId}`);
-      setHubHint(`${items.length} conceptvraag(en) toegevoegd voor review.`);
-      notifications.show({ message: "Hub-bronmateriaal toegevoegd aan de Vragenbank.", color: "campaiNavy" });
-    } catch {
-      setHubHint("Ophalen mislukt.");
+    if (!Array.isArray(parsed)) {
+      notifications.show({ message: "JSON moet een array zijn.", color: "red" });
+      return;
     }
+    const valid: Draft[] = [];
+    let skipped = 0;
+    for (const item of parsed) {
+      if (
+        item &&
+        typeof item === "object" &&
+        domains.includes(item.domain) &&
+        Array.isArray(item.options) &&
+        item.options.length === 4 &&
+        Number.isInteger(item.answer) &&
+        item.answer >= 0 &&
+        item.answer <= 3 &&
+        typeof item.prompt === "string" &&
+        item.prompt.trim().length > 0
+      ) {
+        valid.push({
+          domain: item.domain,
+          role: roles[0].name,
+          type: item.type || "Conceptvraag",
+          source: item.source || "Import",
+          prompt: item.prompt,
+          options: item.options,
+          answer: item.answer,
+        });
+      } else {
+        skipped++;
+      }
+    }
+    if (valid.length > 0) {
+      setDrafts((prev) => [...valid, ...prev]);
+      setActiveIndex(0);
+      recordAudit("JSON-vragen geïmporteerd", `${valid.length} toegevoegd, ${skipped} overgeslagen`);
+    }
+    notifications.show({
+      message: `${valid.length} vraag/vragen toegevoegd, ${skipped} overgeslagen.`,
+      color: valid.length > 0 ? "campaiNavy" : "red",
+    });
+    if (valid.length > 0) setImportJson("");
   }
 
   return (
@@ -238,30 +265,51 @@ export function Vragenfabriek() {
           </Card>
 
           <Card withBorder padding="lg" radius="md">
-            <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700} mb="sm">
-              Hub-bronmateriaal
-            </Text>
+            <Box mb="md">
+              <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                Genereer of importeer
+              </Text>
+              <Title order={3} fz="lg" c="campaiNavy.7">
+                Genereer of importeer vragen
+              </Title>
+            </Box>
             <Stack gap="sm">
               <Select
-                label="Klant"
-                placeholder="— kies klant —"
-                data={companies.map((c) => ({ value: c.id, label: c.name }))}
-                value={companyId}
-                onChange={setCompanyId}
+                label="Domein"
+                data={domains}
+                value={genDomain}
+                onChange={(v) => v && setGenDomain(v)}
                 radius="md"
-                searchable
+                allowDeselect={false}
               />
-              <Group gap="sm">
-                <Button variant="default" radius="md" size="sm" onClick={loadCompanies}>
-                  Klanten laden
-                </Button>
-                <Button color="campaiNavy" radius="md" size="sm" leftSection={<IconCloudDownload size={16} />} onClick={loadSourceMaterial}>
-                  Bronmateriaal uit hub
-                </Button>
-              </Group>
-              <Text size="xs" c="dimmed">
-                {hubHint}
-              </Text>
+              <NumberInput
+                label="Aantal"
+                value={genCount}
+                onChange={(v) => setGenCount(typeof v === "number" ? v : 5)}
+                min={1}
+                max={10}
+                radius="md"
+              />
+              <Button
+                color="campaiNavy"
+                radius="md"
+                leftSection={<IconPlus size={16} />}
+                onClick={handleGenerate}
+                loading={genLoading}
+              >
+                Genereer
+              </Button>
+              <Textarea
+                label="Plak JSON-vragen"
+                placeholder='[{"domain":"...","type":"...","prompt":"...","options":["A","B","C","D"],"answer":0}]'
+                rows={4}
+                value={importJson}
+                onChange={(e) => setImportJson(e.currentTarget.value)}
+                radius="md"
+              />
+              <Button color="campaiNavy" radius="md" onClick={handleImport}>
+                Importeer
+              </Button>
             </Stack>
           </Card>
         </Grid.Col>
