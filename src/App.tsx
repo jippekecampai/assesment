@@ -20,6 +20,7 @@ import {
   IconSearch,
   IconSettings,
   IconShieldCheck,
+  IconUserPlus,
   IconUsers,
   type Icon,
 } from "@tabler/icons-react";
@@ -30,8 +31,9 @@ import { Vragenfabriek } from "./views/Vragenfabriek";
 import { SkillsAcademy } from "./views/SkillsAcademy";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
+import { Sollicitanten } from "./views/Sollicitanten";
 
-export type ViewId = "overview" | "test" | "questions" | "academy" | "governance" | "admin";
+export type ViewId = "overview" | "test" | "questions" | "academy" | "governance" | "admin" | "sollicitanten";
 
 interface NavEntry {
   id: ViewId;
@@ -42,6 +44,7 @@ interface NavEntry {
 
 const navEntries: NavEntry[] = [
   { id: "overview", label: "Reviewdashboard", icon: IconDashboard, group: "Dashboard" },
+  { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
   { id: "test", label: "Kandidaattest", icon: IconClipboardCheck, group: "Recruitment" },
   { id: "questions", label: "Vragenfabriek", icon: IconFileText, group: "Recruitment" },
   { id: "academy", label: "Skills Academy", icon: IconUsers, group: "Ontwikkeling" },
@@ -51,6 +54,7 @@ const navEntries: NavEntry[] = [
 
 const viewTitles: Record<ViewId, string> = {
   overview: "Reviewdashboard",
+  sollicitanten: "Sollicitanten",
   test: "Kandidaattest",
   questions: "Vragenfabriek",
   academy: "Skills Academy",
@@ -151,6 +155,7 @@ export function App() {
       <AppShell.Main>
         <Box key={view}>
           {view === "overview" && <Reviewdashboard search={search} onOpenLearner={openLearner} />}
+          {view === "sollicitanten" && <Sollicitanten />}
           {view === "test" && <Kandidaattest />}
           {view === "questions" && <Vragenfabriek />}
           {view === "academy" && <SkillsAcademy learnerId={learnerId} setLearnerId={setLearnerId} />}
