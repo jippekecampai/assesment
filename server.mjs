@@ -251,7 +251,8 @@ async function handleApi(request, response, url) {
       const concepts = await generateQuestions({ domain: b.domain, count });
       sendJson(response, 200, concepts);
     } catch (e) {
-      sendJson(response, e instanceof AiError && e.code === 'not_configured' ? 503 : 502, { error: e.code || 'ai_error' });
+      const notConfigured = e instanceof AiError && e.code === 'not_configured';
+      sendJson(response, notConfigured ? 503 : 502, { error: notConfigured ? 'ai_not_configured' : (e.code || 'ai_error') });
     }
     return true;
   }

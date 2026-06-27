@@ -189,11 +189,12 @@ export function Vragenfabriek() {
         domains.includes(item.domain) &&
         Array.isArray(item.options) &&
         item.options.length === 4 &&
+        item.options.every((o: unknown) => typeof o === "string" && o.trim().length > 0) &&
         Number.isInteger(item.answer) &&
         item.answer >= 0 &&
         item.answer <= 3 &&
         typeof item.prompt === "string" &&
-        item.prompt.trim().length > 0
+        item.prompt.trim().length >= 30
       ) {
         valid.push({
           domain: item.domain,
