@@ -10,9 +10,7 @@ import {
   Loader,
   Progress,
   RingProgress,
-  ScrollArea,
   Stack,
-  Table,
   Text,
   ThemeIcon,
   Title,
@@ -408,70 +406,103 @@ export function Reviewdashboard({
 
                 <Divider />
 
-                {/* Per-question evidence table */}
+                {/* Per-question evidence: volledige vraag + alle opties, juist + gekozen gemarkeerd */}
                 <Box>
-                  <Text size="xs" tt="uppercase" c="dimmed" fw={700} lts={0.5} mb="md">
-                    Bewijs per vraag
-                  </Text>
-                  <ScrollArea>
-                    <Table verticalSpacing="sm" highlightOnHover>
-                      <Table.Thead>
-                        <Table.Tr>
-                          <Table.Th>Vraag</Table.Th>
-                          <Table.Th>Domein</Table.Th>
-                          <Table.Th>Gekozen antwoord</Table.Th>
-                          <Table.Th>Goed/fout</Table.Th>
-                        </Table.Tr>
-                      </Table.Thead>
-                      <Table.Tbody>
-                        {result.details.length === 0 ? (
-                          <Table.Tr>
-                            <Table.Td colSpan={4}>
-                              <Text size="sm" c="dimmed">
-                                Geen bewijs beschikbaar.
+                  <Group justify="space-between" align="center" mb="md">
+                    <Text size="xs" tt="uppercase" c="dimmed" fw={700} lts={0.5}>
+                      Antwoorden per vraag
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      {result.details.filter((d) => d.correct).length}/{result.details.length} goed
+                    </Text>
+                  </Group>
+                  {result.details.length === 0 ? (
+                    <Text size="sm" c="dimmed">
+                      Geen antwoorden beschikbaar.
+                    </Text>
+                  ) : (
+                    <Stack gap="sm">
+                      {result.details.map((detail, i) => (
+                        <Card key={detail.questionId} withBorder radius="md" padding="md">
+                          <Group justify="space-between" align="flex-start" wrap="nowrap" mb="xs">
+                            <Box style={{ flex: 1 }}>
+                              <Badge variant="light" color="gray" radius="sm" size="xs" mb={4}>
+                                {detail.domain}
+                              </Badge>
+                              <Text size="sm" fw={600} c="campaiNavy.8">
+                                {i + 1}. {detail.prompt}
                               </Text>
-                            </Table.Td>
-                          </Table.Tr>
-                        ) : (
-                          result.details.map((detail) => {
-                            const chosenAnswer =
-                              detail.chosenIndex >= 0 && detail.options[detail.chosenIndex]
-                                ? detail.options[detail.chosenIndex]
-                                : "—";
-                            return (
-                              <Table.Tr key={detail.questionId}>
-                                <Table.Td>
-                                  <Text size="sm" fw={600} style={{ maxWidth: 320 }} truncate>
-                                    {detail.prompt}
+                            </Box>
+                            <Badge
+                              variant="light"
+                              color={detail.correct ? "campaiLime" : "campaiRed"}
+                              radius="sm"
+                              size="sm"
+                            >
+                              {detail.correct ? "Goed" : "Fout"}
+                            </Badge>
+                          </Group>
+                          <Stack gap={4}>
+                            {detail.options.map((opt, idx) => {
+                              const isChosen = idx === detail.chosenIndex;
+                              const isCorrect = idx === detail.correctIndex;
+                              const bg = isCorrect
+                                ? "var(--mantine-color-campaiLime-0, #f4f7d9)"
+                                : isChosen
+                                  ? "var(--mantine-color-campaiRed-0, #fbe6e6)"
+                                  : "transparent";
+                              const border = isCorrect
+                                ? "var(--mantine-color-campaiLime-5, #b6c200)"
+                                : isChosen
+                                  ? "var(--mantine-color-campaiRed-5, #e03131)"
+                                  : "var(--mantine-color-gray-3, #dee2e6)";
+                              return (
+                                <Group
+                                  key={idx}
+                                  gap="xs"
+                                  wrap="nowrap"
+                                  align="center"
+                                  style={{
+                                    background: bg,
+                                    borderLeft: `3px solid ${border}`,
+                                    borderRadius: 6,
+                                    padding: "6px 10px",
+                                  }}
+                                >
+                                  <Text size="xs" fw={700} c="dimmed" w={16}>
+                                    {String.fromCharCode(65 + idx)}
                                   </Text>
-                                </Table.Td>
-                                <Table.Td>
-                                  <Text size="xs" c="dimmed">
-                                    {detail.domain}
+                                  <Text size="sm" style={{ flex: 1 }}>
+                                    {opt}
                                   </Text>
-                                </Table.Td>
-                                <Table.Td>
-                                  <Text size="xs" c="gray.7" style={{ maxWidth: 200 }} truncate>
-                                    {chosenAnswer}
-                                  </Text>
-                                </Table.Td>
-                                <Table.Td>
-                                  <Badge
-                                    variant="light"
-                                    color={detail.correct ? "campaiLime" : "campaiRed"}
-                                    radius="sm"
-                                    size="sm"
-                                  >
-                                    {detail.correct ? "Goed" : "Fout"}
-                                  </Badge>
-                                </Table.Td>
-                              </Table.Tr>
-                            );
-                          })
-                        )}
-                      </Table.Tbody>
-                    </Table>
-                  </ScrollArea>
+                                  {isCorrect && (
+                                    <Badge variant="filled" color="campaiLime" radius="sm" size="xs">
+                                      Juist
+                                    </Badge>
+                                  )}
+                                  {isChosen && (
+                                    <Badge
+                                      variant={isCorrect ? "light" : "filled"}
+                                      color={isCorrect ? "campaiLime" : "campaiRed"}
+                                      radius="sm"
+                                      size="xs"
+                                    >
+                                      Gekozen
+                                    </Badge>
+                                  )}
+                                </Group>
+                              );
+                            })}
+                            {detail.chosenIndex < 0 && (
+                              <Text size="xs" c="campaiRed.7" fw={600}>
+                                Niet beantwoord
+                              </Text>
+                            )}
+                          </Stack>
+                        </Card>
+                      ))}
+                    </Stack>
+                  )}
                 </Box>
               </Stack>
             )}
