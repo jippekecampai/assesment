@@ -13,7 +13,6 @@ import {
   ThemeIcon,
 } from "@mantine/core";
 import {
-  IconClipboardCheck,
   IconDashboard,
   IconDownload,
   IconFileText,
@@ -26,14 +25,13 @@ import {
 } from "@tabler/icons-react";
 
 import { Reviewdashboard } from "./views/Reviewdashboard";
-import { Kandidaattest } from "./views/Kandidaattest";
 import { Vragenfabriek } from "./views/Vragenfabriek";
 import { SkillsAcademy } from "./views/SkillsAcademy";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
 import { Sollicitanten } from "./views/Sollicitanten";
 
-export type ViewId = "overview" | "test" | "questions" | "academy" | "governance" | "admin" | "sollicitanten";
+export type ViewId = "overview" | "questions" | "academy" | "governance" | "admin" | "sollicitanten";
 
 interface NavEntry {
   id: ViewId;
@@ -45,7 +43,6 @@ interface NavEntry {
 const navEntries: NavEntry[] = [
   { id: "overview", label: "Reviewdashboard", icon: IconDashboard, group: "Dashboard" },
   { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
-  { id: "test", label: "Kandidaattest", icon: IconClipboardCheck, group: "Recruitment" },
   { id: "questions", label: "Vragenbank", icon: IconFileText, group: "Recruitment" },
   { id: "academy", label: "Skills Academy", icon: IconUsers, group: "Ontwikkeling" },
   { id: "governance", label: "Beleid", icon: IconShieldCheck, group: "Governance" },
@@ -55,7 +52,6 @@ const navEntries: NavEntry[] = [
 const viewTitles: Record<ViewId, string> = {
   overview: "Reviewdashboard",
   sollicitanten: "Sollicitanten",
-  test: "Kandidaattest",
   questions: "Vragenbank",
   academy: "Skills Academy",
   governance: "Beleid",
@@ -156,7 +152,6 @@ export function App() {
         <Box key={view}>
           {view === "overview" && <Reviewdashboard search={search} onOpenLearner={openLearner} />}
           {view === "sollicitanten" && <Sollicitanten />}
-          {view === "test" && <Kandidaattest />}
           {view === "questions" && <Vragenfabriek />}
           {view === "academy" && <SkillsAcademy learnerId={learnerId} setLearnerId={setLearnerId} />}
           {view === "governance" && <Beleid />}
