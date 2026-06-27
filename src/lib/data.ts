@@ -624,6 +624,226 @@ export const teamChallenge = {
   reward: "Team XP + workflow-template voor de vragenbank",
 };
 
+export interface PerformanceLoopModule {
+  id: string;
+  title: string;
+  purpose: string;
+  campaiUse: string;
+  owner: string;
+  status: string;
+}
+
+export interface DevelopmentGoal {
+  id: string;
+  learnerId: string;
+  title: string;
+  metric: string;
+  linkedDomain: string;
+  progress: number;
+  status: string;
+  due: string;
+}
+
+export interface CoachingMoment {
+  learnerId: string;
+  type: "1:1" | "Review";
+  title: string;
+  date: string;
+  focus: string;
+  action: string;
+}
+
+export interface ReviewTemplate {
+  id: string;
+  title: string;
+  cadence: string;
+  questions: string[];
+}
+
+export interface SurveyTheme {
+  title: string;
+  score: number;
+  state: "good" | "warn" | "risk";
+  signal: string;
+}
+
+export const performanceLoopModules: PerformanceLoopModule[] = [
+  {
+    id: "career",
+    title: "Career plan",
+    purpose: "Rolprofiel, huidige functiecontext en doelrol in een vaste ontwikkelroute.",
+    campaiUse: "Gebruik rolwegingen en skill gaps als ontwikkelkompas, niet als automatische HR-score.",
+    owner: "Coach + medewerker",
+    status: "Actief",
+  },
+  {
+    id: "reviews",
+    title: "Reviews",
+    purpose: "Formele evaluatiemomenten met self-review, coachinput en bewijs.",
+    campaiUse: "Koppel reviews aan modulebewijs, klantveilige feedback en senior review.",
+    owner: "Teamlead",
+    status: "Template",
+  },
+  {
+    id: "one-on-ones",
+    title: "1:1s",
+    purpose: "Continue dialoog over blockers, voortgang en volgende acties.",
+    campaiUse: "Leg per 1:1 eigenaar, deadline en praktijkbewijs vast.",
+    owner: "Coach",
+    status: "Actief",
+  },
+  {
+    id: "goals",
+    title: "Goals",
+    purpose: "SMART ontwikkeldoelen met status en voortgang.",
+    campaiUse: "Doelen leveren MSP-output op: SOP, script, klantupdate, checklist of runbook.",
+    owner: "Medewerker",
+    status: "Actief",
+  },
+  {
+    id: "onboard-learn",
+    title: "Onboard & Learn",
+    purpose: "Learning paths, courses, articles en onboarding-items.",
+    campaiUse: "Gebruik modules voor Campai-stack, security, klantcommunicatie en tooling.",
+    owner: "Academy admin",
+    status: "Actief",
+  },
+  {
+    id: "surveys",
+    title: "Surveys",
+    purpose: "Korte pulse-metingen voor betrokkenheid, focus en teamfrictie.",
+    campaiUse: "Alleen geaggregeerd tonen; niet mengen met recruitment of individuele beoordeling.",
+    owner: "HR / management",
+    status: "Governance nodig",
+  },
+  {
+    id: "insights",
+    title: "Insights",
+    purpose: "Doorlopende feedback en complimenten als gespreksinput.",
+    campaiUse: "Maak feedback concreet: gedrag, impact, voorbeeld en vervolgactie.",
+    owner: "Iedereen",
+    status: "Template",
+  },
+  {
+    id: "reports",
+    title: "Reports",
+    purpose: "Trendrapportage over ontwikkeling, engagement en opvolging.",
+    campaiUse: "Rapporteer op teamniveau en scheid trainingdata van HR-besluiten.",
+    owner: "Management",
+    status: "Prototype",
+  },
+];
+
+export const developmentGoals: DevelopmentGoal[] = [
+  {
+    id: "goal-secure-runbook",
+    learnerId: "LV",
+    title: "Maak een herbruikbaar incident-runbook",
+    metric: "Runbook gereviewd door senior engineer en toegepast op 2 scenario's",
+    linkedDomain: "Basic IT & Troubleshooting",
+    progress: 65,
+    status: "progress",
+    due: "Q3",
+  },
+  {
+    id: "goal-customer-update",
+    learnerId: "LV",
+    title: "Verbeter klantupdates bij P1/P2-incidenten",
+    metric: "3 updates met impact, eigenaar, ETA en volgende update",
+    linkedDomain: "Werkhouding & Communicatie",
+    progress: 40,
+    status: "progress",
+    due: "Q3",
+  },
+  {
+    id: "goal-azure-governance",
+    learnerId: "DK",
+    title: "Standaardiseer Azure governance intake",
+    metric: "Checklist voor RBAC, Policy, tagging en cost guardrails",
+    linkedDomain: "Azure",
+    progress: 55,
+    status: "progress",
+    due: "Q4",
+  },
+  {
+    id: "goal-copilot-governance",
+    learnerId: "NO",
+    title: "Bouw Copilot-readiness gespreksscript",
+    metric: "Script met permissions, labels, adoptie en risicoacceptatie",
+    linkedDomain: "AI / Copilot",
+    progress: 70,
+    status: "progress",
+    due: "Q3",
+  },
+];
+
+export const coachingMoments: CoachingMoment[] = [
+  {
+    learnerId: "LV",
+    type: "1:1",
+    title: "Skill-gap check Servicedesk → Cloud",
+    date: "2026-07-03",
+    focus: "Azure restore, klantupdate en escalatiegrenzen",
+    action: "Koppel labbewijs aan doel en plan senior review",
+  },
+  {
+    learnerId: "DK",
+    type: "Review",
+    title: "Cloud governance review",
+    date: "2026-07-10",
+    focus: "RBAC, policy, rollback en kostenbewuste nazorg",
+    action: "Senior review op governance checklist",
+  },
+  {
+    learnerId: "NO",
+    type: "1:1",
+    title: "Modern Work verdieping",
+    date: "2026-07-08",
+    focus: "SharePoint governance, guests en Copilot-readiness",
+    action: "Feedback verzamelen uit projectretro",
+  },
+];
+
+export const reviewTemplates: ReviewTemplate[] = [
+  {
+    id: "self-review",
+    title: "Self-review",
+    cadence: "Per kwartaal",
+    questions: [
+      "Wat heb je aantoonbaar verbeterd?",
+      "Welke MSP-werkwijze is herbruikbaar geworden?",
+      "Waar is senior hulp nodig?",
+    ],
+  },
+  {
+    id: "coach-review",
+    title: "Coachreview",
+    cadence: "Na rolpad-mijlpaal",
+    questions: [
+      "Is bewijs klantveilig?",
+      "Past gedrag bij de doelrol?",
+      "Welke volgende stap verlaagt operationeel risico?",
+    ],
+  },
+  {
+    id: "peer-feedback",
+    title: "Peer feedback",
+    cadence: "Doorlopend",
+    questions: [
+      "Wat was de impact?",
+      "Welk concreet voorbeeld hoort erbij?",
+      "Welke vervolgactie helpt het team?",
+    ],
+  },
+];
+
+export const surveyThemes: SurveyTheme[] = [
+  { title: "Werkdruk en focus", score: 72, state: "warn", signal: "Let op structurele interrupties bij escalaties." },
+  { title: "Kennisdeling", score: 81, state: "good", signal: "SOP's en teamchallenges werken als teamritme." },
+  { title: "Security awareness", score: 68, state: "warn", signal: "Meer bewijs vragen bij uitzonderingen en klantdata." },
+  { title: "Rolduidelijkheid", score: 76, state: "good", signal: "Career plans maken verwachtingen zichtbaar." },
+];
+
 export type EvidenceRow = [string, string, string, number, string];
 
 export const evidence: EvidenceRow[] = [
