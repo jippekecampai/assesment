@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  ActionIcon,
   Badge,
   Box,
   Button,
@@ -18,8 +19,8 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCopy, IconCheck } from "@tabler/icons-react";
-import { listCandidates, createCandidate, type Candidate } from "../lib/api";
+import { IconCopy, IconCheck, IconTrash } from "@tabler/icons-react";
+import { listCandidates, createCandidate, deleteCandidate, type Candidate } from "../lib/api";
 import { roles, domains } from "../lib/data";
 import { ViewHead } from "./_shared";
 
@@ -72,6 +73,17 @@ export function Sollicitanten() {
     }
   }
 
+  async function remove(id: string, naam: string) {
+    if (!window.confirm(`Sollicitant "${naam}" en eventuele resultaten verwijderen?`)) return;
+    try {
+      await deleteCandidate(id);
+      notifications.show({ message: "Sollicitant verwijderd.", color: "campaiNavy" });
+      refresh();
+    } catch {
+      notifications.show({ message: "Verwijderen mislukt.", color: "red" });
+    }
+  }
+
   const roleOptions = roles.map((r) => ({ value: r.id, label: r.name }));
   const kioskUrl = `${window.location.origin}/test`;
 
@@ -79,6 +91,26 @@ export function Sollicitanten() {
     <Table.Tr key={c.id}>
       <Table.Td>{c.naam}</Table.Td>
       <Table.Td>{roleName(c.functie)}</Table.Td>
+      <Table.Td>
+        <Group gap={6} wrap="nowrap">
+          <Text ff="monospace" fw={700} c="campaiNavy.8" style={{ letterSpacing: 1 }}>
+            {c.code}
+          </Text>
+          <CopyButton value={c.code} timeout={2000}>
+            {({ copied, copy }) => (
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color={copied ? "campaiLime" : "campaiNavy"}
+                onClick={copy}
+                aria-label="Kopieer code"
+              >
+                {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+              </ActionIcon>
+            )}
+          </CopyButton>
+        </Group>
+      </Table.Td>
       <Table.Td>
         <Badge color={statusColor[c.status] ?? "gray"} variant="light" radius="sm">
           {statusLabel[c.status] ?? c.status}
@@ -90,6 +122,16 @@ export function Sollicitanten() {
           month: "2-digit",
           year: "numeric",
         })}
+      </Table.Td>
+      <Table.Td>
+        <ActionIcon
+          variant="subtle"
+          color="campaiRed"
+          onClick={() => remove(c.id, c.naam)}
+          aria-label="Verwijder sollicitant"
+        >
+          <IconTrash size={16} />
+        </ActionIcon>
       </Table.Td>
     </Table.Tr>
   ));
@@ -247,8 +289,10 @@ export function Sollicitanten() {
                   <Table.Tr>
                     <Table.Th>Naam</Table.Th>
                     <Table.Th>Functie</Table.Th>
+                    <Table.Th>Code</Table.Th>
                     <Table.Th>Status</Table.Th>
                     <Table.Th>Aangemaakt</Table.Th>
+                    <Table.Th w={48}></Table.Th>
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>{rows}</Table.Tbody>

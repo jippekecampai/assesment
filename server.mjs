@@ -269,6 +269,13 @@ async function handleApi(request, response, url) {
     return true;
   }
 
+  const cd = url.pathname.match(/^\/api\/candidates\/([^/]+)$/);
+  if (cd && request.method === 'DELETE') {
+    if (!requireStaff(request, response)) return true;
+    await candidateStore.deleteCandidate(decodeURIComponent(cd[1]));
+    sendJson(response, 200, { ok: true }); return true;
+  }
+
   const m = url.pathname.match(/^\/api\/candidates\/([^/]+)\/result$/);
   if (m && request.method === 'GET') {
     if (!requireStaff(request, response)) return true;
