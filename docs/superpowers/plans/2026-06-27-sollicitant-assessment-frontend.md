@@ -410,76 +410,115 @@ git commit -m "feat(fe): Sollicitanten-beheerscherm (aanmaken + code + lijst)"
 
 ---
 
-### Task 6: Reviewdashboard op echte data
+### Task 6: Per-vraag-bewijs in resultaat + result-endpoint (backend)
 
-Vervang de demo-kandidaten door echte sollicitanten + resultaten. Behoud de cockpit-opbouw, maar voed 'm uit de API.
+Het opgeslagen resultaat moet per vraag detail bevatten (vraagtekst + gekozen optie + goed/fout) zodat de reviewer per vraag kan inzien; en er moet een staff-endpoint zijn om het resultaat te lezen (de uitslag staat in de candidate-store, niet in `/api/results`).
 
 **Files:**
-- Modify: `src/views/Reviewdashboard.tsx`
-- (Resultaten lezen: `GET /api/results` levert opgeslagen submit-resultaten; koppel op `candidateId`. Voeg indien nodig een `getResults()` toe aan `src/lib/api.ts`.)
+- Modify: `lib/assessment.mjs` (nieuwe pure helper `gradeDetails`)
+- Modify: `lib/assessment-service.mjs` (`submitAssessment` slaat de details op)
+- Modify: `server.mjs` (nieuw endpoint `GET /api/candidates/:id/result`, staff)
+- Modify: `test/assessment-service.test.mjs` (assert dat het opgeslagen resultaat per-vraag-details bevat)
 
 **Interfaces:**
-- Consumes: `listCandidates` + resultaten. Een afgeronde sollicitant heeft een resultaat met `domeinScores`, `totaalScore`, `roleFit` (reviewer mag dit zien), `antwoorden`.
+- Produces in `lib/assessment.mjs`: `gradeDetails(answers, questions)` → `Array<{ questionId, domain, prompt, options, chosenIndex, correctIndex, correct }>` (pure; gebruikt de server-side `questions` mét `answer`).
+- `submitAssessment` slaat in het result op: `{ functie, domeinScores, totaalScore, roleFit, details, ingediendOp }` (de `details` vervangt/verrijkt de eerdere kale `antwoorden`).
+- Endpoint `GET /api/candidates/:id/result` (staff, via `requireStaff`) → `candidateStore.getResult(id)` (volledige reviewer-uitslag incl. `roleFit` + `details`), of `404 {error:'not_found'}`.
 
-- [ ] **Step 1: Data laden** — vervang de import-gebaseerde `candidates`-demo door state uit `listCandidates()` (alleen `status==='afgerond'` hebben een uitslag; toon ook lopende met status). Voeg `getResults()` toe aan de API-client als `GET /api/results` (bestaand endpoint) en koppel resultaat per kandidaat. Toon per geselecteerde sollicitant: `totaalScore`, **rol-fit** (reviewer-only, mag hier wél), domein-uitslag (de geteste domeinen), en de **per-vraag**-tabel uit `antwoorden` (vraagtekst + gekozen optie + goed/fout). 
-- Let op shape-verschil: demo had `scores` voor álle 13 domeinen; echte `domeinScores` bevat alleen geteste domeinen. Pas de heatmap/radar/benchmark aan om alleen aanwezige domeinen te tonen (ontbrekende = "n.v.t."), of toon een compactere domein-uitslag (balken per getest domein) als de radar te dun wordt. Kies de balken-variant als < 5 domeinen.
+- [ ] **Step 1: Test** — breid `test/assessment-service.test.mjs` uit: na `submitAssessment` heeft `store.getResult(id)` een `details`-array met per vraag `{questionId, prompt, chosenIndex, correctIndex, correct, domain, options}`, en bevat het result nog steeds `roleFit`.
 
-- [ ] **Step 2: Lege staat** — als er nog geen afgeronde sollicitanten zijn, toon een nette lege staat ("Nog geen ingeleverde assessments"), niet de demo.
+```javascript
+test('submit slaat per-vraag-details op (reviewer-bewijs)', async () => {
+  const { store, dir } = fresh();
+  try {
+    await store.createCandidate({ naam: 'A', functie: 'cloud', code: 'ABC234', aangemaaktDoor: 'r@c.nl' });
+    const { questions } = await startAssessment(store, 'ABC234');
+    await submitAssessment(store, 'ABC234', questions.map((q, i) => ({ questionId: q.id, choice: i % 4 })));
+    const c = await store.getByCode('ABC234');
+    const saved = await store.getResult(c.id);
+    assert.ok(Array.isArray(saved.details) && saved.details.length === questions.length);
+    for (const d of saved.details) {
+      assert.ok('questionId' in d && 'prompt' in d && 'chosenIndex' in d && 'correctIndex' in d && typeof d.correct === 'boolean');
+    }
+    assert.ok(saved.roleFit); // reviewer-data behoudt de fit
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+```
 
-- [ ] **Step 3: Verify**
+- [ ] **Step 2: Run → faalt** — `npm test -- test/assessment-service.test.mjs` → FAIL (geen `details`).
 
-Run: `npx tsc --noEmit && npx vite build` → exit 0.
-Visueel: met een afgeronde sollicitant (uit Task 4-flow) toont het dashboard die persoon met score, rol-fit, domein-uitslag en per-vraag-bewijs; zonder data de lege staat.
+- [ ] **Step 3: Implementeer**
 
-- [ ] **Step 4: Commit**
+In `lib/assessment.mjs` toevoegen:
+```javascript
+export function gradeDetails(answers, questions) {
+  const byId = new Map(answers.map((a) => [a.questionId, a.choice]));
+  return questions.map((q) => {
+    const chosenIndex = byId.has(q.id) ? byId.get(q.id) : -1;
+    return { questionId: q.id, domain: q.domain, prompt: q.prompt, options: q.options, chosenIndex, correctIndex: q.answer, correct: chosenIndex === q.answer };
+  });
+}
+```
+In `lib/assessment-service.mjs` `submitAssessment`: importeer `gradeDetails`, en sla op:
+```javascript
+const details = gradeDetails(answers, questions);
+await store.saveResult(candidate.id, { functie: candidate.functie, details, domeinScores, totaalScore, roleFit, ingediendOp: new Date().toISOString() });
+```
+(verwijder de eerdere kale `antwoorden: answers` — `details` vervangt het.)
+
+In `server.mjs` `handleApi`, een staff-endpoint (parse id uit het pad):
+```javascript
+const m = url.pathname.match(/^\/api\/candidates\/([^/]+)\/result$/);
+if (m && request.method === 'GET') {
+  if (!requireStaff(request, response)) return true;
+  const result = await candidateStore.getResult(decodeURIComponent(m[1]));
+  if (!result) { sendJson(response, 404, { error: 'not_found' }); return true; }
+  sendJson(response, 200, result);
+  return true;
+}
+```
+
+- [ ] **Step 4: Run → slaagt** — `npm test` (volledige suite groen) + `node --check server.mjs`.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add src/views/Reviewdashboard.tsx src/lib/api.ts
-git commit -m "feat(fe): Reviewdashboard op echte sollicitant-data + per-vraag-bewijs"
+git add lib/assessment.mjs lib/assessment-service.mjs server.mjs test/assessment-service.test.mjs
+git commit -m "feat(assessment): per-vraag-bewijs in resultaat + result-endpoint"
 ```
 
 ---
 
-### Task 7: Werkhouding & Communicatie — bias-arme SJT-vragen
+### Task 7: Reviewdashboard op echte data (frontend)
 
-Versterk het domein met situational-judgement-vragen in de gedeelde content. Deze stromen automatisch door filtering/scoring/kiosk (Plan 1).
+Vervang de demo-kandidaten door echte sollicitanten + hun uitslag, met per-vraag-bewijs.
 
 **Files:**
-- Modify: `lib/assessment-content.mjs` (voeg vragen toe aan `testQuestions` met `domain: "Werkhouding & Communicatie"`)
-- Modify: `test/assessment-content.test.mjs` (pas de verwachte `testQuestions.length` aan)
+- Modify: `src/lib/api.ts` (voeg `getCandidateResult(id)` toe + type `CandidateResult`)
+- Modify: `src/views/Reviewdashboard.tsx`
 
-**Interfaces:** geen nieuwe; bestaande vorm `{domain,type,prompt,options:[4],answer}`.
+**Interfaces:**
+- `type GradeDetail = { questionId:string; domain:string; prompt:string; options:string[]; chosenIndex:number; correctIndex:number; correct:boolean }`
+- `type CandidateResult = { functie:string; domeinScores:Record<string,number>; totaalScore:number; roleFit:{score:number;state:string}; details:GradeDetail[]; ingediendOp:string }`
+- `getCandidateResult(id:string): Promise<CandidateResult>` → `GET /api/candidates/${id}/result`.
 
-- [ ] **Step 1: Voeg 4 SJT-vragen toe** (eigenaarschap, afspraken nakomen, omgaan met druk, zorgvuldig met bedrijfsmiddelen/security). Vorm exact als de bestaande vragen: 4 opties, `answer` = index van het sterkste professionele antwoord, geen leeftijd/persoonlijke proxy's. Voorbeeld:
+- [ ] **Step 1: API-client** — voeg `CandidateResult`/`GradeDetail` + `getCandidateResult` toe aan `src/lib/api.ts`. `npx tsc --noEmit` groen.
 
-```javascript
-{
-  domain: "Werkhouding & Communicatie",
-  type: "Situational judgement",
-  prompt: "Je krijgt een bedrijfslaptop in bruikleen. Aan het eind van een drukke dag moet je weg. Wat doe je?",
-  options: [
-    "Laat de laptop ingelogd en onbeheerd op het bureau liggen zodat je morgen snel verder kunt.",
-    "Vergrendel of sluit af, berg het apparaat veilig op en meld eventuele schade of problemen.",
-    "Neem de laptop mee naar huis zonder dit te melden omdat dat handiger is.",
-    "Laat hem aan staan en geef je wachtwoord aan een collega voor het geval dat.",
-  ],
-  answer: 1,
-},
-```
-Schrijf in dezelfde stijl ook items voor: afspraken nakomen/planning, escalatie onder druk, en eigenaarschap bij een fout. (Hergebruik waar passend de toon van de bestaande Werkhouding-vragen.)
+- [ ] **Step 2: Dashboard op echte data** — in `src/views/Reviewdashboard.tsx`: laad `listCandidates()` (state). Toon een lijst/keuze van sollicitanten met status-badge. Bij selectie van een **afgeronde** sollicitant: `getCandidateResult(id)` → toon `totaalScore` (RingProgress), **rol-fit** `roleFit.state` (reviewer-only, hier zichtbaar), domein-uitslag als **balken per getest domein** (uit `domeinScores`), en een **per-vraag-bewijs**-tabel uit `details` (kolommen: Vraag (prompt), Domein, Gekozen antwoord (`options[chosenIndex]` of "—" bij -1), Goed/fout (badge groen/rood)). Behoud de Mantine-cockpit-stijl (Card/RingProgress/Progress/Table/Badge). Verwijder de demo-`candidates`/scores-afhankelijkheid uit dit scherm.
+- Shape: `domeinScores` bevat alleen geteste domeinen → gebruik de balken-variant (geen radar over 13 domeinen). De oude demo-radar/heatmap mag hier weg (de demo `candidates[]` in `data.ts` blijft bestaan voor evt. ander gebruik, maar het dashboard gebruikt 'm niet meer).
 
-- [ ] **Step 2: Update de count-test** — verhoog `assert.equal(testQuestions.length, 18)` naar het nieuwe aantal (18 + toegevoegde).
+- [ ] **Step 3: Lege staat** — geen sollicitanten/geen afgeronde → nette lege staat ("Nog geen ingeleverde assessments"), niet de demo.
 
-- [ ] **Step 3: Run de backend-suite**
+- [ ] **Step 4: Verify**
 
-Run: `npm test`
-Expected: alle tests groen (incl. de aangepaste count).
+Run: `npx tsc --noEmit && npx vite build` → exit 0.
+Visueel (met `AUTH_DEV_MODE` server + een afgeronde sollicitant uit de kiosk-flow): dashboard toont die persoon met score, rol-fit, domein-balken en per-vraag-bewijs; zonder data de lege staat.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add lib/assessment-content.mjs test/assessment-content.test.mjs
-git commit -m "feat(assessment): bias-arme SJT-vragen voor Werkhouding & Communicatie"
+git add src/lib/api.ts src/views/Reviewdashboard.tsx
+git commit -m "feat(fe): Reviewdashboard op echte sollicitant-data + per-vraag-bewijs"
 ```
 
 ---
