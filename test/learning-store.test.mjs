@@ -1,9 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { unlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { createLearningStore } from '../lib/learning-store.mjs';
 
-const TEMP_FILE = 'C:\\Users\\JANNEK~1\\AppData\\Local\\Temp\\claude\\c--Users-JannekePostCampai-Assessment-App\\ee185fa6-e864-4633-a9f2-12bfcb2ea07e\\scratchpad\\test-learning-roundtrip.json';
+const TEMP_FILE = join(tmpdir(), `test-learning-${randomUUID()}.json`);
 
 test('learning-store file round-trip', async () => {
   const store = createLearningStore({ filePath: TEMP_FILE });
