@@ -8,11 +8,13 @@ import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
 import { generateCode } from './lib/codes.mjs';
-import { roles } from './lib/assessment-content.mjs';
+import { roles, domains } from './lib/assessment-content.mjs';
+import { createQuestionBank } from './lib/question-bank.mjs';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
 const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
+const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 function requireStaff(request, response) {
   if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
     sendJson(response, 401, { error: 'auth_required' }); return false;
@@ -239,7 +241,7 @@ async function handleApi(request, response, url) {
   }
   if (url.pathname === '/api/assessment/start' && request.method === 'POST') {
     const body = await readRequestBody(request);
-    try { sendJson(response, 200, await startAssessment(candidateStore, String(body.code || ''))); }
+    try { sendJson(response, 200, await startAssessment(candidateStore, String(body.code || ''), questionBank)); }
     catch (e) { sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' }); }
     return true;
   }
@@ -257,6 +259,27 @@ async function handleApi(request, response, url) {
     if (!result) { sendJson(response, 404, { error: 'not_found' }); return true; }
     sendJson(response, 200, result);
     return true;
+  }
+
+  if (url.pathname === '/api/questions' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, await questionBank.listApproved()); return true;
+  }
+  if (url.pathname === '/api/questions' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const b = await readRequestBody(request);
+    if (!domains.includes(b.domain) || !Array.isArray(b.options) || b.options.length !== 4 || !Number.isInteger(b.answer) || b.answer < 0 || b.answer > 3 || !b.prompt) {
+      sendJson(response, 400, { error: 'ongeldige_vraag' }); return true;
+    }
+    const identity = readIdentity(request);
+    const q = await questionBank.addApproved({ domain: b.domain, type: b.type || 'Scenario', prompt: b.prompt, options: b.options, answer: b.answer, source: b.source || 'Handmatig', approvedBy: identity.email || identity.name });
+    sendJson(response, 201, q); return true;
+  }
+  const dm = url.pathname.match(/^\/api\/questions\/([^/]+)$/);
+  if (dm && request.method === 'DELETE') {
+    if (!requireStaff(request, response)) return true;
+    await questionBank.removeApproved(decodeURIComponent(dm[1]));
+    sendJson(response, 200, { ok: true }); return true;
   }
 
   return false;
