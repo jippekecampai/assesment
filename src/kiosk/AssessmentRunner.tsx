@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Badge, Box, Button, Card, Center, Group, Progress, Radio, Stack, Text, Title } from "@mantine/core";
 import { submitAssessment, type StartResponse, type SubmitResponse } from "../lib/api";
+import { domainIntros } from "../lib/data";
 
 export function AssessmentRunner({ code, data, onDone }: { code: string; data: StartResponse; onDone: (r: SubmitResponse) => void }) {
   const key = `camai-kiosk-${code}`;
@@ -45,6 +46,19 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
           <Progress value={((idx + 1) / total) * 100} size="sm" radius="xl" color="campaiNavy" />
           <Box>
             <Badge variant="light" color="gray" radius="sm" mb="sm">{q.domain} / {q.type}</Badge>
+            {domainIntros[q.domain] && (
+              <Box
+                mb="sm"
+                p="sm"
+                style={{
+                  background: "var(--mantine-color-campaiNavy-0, #e6f0f7)",
+                  borderRadius: "var(--mantine-radius-md)",
+                  borderLeft: "3px solid var(--mantine-color-campaiNavy-4, #6fa8d6)",
+                }}
+              >
+                <Text size="xs" c="campaiNavy.7">{domainIntros[q.domain]}</Text>
+              </Box>
+            )}
             <Title order={2} fz="xl" c="campaiNavy.8" lh={1.3}>{q.prompt}</Title>
           </Box>
           <Radio.Group value={answers[q.id] != null ? String(answers[q.id]) : null} onChange={(v) => choose(Number(v))}>

@@ -48,3 +48,16 @@ test('selectQuestionsForRole respecteert domains-override', () => {
   const qs = selectQuestionsForRole('cloud', approved, { domains: ['VoIP'], minPerDomain: 5 });
   assert.ok(qs.length >= 5 && qs.every((q) => q.domain === 'VoIP'));
 });
+
+test('assessment eindigt met Engels (laatst) en Werkhouding (een-na-laatst)', () => {
+  // override met de twee staart-domeinen vooraan + een ander domein ertussen;
+  // ongeacht invoervolgorde moeten Werkhouding en Engels achteraan komen.
+  const qs = selectQuestionsForRole('cloud', [], {
+    domains: ['Engels', 'Werkhouding & Communicatie', 'Azure'],
+    minPerDomain: 5,
+  });
+  const blocks = [];
+  for (const q of qs) if (blocks[blocks.length - 1] !== q.domain) blocks.push(q.domain);
+  assert.equal(blocks[blocks.length - 1], 'Engels');
+  assert.equal(blocks[blocks.length - 2], 'Werkhouding & Communicatie');
+});

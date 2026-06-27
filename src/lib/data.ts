@@ -201,6 +201,38 @@ export const domainDetails: Record<string, string> = {
   Engels: "Engelse klantupdates, vendorcommunicatie, documentatie en incidentstatus",
 };
 
+// Kandidaat-gerichte introtekst per domein: wat je kunt verwachten en waarom we
+// het toetsen. Wordt in de testomgeving (kiosk) boven de vragen van dat domein
+// getoond. Kort en geruststellend houden.
+export const domainIntros: Record<string, string> = {
+  "Microsoft 365":
+    "Praktijksituaties rond Microsoft 365 (identiteit, e-mail, beveiliging). We kijken hoe je een probleem aanpakt, niet of je definities uit je hoofd kent.",
+  Azure:
+    "Scenario's rond Azure (resources, netwerk, identiteit, kosten). Het gaat om je redenering en keuzes, niet om losse feitjes.",
+  "Kaseya Stack":
+    "Werken met de Kaseya-tooling (Autotask, Datto RMM, IT Glue, EDR). We toetsen hoe je tickets, monitoring en documentatie aan elkaar knoopt.",
+  Fortigate:
+    "Firewall- en netwerksituaties (policies, VPN, routing). We kijken naar je troubleshooting-aanpak.",
+  "AI / Copilot":
+    "Verantwoord en praktisch AI-gebruik (Copilot, dataveiligheid). Het gaat om beoordelingsvermogen, niet om hypes.",
+  VoIP:
+    "Telefonie-situaties (call routing, audio-issues). We kijken hoe je een storing logisch terugbrengt naar de oorzaak.",
+  Servers:
+    "Windows Server-situaties (AD, DNS, backup, herstel). Het gaat om diagnose en veilige herstelstappen.",
+  "SharePoint / Teams":
+    "Samenwerken en rechten in SharePoint/Teams (gasten, governance). We kijken naar veilige, werkbare keuzes.",
+  "SharePoint / Azure Migrations":
+    "Migratiesituaties (intake, cutover, rollback). We toetsen je planmatige en risicobewuste aanpak.",
+  Inforcer:
+    "Beheer van baselines en tenant-policies (rollout, exceptions, drift). Het gaat om controle en zorgvuldigheid.",
+  "Basic IT & Troubleshooting":
+    "Algemene IT-diagnose (netwerk, endpoint, escalatie). We kijken naar een gestructureerde aanpak en klantimpact.",
+  "Werkhouding & Communicatie":
+    "Situaties uit de praktijk over samenwerking, klanttoon en omgaan met druk. Er is geen trucvraag — kies wat jij professioneel zou doen.",
+  Engels:
+    "Engels leesbegrip: je leest korte technische Engelse teksten en beantwoordt vragen erover. Je hoeft zelf niets te schrijven; we testen begrip, niet schrijfstijl.",
+};
+
 export const competencies = [
   "Concepten",
   "Configuratie",
