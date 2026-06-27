@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Anchor,
   Badge,
@@ -18,8 +18,8 @@ import { notifications } from "@mantine/notifications";
 import { IconChevronDown, IconCloudDownload, IconPlus } from "@tabler/icons-react";
 
 import { domains, draftQuestions as seedDrafts, roles, type DraftQuestion } from "../lib/data";
-import { addCustomQuestion } from "../lib/assessment";
 import { recordAudit } from "../lib/learning";
+import { addQuestion, listQuestions, type ApprovedQuestion } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 interface Draft extends DraftQuestion {
@@ -50,6 +50,20 @@ function defaultDraftOptions(): string[] {
 export function Vragenfabriek() {
   const [drafts, setDrafts] = useState<Draft[]>(() => seedDrafts.map((d) => ({ ...d })));
   const [activeIndex, setActiveIndex] = useState(0);
+  const [approvedQuestions, setApprovedQuestions] = useState<ApprovedQuestion[]>([]);
+
+  async function refreshApproved() {
+    try {
+      const qs = await listQuestions();
+      setApprovedQuestions(qs);
+    } catch {
+      // silently ignore — server may not be running in dev
+    }
+  }
+
+  useEffect(() => {
+    refreshApproved();
+  }, []);
 
   // Nieuw-concept formulier
   const [fDomain, setFDomain] = useState(domains[0]);
@@ -91,18 +105,24 @@ export function Vragenfabriek() {
     notifications.show({ message: "Conceptvraag bijgewerkt.", color: "campaiNavy" });
   }
 
-  function promote(index: number) {
+  async function promote(index: number) {
     const d = drafts[index];
-    addCustomQuestion({
-      id: `q-custom-${index}-${d.prompt.length}`,
-      domain: d.domain,
-      type: d.type || "Conceptvraag",
-      prompt: d.prompt,
-      options: d.options || defaultDraftOptions(),
-      answer: Number.isInteger(d.answer) ? d.answer! : 1,
-    });
-    recordAudit("Conceptvraag toegevoegd aan assessment", `${d.domain} / ${d.role}`);
-    notifications.show({ message: "Conceptvraag toegevoegd aan kandidaattest.", color: "campaiLime" });
+    try {
+      await addQuestion({
+        domain: d.domain,
+        type: d.type || "Conceptvraag",
+        prompt: d.prompt,
+        options: d.options || defaultDraftOptions(),
+        answer: Number.isInteger(d.answer) ? d.answer! : 1,
+        source: "Handmatig",
+      });
+      recordAudit("Conceptvraag goedgekeurd naar server-bank", `${d.domain} / ${d.role}`);
+      notifications.show({ message: "Vraag toegevoegd aan goedgekeurde bank.", color: "campaiLime" });
+      await refreshApproved();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Onbekende fout";
+      notifications.show({ message: `Opslaan mislukt: ${msg}`, color: "red" });
+    }
   }
 
   async function loadCompanies() {
@@ -230,6 +250,34 @@ export function Vragenfabriek() {
               <Text size="xs" c="dimmed">
                 {hubHint}
               </Text>
+            </Stack>
+          </Card>
+        </Grid.Col>
+
+        {/* Goedgekeurde bank */}
+        <Grid.Col span={{ base: 12, lg: 7 }}>
+          <Card withBorder padding="lg" radius="md" mb="lg">
+            <Box mb="md">
+              <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                Goedgekeurde bank
+              </Text>
+              <Title order={3} fz="lg" c="campaiNavy.7">
+                Aantal per domein
+              </Title>
+            </Box>
+            <Stack gap="xs">
+              {domains.map((domain) => {
+                const count = approvedQuestions.filter((q) => q.domain === domain).length;
+                const low = count < 5;
+                return (
+                  <Group key={domain} justify="space-between" align="center">
+                    <Text size="sm">{domain}</Text>
+                    <Badge color={low ? "red" : "campaiLime"} variant="filled" radius="sm">
+                      {count}
+                    </Badge>
+                  </Group>
+                );
+              })}
             </Stack>
           </Card>
         </Grid.Col>

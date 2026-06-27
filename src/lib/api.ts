@@ -52,3 +52,26 @@ export const listCandidates = () => get<Candidate[]>("/api/candidates");
 export const createCandidate = (input: { naam: string; email?: string; functie: string }) =>
   post<{ candidate: Candidate; code: string }>("/api/candidates", input);
 export const getCandidateResult = (id: string) => get<CandidateResult>(`/api/candidates/${id}/result`);
+
+export type ApprovedQuestion = {
+  id: string;
+  domain: string;
+  type: string;
+  prompt: string;
+  options: string[];
+  answer: number;
+  source: string;
+  approvedBy: string;
+  approvedAt: string;
+};
+
+export const listQuestions = () => get<ApprovedQuestion[]>("/api/questions");
+export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
+  post<ApprovedQuestion>("/api/questions", q);
+export const removeQuestion = async (id: string): Promise<void> => {
+  const res = await fetch(`/api/questions/${encodeURIComponent(id)}`, { method: "DELETE" });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
+  }
+};
