@@ -10,8 +10,10 @@ import "./global.css";
 
 import { campaiTheme } from "./lib/campai-theme";
 import { App } from "./App";
+import Kiosk from "./kiosk/Kiosk";
 
 const queryClient = new QueryClient();
+const isKiosk = window.location.pathname.startsWith("/test");
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,7 +21,7 @@ createRoot(document.getElementById("root")!).render(
     <MantineProvider theme={campaiTheme} defaultColorScheme="light">
       <QueryClientProvider client={queryClient}>
         <Notifications position="top-right" />
-        <App />
+        {isKiosk ? <Kiosk /> : <App />}
       </QueryClientProvider>
     </MantineProvider>
   </StrictMode>,
