@@ -5,8 +5,10 @@ import {
   Button,
   Card,
   CopyButton,
+  Divider,
   Grid,
   Group,
+  List,
   MultiSelect,
   Select,
   Stack,
@@ -71,6 +73,7 @@ export function Sollicitanten() {
   }
 
   const roleOptions = roles.map((r) => ({ value: r.id, label: r.name }));
+  const kioskUrl = `${window.location.origin}/test`;
 
   const rows = list.map((c) => (
     <Table.Tr key={c.id}>
@@ -192,9 +195,36 @@ export function Sollicitanten() {
                     )}
                   </CopyButton>
                 </Group>
-                <Text size="xs" c="dimmed" mt={6}>
-                  Stuur deze code naar de sollicitant. Hij of zij kan er direct de test mee starten.
+                <Divider my="md" />
+
+                <Text size="sm" fw={600} c="campaiNavy.7" mb={4}>
+                  Testpagina voor de kandidaat
                 </Text>
+                <Group gap="sm" align="center" wrap="nowrap">
+                  <Text ff="monospace" fz="sm" c="campaiNavy.8" style={{ wordBreak: "break-all" }}>
+                    {kioskUrl}
+                  </Text>
+                  <CopyButton value={kioskUrl} timeout={2000}>
+                    {({ copied, copy }) => (
+                      <Button
+                        size="xs"
+                        radius="md"
+                        color={copied ? "campaiLime" : "campaiNavy"}
+                        variant={copied ? "filled" : "light"}
+                        leftSection={copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+                        onClick={copy}
+                      >
+                        {copied ? "Gekopieerd!" : "Kopieer"}
+                      </Button>
+                    )}
+                  </CopyButton>
+                </Group>
+
+                <List size="xs" c="dimmed" mt="sm" spacing={4} type="ordered">
+                  <List.Item>Open deze pagina op de testlaptop op locatie.</List.Item>
+                  <List.Item>Laat de kandidaat de testcode hierboven intikken.</List.Item>
+                  <List.Item>De kandidaat start en maakt de assessment onder toezicht.</List.Item>
+                </List>
               </Box>
             )}
           </Card>
