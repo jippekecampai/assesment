@@ -1044,24 +1044,11 @@ learners.forEach((learner) => {
 });
 export const people: Person[] = [...(candidates as Person[]), ...(learners as Person[])];
 
-export const draftQuestions: DraftQuestion[] = [
-  { domain: "Servers", role: "Servicedesk Engineer", source: "Datto RMM alertpatroon", prompt: "Een Windows Server meldt drie nachten mislukte backups. Laat de kandidaat VSS, storage, service health en restore verification triageren." },
-  { domain: "Sales", role: "Sales", source: "Discovery call notes", prompt: "Een prospect vraagt of Copilot veilig is. Laat de kandidaat readiness uitleggen zonder te overpromisen." },
-  { domain: "SharePoint / Teams", role: "Modern Work Consultant", source: "SharePoint rechtenincident", prompt: "Een Teams owner heeft per ongeluk gevoelige bestanden aan gasten blootgesteld. Vraag naar herstel en governancepreventie." },
-  { domain: "Kaseya Stack", role: "Servicedesk Engineer", source: "Autotask / Datto RMM / IT Glue case", prompt: "Laat de kandidaat uitleggen hoe een Datto RMM alert naar Autotask-ticket, IT Glue-documentatie, EDR-check en klantupdate loopt." },
-  { domain: "Kaseya Stack", role: "Sales", source: "BullPhish security awareness", prompt: "Laat de kandidaat uitleggen wanneer BullPhish relevant is in een klantgesprek en hoe je security awareness niet als bangmakerij verkoopt." },
-  { domain: "SharePoint / Azure Migrations", role: "Cloud Engineer", source: "Migratieproject retrospective", prompt: "Laat de kandidaat een migratieplan maken met discovery, pilot, tooling, cutover, delta sync, rollback, communicatie en nazorg." },
-  { domain: "Werkhouding & Communicatie", role: "Servicedesk Engineer", source: "Escalatiegesprek", prompt: "Een klant is boos omdat hij geen update heeft gehad. Laat de kandidaat een kalme reactie formuleren met erkenning, status en concrete vervolgstap." },
-  { domain: "Engels", role: "Cloud Engineer", source: "Engelse klantcommunicatie", prompt: "Laat de kandidaat in het Engels een korte incidentupdate schrijven met impact, herstelstatus, monitoring en next update." },
-  { domain: "Azure", role: "Cloud Engineer", source: "Azure interview en AZ-900 bronmateriaal", prompt: "Laat de kandidaat aan een MKB-klant uitleggen wanneer IaaS, PaaS en SaaS logisch zijn, inclusief shared responsibility, kosten en beheerimpact." },
-  { domain: "Azure", role: "Technical Account Manager", source: "Azure governance bronmateriaal", prompt: "Laat de kandidaat een governanceadvies maken voor resource groups, tags, RBAC, locks, Policy en kostenbewaking in een multi-customer MSP-omgeving." },
-  { domain: "Microsoft 365", role: "Modern Work Consultant", source: "M365 Assessment Toolkit", prompt: "Laat de kandidaat een M365 security intake ontwerpen met identity, Conditional Access, Exchange, Teams, SharePoint, Intune en attack-path prioritering." },
-  { domain: "Microsoft 365", role: "Servicedesk Engineer", source: "M365 Assessment Toolkit", prompt: "Laat de kandidaat triageren waarom MFA/Conditional Access onverwacht blokkeert, inclusief sign-in logs, policy scope, exclusions en break-glass risico." },
-  { domain: "SharePoint / Teams", role: "Modern Work Consultant", source: "M365 Assessment Toolkit", prompt: "Laat de kandidaat een secure collaboration review doen voor gasten, external sharing, owners, lifecycle, sensitivity labels en herstelmaatregelen." },
-  { domain: "Basic IT & Troubleshooting", role: "Cloud Engineer", source: "UnitOneAI SecuritySkills", prompt: "Laat de kandidaat een attack path uitschrijven vanaf zwakke identity controls naar datalekrisico en dit vertalen naar MSP-remediationstappen." },
-  { domain: "Basic IT & Troubleshooting", role: "Servicedesk Engineer", source: "UnitOneAI SecuritySkills", prompt: "Laat de kandidaat een automation-script reviewen op secrets, permissies, tenant-scope, logging, dry-run en rollback." },
-  { domain: "Werkhouding & Communicatie", role: "Sales", source: "Security awareness bronmateriaal", prompt: "Laat de kandidaat security awareness positioneren zonder angstverkoop: gedrag, risico, meetbaarheid, opvolging en realistische klantverwachting." },
-];
+// Recruitment-Vragenbank start leeg: alleen échte meerkeuzevragen horen hier.
+// Vullen gebeurt via de goedgekeurde server-bank + "Genereer" (AI) / "Importeer" (JSON)
+// in de Vragenbank. Open instructie-/coachingteksten en interne-trainingstof horen
+// hier NIET thuis (interne ontwikkeling staat gescheiden in de Skills Academy).
+export const draftQuestions: DraftQuestion[] = [];
 
 export const dashboardModules = [
   { id: "overview-stats", title: "Statistieken", view: "overview" },
