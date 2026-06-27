@@ -5,9 +5,20 @@ import { extname, join, normalize } from "node:path";
 import { createHubClient, HubError } from "./lib/hub.mjs";
 import { getUserToken } from "./lib/auth.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
+import { createStore } from './lib/candidate-store.mjs';
+import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
+import { generateCode } from './lib/codes.mjs';
+import { roles } from './lib/assessment-content.mjs';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
+const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
+function requireStaff(request, response) {
+  if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
+    sendJson(response, 401, { error: 'auth_required' }); return false;
+  }
+  return true;
+}
 const host = process.env.HOST || (process.env.WEBSITE_SITE_NAME ? "0.0.0.0" : "127.0.0.1");
 const dataPath = join(root, "data", "assessment-results.json");
 const tableName = process.env.ASSESSMENT_TABLE || "AssessmentResults";
@@ -208,6 +219,34 @@ async function handleApi(request, response, url) {
       const status = error instanceof HubError ? 502 : 500;
       sendJson(response, status, { error: "hub_error", message: error.message });
     }
+    return true;
+  }
+
+  if (url.pathname === '/api/candidates' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const list = (await candidateStore.listCandidates()).map(({ serverQuestions, ...c }) => c);
+    sendJson(response, 200, list); return true;
+  }
+  if (url.pathname === '/api/candidates' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const body = await readRequestBody(request);
+    if (!body.naam || !roles.some((r) => r.id === body.functie)) { sendJson(response, 400, { error: 'naam_en_functie_vereist' }); return true; }
+    const code = generateCode();
+    const identity = readIdentity(request);
+    const candidate = await candidateStore.createCandidate({ naam: body.naam, email: body.email || null, functie: body.functie, code, aangemaaktDoor: identity.email || identity.name });
+    const { serverQuestions, ...safe } = candidate;
+    sendJson(response, 201, { candidate: safe, code }); return true;
+  }
+  if (url.pathname === '/api/assessment/start' && request.method === 'POST') {
+    const body = await readRequestBody(request);
+    try { sendJson(response, 200, await startAssessment(candidateStore, String(body.code || ''))); }
+    catch (e) { sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' }); }
+    return true;
+  }
+  if (url.pathname === '/api/assessment/submit' && request.method === 'POST') {
+    const body = await readRequestBody(request);
+    try { sendJson(response, 200, await submitAssessment(candidateStore, String(body.code || ''), Array.isArray(body.answers) ? body.answers : [])); }
+    catch (e) { sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' }); }
     return true;
   }
 
