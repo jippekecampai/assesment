@@ -202,7 +202,9 @@ async function handleApi(request, response, url) {
   if (url.pathname === '/api/learning/me' && request.method === 'PUT') {
     const me = await currentProfile();
     if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
-    const b = await readRequestBody(request);
+    let b;
+    try { b = await readRequestBody(request); }
+    catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
     const completed = Array.isArray(b.completedModules) ? b.completedModules.filter((x) => typeof x === 'string') : [];
     sendJson(response, 200, await learningStore.saveProgress(me.entraOid, completed));
     return true;

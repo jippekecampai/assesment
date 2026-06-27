@@ -171,7 +171,11 @@ export function SkillsAcademy({
     [completedIds],
   );
   const level = learnerLevel(xp);
-  const roleFit = roleScore(learner, learningRole);
+  // Zonder gekoppelde assessmentscores (SSO-profiel zonder meting) is rolfit niet te
+  // berekenen → toon "—" i.p.v. NaN.
+  const hasScores = Object.keys(learner.scores).length > 0;
+  const roleFitValue = hasScores ? roleScore(learner, learningRole) : null;
+  const roleFit = roleFitValue ?? "—";
   const domainsWithGap = useMemo(
     () => recommendedDomains(learner, learningRole, domains),
     [learner, learningRole],
@@ -214,7 +218,7 @@ export function SkillsAcademy({
         <Text span ff="monospace">
           {roleFit}
         </Text>
-        /100, {criticalGaps} kritieke {criticalGaps === 1 ? "gap" : "gaten"}, level{" "}
+        {hasScores ? "/100" : ""}, {criticalGaps} kritieke {criticalGaps === 1 ? "gap" : "gaten"}, level{" "}
         <Text span ff="monospace">
           {level}
         </Text>
@@ -334,7 +338,7 @@ export function SkillsAcademy({
               <Progress value={Math.min(100, (xp % 250) / 2.5)} size="md" radius="xl" color="campaiLime" mb="md" />
               <SimpleGrid cols={2} spacing="xs">
                 {[
-                  ["Rolfit", `${roleFit}/100`],
+                  ["Rolfit", hasScores ? `${roleFit}/100` : "—"],
                   ["Modules klaar", `${completedIds.length}/${trainingModules.length}`],
                   ["Badges", `${completedBadges}`],
                   ["Achterstanden", `${criticalGaps}`],

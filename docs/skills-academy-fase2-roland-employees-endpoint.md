@@ -42,7 +42,7 @@ GET /hub/v1/employees
 ## Aanvullende opmerkingen
 
 Dit endpoint is **aanvullend** op bestaande endpoints:
-- `/auth/me` — ingelogde gebruiker (husting Phase 1)
+- `/auth/me` — ingelogde gebruiker (huidige Fase 1)
 - `/beheer/admin/users` — admin-only, ongeschikt voor spoke-volgsysteem
 
 We zullen dit endpoint aanroepen met hetzelfde app-token dat we al gebruiken voor `/hub/v1/companies`.
