@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-06-27 — Werkende sollicitant-assessmentflow (Plan 1 + Plan 2)
+
+- **Backend (Plan 1):** gedeelde vragen-/rol-content (`lib/assessment-content.mjs`),
+  vraagvoorbereiding + functie-filtering + scoring/rol-fit (`lib/assessment.mjs`),
+  toegangscodes (`lib/codes.mjs`), kandidaat-store Azure Table + file-fallback
+  (`lib/candidate-store.mjs`), assessment-service (`lib/assessment-service.mjs`),
+  en HTTP-endpoints in `server.mjs`: `GET/POST /api/candidates` (staff),
+  `POST /api/assessment/start|submit` (code), `GET /api/candidates/:id/result`
+  (staff, per-vraag-bewijs). 33 unit-tests groen.
+- **Frontend (Plan 2):** route-split — `/test*` = vergrendelde **kiosk** (code-start
+  → 1 vraag per scherm → uitslag met score + domein-uitslag, **géén** rol-fit),
+  al het andere de medewerker-app. Nieuw **Sollicitanten**-scherm (aanmaken + code
+  + statuslijst). **Reviewdashboard** op echte data met per-vraag-bewijs + rol-fit
+  (reviewer-only).
+- **Beveiliging:** antwoordsleutels en rol-fit bereiken de kiosk nooit; codes zijn
+  eenmalig; staff-endpoints achter Entra (`requireStaff`), kandidaat-endpoints
+  code-gated.
+- **Opvul-logica verwijderd:** de kunstmatige optie-lengtebalans (`balanceOptionLengths`)
+  die afleiders verraadde is eruit; vragenkwaliteit/-aantal volgt in de vragenbank-feature.
+- **Azure Easy Auth:** `excludedPaths` = `/test`, `/assets/app.js`, `/assets/app.css`,
+  `/favicon.ico`, `/api/assessment/start|submit` → kiosk anoniem bereikbaar op locatie,
+  staff + staff-API's achter Entra SSO. Hiervoor genereert Vite **vaste asset-namen**
+  (`assets/app.js|css`, geen hash) omdat authV2 `excludedPaths` exact matcht.
+  Let op: niet-gehashte assets → bij toekomstige deploys evt. cache-busting toevoegen.
+
 ## 2026-06-26 — AI guard (@cmp/ai-guard) gevendord + Azure-deploy hersteld
 
 - **AI guard:** de Campai PII-pseudonimisatielaag uit Roland's hub-repo
