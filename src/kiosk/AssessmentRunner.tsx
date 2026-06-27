@@ -10,6 +10,7 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
   });
   const [idx, setIdx] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const q = data.questions[idx];
   const total = data.questions.length;
 
@@ -19,6 +20,7 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
     try { sessionStorage.setItem(key, JSON.stringify(next)); } catch { /* ignore */ }
   }
   async function submit() {
+    setError(null);
     const unanswered = data.questions.filter((x) => answers[x.id] == null).length;
     if (unanswered > 0 && !window.confirm(`${unanswered} vraag/vragen niet beantwoord — toch inleveren?`)) return;
     setBusy(true);
@@ -26,7 +28,10 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
       const result = await submitAssessment(code, data.questions.map((x) => ({ questionId: x.id, choice: answers[x.id] ?? -1 })));
       try { sessionStorage.removeItem(key); } catch { /* ignore */ }
       onDone(result);
-    } finally { setBusy(false); }
+    } catch (e) {
+      setError("Inleveren mislukt — probeer opnieuw.");
+      setBusy(false);
+    }
   }
 
   return (
@@ -51,6 +56,7 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
               ))}
             </Stack>
           </Radio.Group>
+          {error && <Text c="campaiRed.6" size="sm">{error}</Text>}
           <Group justify="space-between">
             <Button variant="default" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>Vorige</Button>
             {idx < total - 1

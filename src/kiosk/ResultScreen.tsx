@@ -1,5 +1,5 @@
 // src/kiosk/ResultScreen.tsx
-import { Badge, Card, Center, Group, Progress, RingProgress, Stack, Text, Title } from "@mantine/core";
+import { Card, Center, Group, Progress, RingProgress, Stack, Text, Title } from "@mantine/core";
 import type { SubmitResponse } from "../lib/api";
 
 const color = (s: number) => (s >= 75 ? "campaiLime" : s >= 60 ? "campaiCyan" : "campaiRed");
