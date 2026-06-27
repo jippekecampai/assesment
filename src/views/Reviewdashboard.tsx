@@ -29,9 +29,6 @@ import {
   flagQuestion,
 } from "../lib/api";
 import { ViewHead } from "./_shared";
-import { learners, trainingModules } from "../lib/data";
-import { roleScore, scoreState } from "../lib/scoring";
-import { loadCompleted } from "../lib/learning";
 
 function scoreColor(score: number): string {
   if (score >= 75) return "campaiLime";
@@ -59,13 +56,7 @@ const STATUS_COLORS: Record<string, string> = {
   afgerond: "campaiLime",
 };
 
-export function Reviewdashboard({
-  search,
-  onOpenLearner,
-}: {
-  search: string;
-  onOpenLearner: (id: string) => void;
-}) {
+export function Reviewdashboard({ search }: { search: string }) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -172,32 +163,13 @@ export function Reviewdashboard({
               </Text>
             </Card>
           </Grid.Col>
-          <Grid.Col span={{ base: 6, sm: 3 }}>
-            <Card withBorder padding="md" radius="md">
-              <Text fw={800} ff="heading" fz={30} c="campaiNavy.7">
-                {learners.length}
-              </Text>
-              <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={600}>
-                Medewerkers
-              </Text>
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={{ base: 6, sm: 3 }}>
-            <Card withBorder padding="md" radius="md">
-              <Text fw={800} ff="heading" fz={30} c="campaiNavy.7">
-                {trainingModules.length}
-              </Text>
-              <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={600}>
-                Trainingsmodules
-              </Text>
-            </Card>
-          </Grid.Col>
+          
         </Grid>
 
         {/* People grid */}
         <Grid>
           {/* Kandidaten list */}
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={12}>
             <Card withBorder padding="lg" radius="md" h="100%">
               <Group justify="space-between" mb="md">
                 <Box>
@@ -258,63 +230,6 @@ export function Reviewdashboard({
                   ))}
                 </Stack>
               )}
-            </Card>
-          </Grid.Col>
-
-          {/* Medewerkers list */}
-          <Grid.Col span={{ base: 12, md: 6 }}>
-            <Card withBorder padding="lg" radius="md" h="100%">
-              <Group justify="space-between" mb="md">
-                <Box>
-                  <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
-                    Interne ontwikkeling
-                  </Text>
-                  <Title order={3} fz="lg" c="campaiNavy.7">
-                    Medewerkers
-                  </Title>
-                </Box>
-                <Badge variant="light" color="campaiCyan" radius="sm">
-                  {learners.length} actief
-                </Badge>
-              </Group>
-              <Stack gap="xs">
-                {learners.map((learner) => {
-                  const targetRole = roles.find((r) => r.name === learner.targetRole) ?? roles[0];
-                  const lScore = roleScore(learner, targetRole);
-                  const completed = (loadCompleted()[learner.id] || []).length;
-                  return (
-                    <UnstyledButton key={learner.id} onClick={() => onOpenLearner(learner.id)}>
-                      <Card withBorder padding="sm" radius="md">
-                        <Group justify="space-between" wrap="nowrap">
-                          <Group gap="sm" wrap="nowrap">
-                            <ThemeIcon variant="light" color="campaiCyan" radius="xl" size={36}>
-                              <Text fw={700} size="xs">
-                                {learner.id}
-                              </Text>
-                            </ThemeIcon>
-                            <Box>
-                              <Text fw={600} size="sm">
-                                {learner.name}
-                              </Text>
-                              <Text size="xs" c="dimmed">
-                                {learner.role} → {learner.targetRole}
-                              </Text>
-                            </Box>
-                          </Group>
-                          <Stack gap={0} align="center">
-                            <Badge color={scoreColor(lScore)} variant="light" radius="sm">
-                              {lScore}
-                            </Badge>
-                            <Text size="10px" c="dimmed">
-                              {completed}/{trainingModules.length}
-                            </Text>
-                          </Stack>
-                        </Group>
-                      </Card>
-                    </UnstyledButton>
-                  );
-                })}
-              </Stack>
             </Card>
           </Grid.Col>
         </Grid>
@@ -659,3 +574,4 @@ function GovItem({ label, value }: { label: string; value: string }) {
     </Group>
   );
 }
+

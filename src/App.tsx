@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   AppShell,
-  Badge,
   Box,
   Button,
   Group,
@@ -13,25 +12,35 @@ import {
   ThemeIcon,
 } from "@mantine/core";
 import {
-  IconDashboard,
+  IconBook2,
+  IconBriefcase,
+  IconClipboardList,
   IconDownload,
   IconFileText,
   IconSearch,
   IconSettings,
   IconShieldCheck,
+  IconUserCircle,
   IconUserPlus,
-  IconUsers,
   type Icon,
 } from "@tabler/icons-react";
 
 import { Reviewdashboard } from "./views/Reviewdashboard";
 import { Vragenfabriek } from "./views/Vragenfabriek";
 import { SkillsAcademy } from "./views/SkillsAcademy";
+import { MedewerkerOverview } from "./views/MedewerkerOverview";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
 import { Sollicitanten } from "./views/Sollicitanten";
 
-export type ViewId = "overview" | "questions" | "academy" | "governance" | "admin" | "sollicitanten";
+export type ViewId =
+  | "employeeOverview"
+  | "academy"
+  | "sollicitanten"
+  | "candidateReviews"
+  | "questions"
+  | "governance"
+  | "admin";
 
 interface NavEntry {
   id: ViewId;
@@ -41,35 +50,30 @@ interface NavEntry {
 }
 
 const navEntries: NavEntry[] = [
-  { id: "overview", label: "Reviewdashboard", icon: IconDashboard, group: "Dashboard" },
+  { id: "employeeOverview", label: "Mijn overview", icon: IconUserCircle, group: "Medewerker" },
+  { id: "academy", label: "Skills Academy", icon: IconBook2, group: "Medewerker" },
   { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
+  { id: "candidateReviews", label: "Kandidaat reviews", icon: IconClipboardList, group: "Recruitment" },
   { id: "questions", label: "Vragenbank", icon: IconFileText, group: "Recruitment" },
-  { id: "academy", label: "Skills Academy", icon: IconUsers, group: "Ontwikkeling" },
   { id: "governance", label: "Beleid", icon: IconShieldCheck, group: "Governance" },
   { id: "admin", label: "Beheer", icon: IconSettings, group: "Governance" },
 ];
 
 const viewTitles: Record<ViewId, string> = {
-  overview: "Reviewdashboard",
-  sollicitanten: "Sollicitanten",
-  questions: "Vragenbank",
+  employeeOverview: "Mijn overview",
   academy: "Skills Academy",
+  sollicitanten: "Sollicitanten",
+  candidateReviews: "Kandidaat reviews",
+  questions: "Vragenbank",
   governance: "Beleid",
   admin: "Beheer",
 };
 
-const groupOrder = ["Dashboard", "Recruitment", "Ontwikkeling", "Governance"];
+const groupOrder = ["Medewerker", "Recruitment", "Governance"];
 
 export function App() {
-  const [view, setView] = useState<ViewId>("overview");
+  const [view, setView] = useState<ViewId>("employeeOverview");
   const [search, setSearch] = useState("");
-  // Gedeelde learner-selectie: het dashboard kan naar de Academy springen.
-  const [learnerId, setLearnerId] = useState<string>("LV");
-
-  const openLearner = (id: string) => {
-    setLearnerId(id);
-    setView("academy");
-  };
 
   return (
     <AppShell
@@ -100,7 +104,7 @@ export function App() {
             </Stack>
           </Group>
           <TextInput
-            placeholder="Zoeken op domein — bv. Azure, Fortigate, Engels"
+            placeholder="Zoeken op domein, module of kandidaat"
             leftSection={<IconSearch size={16} />}
             radius="md"
             size="sm"
@@ -109,12 +113,7 @@ export function App() {
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
           />
-          <Button
-            variant="default"
-            leftSection={<IconDownload size={16} />}
-            radius="md"
-            size="sm"
-          >
+          <Button variant="default" leftSection={<IconDownload size={16} />} radius="md" size="sm">
             Rapport exporteren
           </Button>
         </Group>
@@ -125,9 +124,12 @@ export function App() {
           <Stack gap="lg" px={4} py="xs">
             {groupOrder.map((group) => (
               <Stack key={group} gap={2}>
-                <Text size="10px" tt="uppercase" fw={700} c="dimmed" lts={1} px="sm" mb={2}>
-                  {group}
-                </Text>
+                <Group gap={6} px="sm" mb={2}>
+                  {group === "Medewerker" && <IconBriefcase size={13} stroke={1.7} />}
+                  <Text size="10px" tt="uppercase" fw={700} c="dimmed" lts={1}>
+                    {group}
+                  </Text>
+                </Group>
                 {navEntries
                   .filter((entry) => entry.group === group)
                   .map((entry) => (
@@ -150,10 +152,11 @@ export function App() {
 
       <AppShell.Main>
         <Box key={view}>
-          {view === "overview" && <Reviewdashboard search={search} onOpenLearner={openLearner} />}
+          {view === "employeeOverview" && <MedewerkerOverview onOpenAcademy={() => setView("academy")} />}
+          {view === "academy" && <SkillsAcademy />}
           {view === "sollicitanten" && <Sollicitanten />}
+          {view === "candidateReviews" && <Reviewdashboard search={search} />}
           {view === "questions" && <Vragenfabriek />}
-          {view === "academy" && <SkillsAcademy learnerId={learnerId} setLearnerId={setLearnerId} />}
           {view === "governance" && <Beleid />}
           {view === "admin" && <Beheer />}
         </Box>

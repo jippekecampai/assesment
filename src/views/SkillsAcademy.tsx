@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Accordion,
+  Alert,
   Anchor,
   Badge,
   Box,
@@ -12,6 +14,7 @@ import {
   ScrollArea,
   Select,
   SimpleGrid,
+  Tabs,
   Stack,
   Table,
   Text,
@@ -21,11 +24,14 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
+  IconBook2,
   IconCircleCheck,
   IconExternalLink,
   IconFlag,
+  IconInfoCircle,
   IconPlus,
   IconTargetArrow,
+  IconUserCircle,
 } from "@tabler/icons-react";
 
 import { getMe, getLearningProgress, saveLearningProgress, type MeProfile } from "../lib/api";
@@ -33,13 +39,13 @@ import {
   coachingMoments,
   developmentGoals,
   domains,
-  learners,
   performanceLoopModules,
   reviewTemplates,
   roles,
   surveyThemes,
   teamChallenge,
   trainingModules,
+  type Learner,
   type TrainingModule,
 } from "../lib/data";
 import { roleScore } from "../lib/scoring";
@@ -71,13 +77,7 @@ function shortDomain(domain: string): string {
     .replace("Werkhouding & Communicatie", "Werkhouding");
 }
 
-export function SkillsAcademy({
-  learnerId,
-  setLearnerId,
-}: {
-  learnerId: string;
-  setLearnerId: (id: string) => void;
-}) {
+export function SkillsAcademy() {
   // SSO state
   const [me, setMe] = useState<MeProfile | null>(null);
   const [serverCompleted, setServerCompleted] = useState<string[] | null>(null);
@@ -96,25 +96,33 @@ export function SkillsAcademy({
 
   const isSso = me?.authenticated === true;
 
-  // Effective learner: SSO-synthetic or mock
-  const mockLearner = learners.find((l) => l.id === learnerId) ?? learners[0];
+  // Effective learner: SSO-profiel is leidend. Geen demo-medewerkers in de medewerkerflow.
+  const fallbackLearner: Learner = {
+    id: "ME",
+    name: "Mijn profiel",
+    role: "-",
+    targetRole: "Cloud Engineer",
+    meta: "SSO-profiel niet beschikbaar",
+    scores: {},
+    type: "learner",
+  };
   const ssoLearner = isSso
     ? {
-        id: (me as Extract<MeProfile, { authenticated: true }>).entraOid || "sso",
+        id: (me as Extract<MeProfile, { authenticated: true }>).entraOid || "ME",
         name:
           (me as Extract<MeProfile, { authenticated: true }>).name ||
           (me as Extract<MeProfile, { authenticated: true }>).email ||
-          "Ingelogde medewerker",
-        role: (me as Extract<MeProfile, { authenticated: true }>).jobTitle || "—",
-        targetRole: "",
+          "Campai gebruiker",
+        role: (me as Extract<MeProfile, { authenticated: true }>).jobTitle || "-",
+        targetRole: "Cloud Engineer",
         meta: (me as Extract<MeProfile, { authenticated: true }>).department || "Interne medewerker",
         scores: {} as Record<string, number>,
         type: "learner" as const,
       }
     : null;
-  const learner = isSso ? ssoLearner! : mockLearner;
+  const learner = isSso ? ssoLearner! : fallbackLearner;
 
-  const [learningRoleId, setLearningRoleId] = useState(learningRoleFor(mockLearner).id);
+  const [learningRoleId, setLearningRoleId] = useState(learningRoleFor(fallbackLearner).id);
   const learningRole = roles.find((r) => r.id === learningRoleId) ?? roles[1];
 
   // Leerstate (localStorage for demo, server for SSO). Bump om re-render te forceren na opslaan.
@@ -261,23 +269,6 @@ export function SkillsAcademy({
               </Text>
             </Box>
             <Group gap="md" wrap="wrap" align="flex-end">
-              {!isSso && (
-                <Select
-                  label="Medewerker"
-                  data={learners.map((l) => ({ value: l.id, label: l.name }))}
-                  value={learnerId}
-                  onChange={(v) => {
-                    if (!v) return;
-                    setLearnerId(v);
-                    const next = learners.find((l) => l.id === v);
-                    if (next) setLearningRoleId(learningRoleFor(next).id);
-                  }}
-                  radius="md"
-                  size="sm"
-                  w={200}
-                  allowDeselect={false}
-                />
-              )}
               <Select
                 label="Groei richting"
                 data={roles.map((r) => ({ value: r.id, label: r.name }))}
@@ -292,89 +283,134 @@ export function SkillsAcademy({
           </Group>
         </Card>
 
-        {/* Profiel + quick cards / career plan */}
-        <Grid>
-          <Grid.Col span={{ base: 12, lg: 8 }}>
-            <Card withBorder padding="lg" radius="md" h="100%">
-              <Group gap="md" mb="lg">
-                <ThemeIcon variant="light" color="campaiCyan" radius="md" size={48}>
-                  <Text fw={800} ff="heading">
-                    {learner.id}
-                  </Text>
-                </ThemeIcon>
-                <Box>
-                  <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
-                    Welkom
-                  </Text>
-                  <Title order={2} fz="xl" c="campaiNavy.7">
-                    {learner.name}
-                  </Title>
-                  <Text size="sm" c="dimmed">
-                    {learner.meta}
-                  </Text>
-                </Box>
-              </Group>
-              <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
-                {quickCards.map(([title, value, copy]) => (
-                  <Card key={title} withBorder padding="sm" radius="md" bg="gray.0">
-                    <Text size="xs" fw={700} c="campaiNavy.7">
-                      {title}
-                    </Text>
-                    <Text size="sm" fw={700} c="campaiCyan.7" my={2}>
-                      {value}
-                    </Text>
-                    <Text size="10px" c="dimmed">
-                      {copy}
-                    </Text>
+        {/* Profiel + Academy substructuur */}
+        <Accordion variant="contained" radius="md" defaultValue="profile">
+          <Accordion.Item value="profile">
+            <Accordion.Control icon={<IconUserCircle size={18} />}>
+              Mijn profiel en leercontext
+            </Accordion.Control>
+            <Accordion.Panel>
+              {!isSso && (
+                <Alert color="yellow" icon={<IconInfoCircle size={16} />} radius="md" mb="md">
+                  SSO-profiel is niet beschikbaar in deze sessie. De live Azure-omgeving vult dit via Entra ID.
+                </Alert>
+              )}
+              <Tabs defaultValue="profile" radius="md">
+                <Tabs.List mb="md">
+                  <Tabs.Tab value="profile">Profiel</Tabs.Tab>
+                  <Tabs.Tab value="career">Career path</Tabs.Tab>
+                  <Tabs.Tab value="progress">Voortgang</Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value="profile">
+                  <Card withBorder padding="lg" radius="md">
+                    <Group gap="md" wrap="nowrap">
+                      <ThemeIcon variant="light" color="campaiCyan" radius="md" size={48}>
+                        <Text fw={800} ff="heading">
+                          {learner.name
+                            .split(/\s+/)
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map((part) => part[0]?.toUpperCase())
+                            .join("") || "CG"}
+                        </Text>
+                      </ThemeIcon>
+                      <Box>
+                        <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                          User profiel
+                        </Text>
+                        <Title order={2} fz="xl" c="campaiNavy.7">
+                          {learner.name}
+                        </Title>
+                        <Text size="sm" c="dimmed">
+                          {learner.role} · {learner.meta}
+                        </Text>
+                      </Box>
+                    </Group>
                   </Card>
-                ))}
-              </SimpleGrid>
-            </Card>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, lg: 4 }}>
-            <Card withBorder padding="lg" radius="md" h="100%">
-              <Group justify="space-between" mb="sm">
-                <Box>
-                  <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
-                    Career plan
-                  </Text>
-                  <Title order={3} fz="md" c="campaiNavy.7">
-                    {learner.role} → {learningRole.name}
-                  </Title>
-                </Box>
-                <Badge color="campaiNavy" variant="light" radius="sm">
-                  Level {level}
-                </Badge>
-              </Group>
-              <Group justify="space-between" mb={4}>
-                <Text size="xs" c="dimmed">
-                  Performance / XP
-                </Text>
-                <Text size="sm" fw={700} ff="monospace" c="campaiNavy.7">
-                  {xp} XP
-                </Text>
-              </Group>
-              <Progress value={Math.min(100, (xp % 250) / 2.5)} size="md" radius="xl" color="campaiLime" mb="md" />
-              <SimpleGrid cols={2} spacing="xs">
-                {[
-                  ["Rolfit", hasScores ? `${roleFit}/100` : "—"],
-                  ["Modules klaar", `${completedIds.length}/${trainingModules.length}`],
-                  ["Badges", `${completedBadges}`],
-                  ["Achterstanden", `${criticalGaps}`],
-                ].map(([label, value]) => (
-                  <Box key={label}>
-                    <Text size="10px" tt="uppercase" c="dimmed" fw={700}>
-                      {label}
-                    </Text>
-                    <Text size="sm" fw={700} c="campaiNavy.7">
-                      {value}
-                    </Text>
-                  </Box>
-                ))}
-              </SimpleGrid>
-            </Card>
-          </Grid.Col>
-        </Grid>
+                </Tabs.Panel>
+
+                <Tabs.Panel value="career">
+                  <Card withBorder padding="lg" radius="md">
+                    <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
+                      <Box>
+                        <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                          Career plan
+                        </Text>
+                        <Title order={3} fz="md" c="campaiNavy.7">
+                          {learner.role} → {learningRole.name}
+                        </Title>
+                        <Text size="sm" c="dimmed" mt={4}>
+                          Groeirol is persoonlijk en staat los van recruitmentbeoordeling.
+                        </Text>
+                      </Box>
+                      <Select
+                        label="Groei richting"
+                        data={roles.map((r) => ({ value: r.id, label: r.name }))}
+                        value={learningRoleId}
+                        onChange={(v) => v && setLearningRoleId(v)}
+                        radius="md"
+                        size="sm"
+                        w={220}
+                        allowDeselect={false}
+                      />
+                    </Group>
+                  </Card>
+                </Tabs.Panel>
+
+                <Tabs.Panel value="progress">
+                  <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm">
+                    {quickCards.map(([title, value, copy]) => (
+                      <Card key={title} withBorder padding="sm" radius="md" bg="gray.0">
+                        <Text size="xs" fw={700} c="campaiNavy.7">
+                          {title}
+                        </Text>
+                        <Text size="sm" fw={700} c="campaiCyan.7" my={2}>
+                          {value}
+                        </Text>
+                        <Text size="10px" c="dimmed">
+                          {copy}
+                        </Text>
+                      </Card>
+                    ))}
+                  </SimpleGrid>
+                </Tabs.Panel>
+              </Tabs>
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="academy">
+            <Accordion.Control icon={<IconBook2 size={18} />}>
+              Skills Academy onderdelen
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Tabs defaultValue="learn" radius="md">
+                <Tabs.List mb="md">
+                  <Tabs.Tab value="learn">Leren</Tabs.Tab>
+                  <Tabs.Tab value="test">Toetsen</Tabs.Tab>
+                  <Tabs.Tab value="coaching">Coaching</Tabs.Tab>
+                  <Tabs.Tab value="reviews">Reviews</Tabs.Tab>
+                  <Tabs.Tab value="team">Team</Tabs.Tab>
+                </Tabs.List>
+                <Tabs.Panel value="learn">
+                  <Text size="sm" c="dimmed">Modules, badges en praktijkbewijs voor MSP-domeinen.</Text>
+                </Tabs.Panel>
+                <Tabs.Panel value="test">
+                  <Text size="sm" c="dimmed">Toetsen horen bij Skills Academy en meten leerprogressie, niet sollicitantselectie.</Text>
+                </Tabs.Panel>
+                <Tabs.Panel value="coaching">
+                  <Text size="sm" c="dimmed">1:1s, blockers en ontwikkeldoelen worden hier voorbereid.</Text>
+                </Tabs.Panel>
+                <Tabs.Panel value="reviews">
+                  <Text size="sm" c="dimmed">Reviewtemplates ondersteunen gesprekken; geen automatische HR-besluiten.</Text>
+                </Tabs.Panel>
+                <Tabs.Panel value="team">
+                  <Text size="sm" c="dimmed">Team-signalen zijn alleen geaggregeerd zichtbaar.</Text>
+                </Tabs.Panel>
+              </Tabs>
+            </Accordion.Panel>
+          </Accordion.Item>
+        </Accordion>
 
         {/* Skill gap + tasks */}
         <Grid>
@@ -943,3 +979,8 @@ function ModuleModal({
     </Modal>
   );
 }
+
+
+
+
+
