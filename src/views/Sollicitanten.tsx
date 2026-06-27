@@ -7,6 +7,7 @@ import {
   CopyButton,
   Grid,
   Group,
+  MultiSelect,
   Select,
   Stack,
   Table,
@@ -17,7 +18,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconCopy, IconCheck } from "@tabler/icons-react";
 import { listCandidates, createCandidate, type Candidate } from "../lib/api";
-import { roles } from "../lib/data";
+import { roles, domains } from "../lib/data";
 import { ViewHead } from "./_shared";
 
 const statusColor: Record<string, string> = {
@@ -41,6 +42,7 @@ export function Sollicitanten() {
   const [naam, setNaam] = useState("");
   const [functie, setFunctie] = useState<string | null>(null);
   const [email, setEmail] = useState("");
+  const [domeinen, setDomeinen] = useState<string[]>([]);
   const [code, setCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -54,10 +56,11 @@ export function Sollicitanten() {
     if (!naam || !functie) return;
     setLoading(true);
     try {
-      const result = await createCandidate({ naam, email: email || undefined, functie });
+      const result = await createCandidate({ naam, email: email || undefined, functie, domeinen: domeinen.length ? domeinen : undefined });
       setCode(result.code);
       setNaam("");
       setEmail("");
+      setDomeinen([]);
       notifications.show({ message: "Sollicitant aangemaakt.", color: "campaiNavy" });
       refresh();
     } catch {
@@ -124,6 +127,16 @@ export function Sollicitanten() {
                 placeholder="sollicitant@voorbeeld.nl"
                 value={email}
                 onChange={(e) => setEmail(e.currentTarget.value)}
+              />
+              <MultiSelect
+                label="Domeinen (optioneel)"
+                description="leeg = automatisch op basis van functie"
+                placeholder="Kies domeinen"
+                data={domains}
+                value={domeinen}
+                onChange={setDomeinen}
+                searchable
+                clearable
               />
 
               <Button
