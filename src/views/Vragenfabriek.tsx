@@ -20,7 +20,7 @@ import { IconChevronDown, IconPlus } from "@tabler/icons-react";
 
 import { domains, draftQuestions as seedDrafts, roles, type DraftQuestion } from "../lib/data";
 import { recordAudit } from "../lib/learning";
-import { addQuestion, ApiError, generateQuestions, getCoverage, listQuestions, type ApprovedQuestion, type DomainCoverage } from "../lib/api";
+import { addQuestion, ApiError, generateQuestions, getCoverage, listQuestions, listFlags, resolveFlag, type ApprovedQuestion, type DomainCoverage, type QuestionFlag } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 interface Draft extends DraftQuestion {
@@ -53,6 +53,7 @@ export function Vragenfabriek() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [approvedQuestions, setApprovedQuestions] = useState<ApprovedQuestion[]>([]);
   const [coverage, setCoverage] = useState<DomainCoverage>({});
+  const [flags, setFlags] = useState<QuestionFlag[]>([]);
 
   async function refreshApproved() {
     try {
@@ -72,9 +73,28 @@ export function Vragenfabriek() {
     }
   }
 
+  async function refreshFlags() {
+    try {
+      setFlags(await listFlags());
+    } catch {
+      // silently ignore — server may not be running in dev
+    }
+  }
+
+  async function markResolved(id: string) {
+    try {
+      await resolveFlag(id);
+      notifications.show({ message: "Markering verwijderd.", color: "campaiNavy" });
+      refreshFlags();
+    } catch {
+      notifications.show({ message: "Verwijderen mislukt.", color: "red" });
+    }
+  }
+
   useEffect(() => {
     refreshApproved();
     refreshCoverage();
+    refreshFlags();
   }, []);
 
   // Nieuw-concept formulier
@@ -342,6 +362,52 @@ export function Vragenfabriek() {
               })}
             </Stack>
           </Card>
+
+          {/* Gemarkeerde vragen (vanuit het Reviewdashboard) */}
+          {flags.length > 0 && (
+            <Card withBorder padding="lg" radius="md" mt="lg" style={{ borderColor: "var(--mantine-color-campaiRed-3)" }}>
+              <Box mb="md">
+                <Text size="xs" tt="uppercase" c="campaiRed.7" lts={0.5} fw={700}>
+                  Aandacht
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Gemarkeerde vragen ({flags.length})
+                </Title>
+                <Text size="xs" c="dimmed" mt={4}>
+                  Door reviewers gemarkeerd als onjuist of twijfelachtig. Pas de vraag aan (of laat
+                  Campai het aanpassen) en vink dan af.
+                </Text>
+              </Box>
+              <Stack gap="sm">
+                {flags.map((f) => (
+                  <Card key={f.id} withBorder padding="sm" radius="md">
+                    <Group justify="space-between" align="flex-start" wrap="nowrap">
+                      <Box flex={1}>
+                        <Badge variant="light" color="gray" radius="sm" size="sm" mb={4}>
+                          {f.domain || "—"}
+                        </Badge>
+                        <Text size="sm" fw={600} c="campaiNavy.8">
+                          {f.prompt}
+                        </Text>
+                        {f.note && (
+                          <Text size="xs" c="campaiRed.7" mt={4}>
+                            Opmerking: {f.note}
+                          </Text>
+                        )}
+                        <Text size="10px" c="dimmed" mt={2}>
+                          {f.flaggedBy || "onbekend"} ·{" "}
+                          {new Date(f.flaggedAt).toLocaleDateString("nl-NL")}
+                        </Text>
+                      </Box>
+                      <Button size="compact-xs" variant="light" color="campaiLime" onClick={() => markResolved(f.id)}>
+                        Afgehandeld
+                      </Button>
+                    </Group>
+                  </Card>
+                ))}
+              </Stack>
+            </Card>
+          )}
         </Grid.Col>
 
         {/* Vragenbank */}

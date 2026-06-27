@@ -10,12 +10,14 @@ import { startAssessment, submitAssessment, AssessmentError } from './lib/assess
 import { generateCode } from './lib/codes.mjs';
 import { roles, domains, testQuestions } from './lib/assessment-content.mjs';
 import { createQuestionBank } from './lib/question-bank.mjs';
+import { createFlagStore } from './lib/flag-store.mjs';
 import { generateQuestions, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
 const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
+const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
   if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
     sendJson(response, 401, { error: 'auth_required' }); return false;
@@ -311,6 +313,25 @@ async function handleApi(request, response, url) {
     const q = await questionBank.addApproved({ domain: b.domain, type: b.type || 'Scenario', prompt: b.prompt, options: b.options, answer: b.answer, source: b.source || 'Handmatig', approvedBy: identity.email || identity.name });
     sendJson(response, 201, q); return true;
   }
+  if (url.pathname === '/api/questions/flags' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, await flagStore.listFlags()); return true;
+  }
+  if (url.pathname === '/api/questions/flags' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const b = await readRequestBody(request);
+    if (!b.prompt) { sendJson(response, 400, { error: 'prompt_vereist' }); return true; }
+    const identity = readIdentity(request);
+    const f = await flagStore.addFlag({ prompt: String(b.prompt), domain: String(b.domain || ''), note: String(b.note || ''), flaggedBy: identity.email || identity.name });
+    sendJson(response, 201, f); return true;
+  }
+  const fm = url.pathname.match(/^\/api\/questions\/flags\/([^/]+)$/);
+  if (fm && request.method === 'DELETE') {
+    if (!requireStaff(request, response)) return true;
+    await flagStore.removeFlag(decodeURIComponent(fm[1]));
+    sendJson(response, 200, { ok: true }); return true;
+  }
+
   const dm = url.pathname.match(/^\/api\/questions\/([^/]+)$/);
   if (dm && request.method === 'DELETE') {
     if (!requireStaff(request, response)) return true;

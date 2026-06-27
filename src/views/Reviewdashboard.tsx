@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Badge,
   Box,
+  Button,
   Card,
   Center,
   Divider,
@@ -16,7 +17,8 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
-import { IconShieldCheck } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconShieldCheck, IconFlag } from "@tabler/icons-react";
 
 import { roles } from "../lib/data";
 import {
@@ -24,6 +26,7 @@ import {
   type CandidateResult,
   getCandidateResult,
   listCandidates,
+  flagQuestion,
 } from "../lib/api";
 import { ViewHead } from "./_shared";
 import { learners, trainingModules } from "../lib/data";
@@ -117,6 +120,19 @@ export function Reviewdashboard({
 
   const afgerond = candidates.filter((c) => c.status === "afgerond");
   const selectedCandidate = candidates.find((c) => c.id === selectedId) ?? null;
+
+  async function flagDetail(prompt: string, domain: string) {
+    const note = window.prompt(
+      "Wat klopt er niet aan deze vraag of het juiste antwoord? (optioneel)\nDe vraag wordt gemarkeerd voor controle in de Vragenbank.",
+    );
+    if (note === null) return; // geannuleerd
+    try {
+      await flagQuestion({ prompt, domain, note });
+      notifications.show({ message: "Vraag gemarkeerd voor controle (zie Vragenbank).", color: "campaiNavy" });
+    } catch {
+      notifications.show({ message: "Markeren mislukt.", color: "red" });
+    }
+  }
 
   return (
     <>
@@ -433,14 +449,25 @@ export function Reviewdashboard({
                                 {i + 1}. {detail.prompt}
                               </Text>
                             </Box>
-                            <Badge
-                              variant="light"
-                              color={detail.correct ? "campaiLime" : "campaiRed"}
-                              radius="sm"
-                              size="sm"
-                            >
-                              {detail.correct ? "Goed" : "Fout"}
-                            </Badge>
+                            <Stack gap={6} align="flex-end">
+                              <Badge
+                                variant="light"
+                                color={detail.correct ? "campaiLime" : "campaiRed"}
+                                radius="sm"
+                                size="sm"
+                              >
+                                {detail.correct ? "Goed" : "Fout"}
+                              </Badge>
+                              <Button
+                                size="compact-xs"
+                                variant="subtle"
+                                color="campaiNavy"
+                                leftSection={<IconFlag size={13} />}
+                                onClick={() => flagDetail(detail.prompt, detail.domain)}
+                              >
+                                Markeer
+                              </Button>
+                            </Stack>
                           </Group>
                           <Stack gap={4}>
                             {detail.options.map((opt, idx) => {

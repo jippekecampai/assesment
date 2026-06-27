@@ -89,3 +89,23 @@ export const removeQuestion = async (id: string): Promise<void> => {
     throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
   }
 };
+
+export type QuestionFlag = {
+  id: string;
+  prompt: string;
+  domain: string;
+  note: string;
+  flaggedBy: string;
+  flaggedAt: string;
+};
+
+export const listFlags = () => get<QuestionFlag[]>("/api/questions/flags");
+export const flagQuestion = (input: { prompt: string; domain: string; note: string }) =>
+  post<QuestionFlag>("/api/questions/flags", input);
+export const resolveFlag = async (id: string): Promise<void> => {
+  const res = await fetch(`/api/questions/flags/${encodeURIComponent(id)}`, { method: "DELETE" });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
+  }
+};
