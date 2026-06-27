@@ -4,6 +4,8 @@ import { createServer } from "node:http";
 import { extname, join, normalize } from "node:path";
 import { createHubClient, HubError } from "./lib/hub.mjs";
 import { getUserToken } from "./lib/auth.mjs";
+import { getMe } from "./lib/hub-me.mjs";
+import { createLearningStore } from "./lib/learning-store.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
@@ -16,6 +18,7 @@ import { generateQuestions, isConfigured as aiConfigured, AiError } from './lib/
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
 const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
+const learningStore = createLearningStore({ filePath: join(root, 'data', 'learning.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
@@ -173,14 +176,35 @@ async function getHub() {
   return createHubClient({ userToken });
 }
 
+async function currentProfile() {
+  const token = await getUserToken();
+  if (!token) return null;
+  return getMe(token);
+}
+
 async function handleApi(request, response, url) {
   if (url.pathname === "/api/health") {
     sendJson(response, 200, { ok: true, mode: "campai-only" });
     return true;
   }
 
-  if (url.pathname === "/api/me") {
-    sendJson(response, 200, readIdentity(request));
+  if (url.pathname === '/api/me' && request.method === 'GET') {
+    const me = await currentProfile();
+    sendJson(response, 200, me ? { authenticated: true, ...me } : { authenticated: false });
+    return true;
+  }
+  if (url.pathname === '/api/learning/me' && request.method === 'GET') {
+    const me = await currentProfile();
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    sendJson(response, 200, await learningStore.getProgress(me.entraOid));
+    return true;
+  }
+  if (url.pathname === '/api/learning/me' && request.method === 'PUT') {
+    const me = await currentProfile();
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    const b = await readRequestBody(request);
+    const completed = Array.isArray(b.completedModules) ? b.completedModules.filter((x) => typeof x === 'string') : [];
+    sendJson(response, 200, await learningStore.saveProgress(me.entraOid, completed));
     return true;
   }
 

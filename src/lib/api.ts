@@ -25,6 +25,21 @@ async function get<T>(path: string): Promise<T> {
   if (!res.ok) throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
   return data as T;
 }
+async function put<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(path, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
+  return data as T;
+}
+
+export type MeProfile =
+  | { authenticated: false }
+  | { authenticated: true; name: string | null; email: string | null; jobTitle: string | null; entraOid: string | null; department: string | null };
+export type LearningProgress = { entraOid: string; completedModules: string[]; updatedAt?: string };
+export const getMe = () => get<MeProfile>("/api/me");
+export const getLearningProgress = () => get<LearningProgress>("/api/learning/me");
+export const saveLearningProgress = (completedModules: string[]) =>
+  put<LearningProgress>("/api/learning/me", { completedModules });
 
 export const startAssessment = (code: string) => post<StartResponse>("/api/assessment/start", { code });
 export const submitAssessment = (code: string, answers: { questionId: string; choice: number }[]) =>
