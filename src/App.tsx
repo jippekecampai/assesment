@@ -89,7 +89,7 @@ export function App() {
       <AppShell.Header>
         <Group h="100%" px="lg" justify="space-between" wrap="nowrap" gap="md">
           <Group gap="sm" wrap="nowrap">
-            <Box component="img" src={campaiLogo} alt="Campai" h={34} style={{ display: "block" }} />
+            <Box component="img" src={campaiLogo} alt="Campai" h={46} style={{ display: "block" }} />
           </Group>
           <TextInput
             placeholder="Zoeken op domein, module of kandidaat"

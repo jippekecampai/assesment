@@ -20,7 +20,7 @@ import { IconChevronDown, IconPlus } from "@tabler/icons-react";
 
 import { domains, draftQuestions as seedDrafts, roles, type DraftQuestion } from "../lib/data";
 import { recordAudit } from "../lib/learning";
-import { addQuestion, ApiError, generateQuestions, getCoverage, listQuestions, listFlags, resolveFlag, type ApprovedQuestion, type DomainCoverage, type QuestionFlag } from "../lib/api";
+import { addQuestion, ApiError, generateQuestions, getCoverage, listQuestions, listAllQuestions, listFlags, resolveFlag, type ApprovedQuestion, type BankQuestion, type DomainCoverage, type QuestionFlag } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 interface Draft extends DraftQuestion {
@@ -54,6 +54,9 @@ export function Vragenfabriek() {
   const [approvedQuestions, setApprovedQuestions] = useState<ApprovedQuestion[]>([]);
   const [coverage, setCoverage] = useState<DomainCoverage>({});
   const [flags, setFlags] = useState<QuestionFlag[]>([]);
+  const [allQuestions, setAllQuestions] = useState<BankQuestion[]>([]);
+  const [bankDomain, setBankDomain] = useState<string>("Alle");
+  const [openBankId, setOpenBankId] = useState<string | null>(null);
 
   async function refreshApproved() {
     try {
@@ -81,6 +84,14 @@ export function Vragenfabriek() {
     }
   }
 
+  async function refreshAll() {
+    try {
+      setAllQuestions(await listAllQuestions());
+    } catch {
+      // silently ignore — server may not be running in dev
+    }
+  }
+
   async function markResolved(id: string) {
     try {
       await resolveFlag(id);
@@ -95,6 +106,7 @@ export function Vragenfabriek() {
     refreshApproved();
     refreshCoverage();
     refreshFlags();
+    refreshAll();
   }, []);
 
   // Nieuw-concept formulier
@@ -153,6 +165,7 @@ export function Vragenfabriek() {
       notifications.show({ message: "Vraag toegevoegd aan goedgekeurde bank.", color: "campaiLime" });
       await refreshApproved();
       await refreshCoverage();
+      await refreshAll();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Onbekende fout";
       notifications.show({ message: `Opslaan mislukt: ${msg}`, color: "red" });
@@ -514,6 +527,145 @@ export function Vragenfabriek() {
                   </Card>
                 );
               })}
+            </Stack>
+          </Card>
+        </Grid.Col>
+
+        {/* Alle vragen per domein (gedeelde kennisbank) */}
+        <Grid.Col span={12}>
+          <Card withBorder padding="lg" radius="md">
+            <Group justify="space-between" align="flex-end" wrap="wrap" mb="md" gap="md">
+              <Box>
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                  Kennisbank · gedeeld voor recruitment én Skills Academy
+                </Text>
+                <Title order={3} fz="lg" c="campaiNavy.7">
+                  Alle vragen per domein ({allQuestions.length})
+                </Title>
+                <Text size="xs" c="dimmed" mt={4}>
+                  De volledige vragenbank (seed + goedgekeurd). Deze vragen voeden zowel de
+                  sollicitant-assessments als de oefenstof in de Skills Academy.
+                </Text>
+              </Box>
+              <Select
+                label="Filter op domein"
+                data={["Alle", ...domains]}
+                value={bankDomain}
+                onChange={(v) => v && setBankDomain(v)}
+                radius="md"
+                size="sm"
+                w={260}
+                allowDeselect={false}
+                searchable
+              />
+            </Group>
+
+            <Stack gap="xs">
+              {(bankDomain === "Alle" ? domains : [bankDomain]).map((domain) => {
+                const qs = allQuestions.filter((q) => q.domain === domain);
+                if (qs.length === 0) return null;
+                return (
+                  <Box key={domain}>
+                    <Group gap="sm" mb={4} mt="xs">
+                      <Text size="sm" fw={700} c="campaiNavy.8">
+                        {domain}
+                      </Text>
+                      <Badge variant="light" color="campaiNavy" radius="sm" size="sm">
+                        {qs.length}
+                      </Badge>
+                    </Group>
+                    <Stack gap={6}>
+                      {qs.map((q) => {
+                        const open = openBankId === q.id;
+                        return (
+                          <Card key={q.id} withBorder padding="sm" radius="md">
+                            <Group justify="space-between" align="flex-start" wrap="nowrap">
+                              <Box flex={1}>
+                                <Group gap={6} mb={2}>
+                                  <Badge variant="light" color="gray" radius="sm" size="xs">
+                                    {q.type}
+                                  </Badge>
+                                  <Badge
+                                    variant="light"
+                                    color={q.origin === "approved" ? "campaiLime" : "campaiCyan"}
+                                    radius="sm"
+                                    size="xs"
+                                  >
+                                    {q.source}
+                                  </Badge>
+                                </Group>
+                                <Anchor
+                                  component="button"
+                                  fw={600}
+                                  size="sm"
+                                  c="campaiNavy.7"
+                                  ta="left"
+                                  display="block"
+                                  onClick={() => setOpenBankId(open ? null : q.id)}
+                                >
+                                  {q.prompt}
+                                </Anchor>
+                              </Box>
+                              <Button
+                                variant="subtle"
+                                color="campaiNavy"
+                                size="compact-xs"
+                                rightSection={<IconChevronDown size={14} />}
+                                onClick={() => setOpenBankId(open ? null : q.id)}
+                              >
+                                {open ? "Verberg" : "Antwoorden"}
+                              </Button>
+                            </Group>
+                            {open && (
+                              <Stack gap={4} mt="sm">
+                                {q.options.map((opt, i) => {
+                                  const correct = i === q.answer;
+                                  return (
+                                    <Group
+                                      key={i}
+                                      gap="xs"
+                                      wrap="nowrap"
+                                      style={{
+                                        background: correct
+                                          ? "var(--mantine-color-campaiLime-0, #f4f7d9)"
+                                          : "transparent",
+                                        borderLeft: `3px solid ${
+                                          correct
+                                            ? "var(--mantine-color-campaiLime-5, #b6c200)"
+                                            : "var(--mantine-color-gray-3, #dee2e6)"
+                                        }`,
+                                        borderRadius: 6,
+                                        padding: "5px 9px",
+                                      }}
+                                    >
+                                      <Text size="xs" fw={700} c="dimmed" w={14}>
+                                        {String.fromCharCode(65 + i)}
+                                      </Text>
+                                      <Text size="sm" flex={1}>
+                                        {opt}
+                                      </Text>
+                                      {correct && (
+                                        <Badge variant="filled" color="campaiLime" radius="sm" size="xs">
+                                          Juist
+                                        </Badge>
+                                      )}
+                                    </Group>
+                                  );
+                                })}
+                              </Stack>
+                            )}
+                          </Card>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                );
+              })}
+              {allQuestions.length === 0 && (
+                <Text size="sm" c="dimmed">
+                  Nog geen vragen geladen (start de server of voeg vragen toe).
+                </Text>
+              )}
             </Stack>
           </Card>
         </Grid.Col>

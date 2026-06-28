@@ -91,6 +91,18 @@ export type DomainCoverage = Record<string, { seed: number; approved: number; to
 
 export const getCoverage = () => get<DomainCoverage>("/api/questions/coverage");
 export const listQuestions = () => get<ApprovedQuestion[]>("/api/questions");
+
+export type BankQuestion = {
+  id: string;
+  domain: string;
+  type: string;
+  prompt: string;
+  options: string[];
+  answer: number;
+  origin: "seed" | "approved";
+  source: string;
+};
+export const listAllQuestions = () => get<BankQuestion[]>("/api/questions/all");
 export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
   post<ApprovedQuestion>("/api/questions", q);
 export type DraftQuestionInput = { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string };

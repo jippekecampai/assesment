@@ -325,6 +325,19 @@ async function handleApi(request, response, url) {
     sendJson(response, 200, coverage); return true;
   }
 
+  if (url.pathname === '/api/questions/all' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const approved = await questionBank.listApproved();
+    const seed = testQuestions.map((q, i) => ({
+      id: q.id ?? `seed-${i}`, domain: q.domain, type: q.type, prompt: q.prompt,
+      options: q.options, answer: q.answer, origin: 'seed', source: 'Seed',
+    }));
+    const appr = approved.map((q) => ({
+      id: q.id, domain: q.domain, type: q.type, prompt: q.prompt,
+      options: q.options, answer: q.answer, origin: 'approved', source: q.source || 'Goedgekeurd',
+    }));
+    sendJson(response, 200, [...seed, ...appr]); return true;
+  }
   if (url.pathname === '/api/questions' && request.method === 'GET') {
     if (!requireStaff(request, response)) return true;
     sendJson(response, 200, await questionBank.listApproved()); return true;
