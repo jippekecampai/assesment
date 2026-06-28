@@ -307,13 +307,19 @@ async function handleApi(request, response, url) {
   if (url.pathname === '/api/assessment/start' && request.method === 'POST') {
     const body = await readRequestBody(request);
     try { sendJson(response, 200, await startAssessment(candidateStore, String(body.code || ''), questionBank)); }
-    catch (e) { sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' }); }
+    catch (e) {
+      if (!(e instanceof AssessmentError)) console.error('assessment/start fout:', e);
+      sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error', detail: e instanceof AssessmentError ? undefined : String(e?.message || e) });
+    }
     return true;
   }
   if (url.pathname === '/api/assessment/submit' && request.method === 'POST') {
     const body = await readRequestBody(request);
     try { sendJson(response, 200, await submitAssessment(candidateStore, String(body.code || ''), Array.isArray(body.answers) ? body.answers : [])); }
-    catch (e) { sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' }); }
+    catch (e) {
+      if (!(e instanceof AssessmentError)) console.error('assessment/submit fout:', e);
+      sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error', detail: e instanceof AssessmentError ? undefined : String(e?.message || e) });
+    }
     return true;
   }
 
