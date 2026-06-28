@@ -18,7 +18,7 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconShieldCheck, IconFlag } from "@tabler/icons-react";
+import { IconShieldCheck, IconFlag, IconDownload } from "@tabler/icons-react";
 
 import { roles } from "../lib/data";
 import {
@@ -55,6 +55,69 @@ const STATUS_COLORS: Record<string, string> = {
   bezig: "campaiCyan",
   afgerond: "campaiLime",
 };
+
+function esc(s: string): string {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+}
+
+// Bouwt een printbaar (PDF) assessmentrapport en opent het in een nieuw venster.
+function exportReport(candidate: Candidate, result: CandidateResult, roleName: string) {
+  const goed = result.details.filter((d) => d.correct).length;
+  const datum = new Date(result.ingediendOp).toLocaleDateString("nl-NL", { day: "2-digit", month: "long", year: "numeric" });
+  const domeinRows = Object.entries(result.domeinScores)
+    .sort((a, b) => b[1] - a[1])
+    .map(([d, s]) => `<tr><td>${esc(d)}</td><td class="num">${s}</td></tr>`)
+    .join("");
+  const vragen = result.details
+    .map((d, i) => {
+      const opts = d.options
+        .map((o, idx) => {
+          const correct = idx === d.correctIndex;
+          const chosen = idx === d.chosenIndex;
+          const tag = correct ? ' <b style="color:#5b6b00">✓ juist</b>' : chosen ? ' <b style="color:#c92a2a">gekozen</b>' : "";
+          const bg = correct ? "background:#f4f7d9" : chosen ? "background:#fbe6e6" : "";
+          return `<li style="${bg}">${String.fromCharCode(65 + idx)}. ${esc(o)}${tag}</li>`;
+        })
+        .join("");
+      return `<div class="q"><p class="qp"><span class="dom">${esc(d.domain)}</span> ${i + 1}. ${esc(d.prompt)} ${d.correct ? '<span class="ok">goed</span>' : '<span class="fout">fout</span>'}</p><ol>${opts}</ol></div>`;
+    })
+    .join("");
+  const html = `<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Assessmentrapport ${esc(candidate.naam)}</title>
+  <style>
+    body{font-family:Inter,Arial,sans-serif;color:#1a2b42;margin:32px;max-width:820px}
+    h1{color:#003d6b;margin:0 0 4px} .sub{color:#667;margin:0 0 20px}
+    .kpis{display:flex;gap:24px;margin:16px 0}
+    .kpi{border:1px solid #dde;border-radius:10px;padding:12px 16px}
+    .kpi .v{font-size:26px;font-weight:800;color:#003d6b} .kpi .l{font-size:11px;text-transform:uppercase;color:#778}
+    table{border-collapse:collapse;width:100%;margin:8px 0 24px} td{border-bottom:1px solid #eee;padding:6px 8px} .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+    h2{color:#003d6b;font-size:16px;margin:20px 0 8px}
+    .q{margin:0 0 14px;page-break-inside:avoid} .qp{font-weight:600;margin:0 0 4px} .dom{font-size:11px;color:#667;background:#eef;padding:1px 6px;border-radius:4px;margin-right:6px}
+    ol{margin:4px 0 0 18px} li{padding:3px 6px;border-radius:4px;margin:2px 0;list-style:upper-alpha}
+    .ok{color:#5b6b00;font-size:12px} .fout{color:#c92a2a;font-size:12px}
+    .foot{margin-top:28px;color:#99a;font-size:11px;border-top:1px solid #eee;padding-top:8px}
+    @media print{body{margin:12mm}}
+  </style></head><body>
+    <h1>Assessmentrapport</h1>
+    <p class="sub">${esc(candidate.naam)} — ${esc(roleName)} · ingeleverd ${esc(datum)}</p>
+    <div class="kpis">
+      <div class="kpi"><div class="v">${result.totaalScore}</div><div class="l">Totaalscore</div></div>
+      <div class="kpi"><div class="v">${result.roleFit.score}</div><div class="l">Rol-fit</div></div>
+      <div class="kpi"><div class="v">${esc(result.roleFit.state)}</div><div class="l">Oordeel</div></div>
+      <div class="kpi"><div class="v">${goed}/${result.details.length}</div><div class="l">Goed</div></div>
+    </div>
+    <h2>Score per domein</h2>
+    <table>${domeinRows}</table>
+    <h2>Antwoorden per vraag</h2>
+    ${vragen}
+    <p class="foot">Campai Assessment · vertrouwelijk · gegenereerd ${esc(new Date().toLocaleString("nl-NL"))}. Rol-fit is een hulpmiddel, geen automatisch besluit.</p>
+    <script>window.onload=function(){window.print();}</script>
+  </body></html>`;
+  const w = window.open("", "_blank");
+  if (!w) return false;
+  w.document.write(html);
+  w.document.close();
+  return true;
+}
 
 export function Reviewdashboard({ search }: { search: string }) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -250,9 +313,29 @@ export function Reviewdashboard({ search }: { search: string }) {
                     selectedCandidate.functie}
                 </Text>
               </Box>
-              <Badge variant="light" color="campaiLime" radius="sm">
-                Afgerond
-              </Badge>
+              <Group gap="sm">
+                {result && (
+                  <Button
+                    size="xs"
+                    radius="md"
+                    variant="light"
+                    color="campaiNavy"
+                    leftSection={<IconDownload size={14} />}
+                    onClick={() =>
+                      exportReport(
+                        selectedCandidate,
+                        result,
+                        roles.find((r) => r.id === selectedCandidate.functie)?.name ?? selectedCandidate.functie,
+                      )
+                    }
+                  >
+                    Exporteer rapport
+                  </Button>
+                )}
+                <Badge variant="light" color="campaiLime" radius="sm">
+                  Afgerond
+                </Badge>
+              </Group>
             </Group>
 
             {resultLoading && (
