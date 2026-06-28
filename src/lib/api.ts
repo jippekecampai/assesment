@@ -120,6 +120,31 @@ export type CoachingEntry = {
   createdBy: string;
   createdAt: string;
 };
+export type DevGoal = {
+  id: string;
+  title: string;
+  metric: string;
+  linkedDomain: string;
+  progress: number;
+  status: "todo" | "progress" | "completed";
+  due: string;
+  createdAt: string;
+};
+export type GoalsRecord = { entraOid: string; aspiration: string; goals: DevGoal[] };
+export const getGoals = () => get<GoalsRecord>("/api/goals");
+export const saveAspiration = (aspiration: string) =>
+  put<GoalsRecord>("/api/goals/aspiration", { aspiration });
+export const addGoal = (input: { title: string; metric: string; linkedDomain: string; due: string }) =>
+  post<GoalsRecord>("/api/goals", input);
+export const updateGoal = (id: string, patch: { progress?: number; status?: string }) =>
+  put<GoalsRecord>(`/api/goals/${encodeURIComponent(id)}`, patch);
+export const removeGoal = async (id: string): Promise<GoalsRecord> => {
+  const res = await fetch(`/api/goals/${encodeURIComponent(id)}`, { method: "DELETE" });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
+  return data as GoalsRecord;
+};
+
 export type PolicyAcks = { entraOid: string; acks: Record<string, string> };
 export const getPolicyAcks = () => get<PolicyAcks>("/api/policy/acks");
 export const ackPolicy = (policyId: string) => post<PolicyAcks>("/api/policy/acks", { policyId });

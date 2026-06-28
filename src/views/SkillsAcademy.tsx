@@ -9,11 +9,14 @@ import {
   Card,
   Grid,
   Group,
+  ActionIcon,
   Modal,
+  NumberInput,
   Progress,
   Radio,
   ScrollArea,
   Select,
+  TextInput,
   SimpleGrid,
   Tabs,
   Stack,
@@ -32,6 +35,7 @@ import {
   IconInfoCircle,
   IconPlus,
   IconTargetArrow,
+  IconTrash,
   IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -42,9 +46,15 @@ import {
   listAllQuestions,
   getPracticeResults,
   savePracticeResult,
+  getGoals,
+  saveAspiration,
+  addGoal,
+  updateGoal,
+  removeGoal,
   type MeProfile,
   type BankQuestion,
   type PracticeResult,
+  type DevGoal,
 } from "../lib/api";
 import {
   domains,
@@ -416,6 +426,9 @@ export function SkillsAcademy() {
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>
+
+        {/* Eigen ontwikkeldoelen + toekomstwens */}
+        <MyGoals />
 
         {/* Skill gap + tasks */}
         <Grid>
@@ -1001,3 +1014,147 @@ function PracticeQuiz() {
 }
 
 
+
+// Eigen ontwikkeldoelen + toekomstwens van de ingelogde medewerker (op entraOid).
+function MyGoals() {
+  const [aspiration, setAspirationText] = useState("");
+  const [goals, setGoals] = useState<DevGoal[]>([]);
+  const [authed, setAuthed] = useState(true);
+  const [title, setTitle] = useState("");
+  const [metric, setMetric] = useState("");
+  const [linkedDomain, setLinkedDomain] = useState<string | null>(null);
+  const [due, setDue] = useState("");
+  const [savingAsp, setSavingAsp] = useState(false);
+
+  useEffect(() => {
+    getGoals()
+      .then((r) => { setGoals(r.goals || []); setAspirationText(r.aspiration || ""); setAuthed(true); })
+      .catch(() => setAuthed(false));
+  }, []);
+
+  async function saveAsp() {
+    setSavingAsp(true);
+    try { const r = await saveAspiration(aspiration); setGoals(r.goals || []); notifications.show({ message: "Toekomstwens opgeslagen.", color: "campaiNavy" }); }
+    catch { notifications.show({ message: "Opslaan mislukt.", color: "red" }); }
+    finally { setSavingAsp(false); }
+  }
+  async function add() {
+    if (!title) return;
+    try {
+      const r = await addGoal({ title, metric, linkedDomain: linkedDomain || "", due });
+      setGoals(r.goals || []); setTitle(""); setMetric(""); setLinkedDomain(null); setDue("");
+      notifications.show({ message: "Doel toegevoegd.", color: "campaiNavy" });
+    } catch { notifications.show({ message: "Toevoegen mislukt.", color: "red" }); }
+  }
+  async function patch(id: string, p: { progress?: number; status?: string }) {
+    try { const r = await updateGoal(id, p); setGoals(r.goals || []); }
+    catch { notifications.show({ message: "Bijwerken mislukt.", color: "red" }); }
+  }
+  async function del(id: string) {
+    try { const r = await removeGoal(id); setGoals(r.goals || []); }
+    catch { notifications.show({ message: "Verwijderen mislukt.", color: "red" }); }
+  }
+
+  if (!authed) {
+    return (
+      <Alert variant="light" color="gray" icon={<IconInfoCircle size={16} />} radius="md">
+        Log in via SSO (live omgeving) om je eigen ontwikkeldoelen en toekomstwens te beheren.
+      </Alert>
+    );
+  }
+
+  return (
+    <Card withBorder padding="lg" radius="md">
+      <Box mb="md">
+        <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+          Mijn ontwikkeling
+        </Text>
+        <Title order={3} fz="lg" c="campaiNavy.7">
+          Ontwikkeldoelen &amp; toekomstwens
+        </Title>
+      </Box>
+
+      <Textarea
+        label="Waar wil ik naartoe? (toekomstwens)"
+        placeholder="Bv. doorgroeien naar Cloud Engineer, meer Azure-projecten, security-verdieping…"
+        value={aspiration}
+        onChange={(e) => setAspirationText(e.currentTarget.value)}
+        autosize
+        minRows={2}
+        radius="md"
+        mb="xs"
+      />
+      <Group mb="lg">
+        <Button size="xs" radius="md" color="campaiNavy" variant="light" onClick={saveAsp} loading={savingAsp}>
+          Toekomstwens opslaan
+        </Button>
+      </Group>
+
+      <Card withBorder padding="sm" radius="md" bg="gray.0" mb="md">
+        <Stack gap="xs">
+          <TextInput label="Nieuw doel" placeholder="Bv. Maak een herbruikbaar incident-runbook" value={title} onChange={(e) => setTitle(e.currentTarget.value)} size="xs" radius="md" />
+          <TextInput label="Hoe meet je succes?" placeholder="Bv. gereviewd door senior + toegepast op 2 cases" value={metric} onChange={(e) => setMetric(e.currentTarget.value)} size="xs" radius="md" />
+          <Group grow>
+            <Select label="Domein (optioneel)" data={domains} value={linkedDomain} onChange={setLinkedDomain} size="xs" radius="md" searchable clearable />
+            <TextInput label="Streeftermijn" placeholder="Bv. Q3" value={due} onChange={(e) => setDue(e.currentTarget.value)} size="xs" radius="md" />
+          </Group>
+          <Button size="xs" radius="md" color="campaiNavy" leftSection={<IconPlus size={14} />} onClick={add} disabled={!title}>
+            Doel toevoegen
+          </Button>
+        </Stack>
+      </Card>
+
+      {goals.length === 0 ? (
+        <Text size="sm" c="dimmed">Nog geen ontwikkeldoelen — voeg er hierboven een toe.</Text>
+      ) : (
+        <Stack gap="sm">
+          {goals.map((g) => (
+            <Card key={g.id} withBorder padding="sm" radius="md">
+              <Group justify="space-between" align="flex-start" wrap="nowrap" mb={4}>
+                <Box flex={1}>
+                  <Text size="sm" fw={600} c="campaiNavy.8">{g.title}</Text>
+                  {g.metric && <Text size="xs" c="dimmed">{g.metric}</Text>}
+                </Box>
+                <Group gap={6} wrap="nowrap">
+                  {g.linkedDomain && <Badge variant="light" color="gray" radius="sm" size="xs">{shortDomain(g.linkedDomain)}</Badge>}
+                  {g.due && <Badge variant="outline" color="campaiNavy" radius="sm" size="xs">{g.due}</Badge>}
+                  <ActionIcon variant="subtle" color="campaiRed" size="sm" onClick={() => del(g.id)} aria-label="Verwijder doel">
+                    <IconTrash size={14} />
+                  </ActionIcon>
+                </Group>
+              </Group>
+              <Group gap="sm" wrap="nowrap" align="flex-end">
+                <NumberInput
+                  label="Voortgang %"
+                  value={g.progress}
+                  onChange={(v) => patch(g.id, { progress: typeof v === "number" ? v : 0 })}
+                  min={0}
+                  max={100}
+                  step={10}
+                  size="xs"
+                  radius="md"
+                  w={110}
+                />
+                <Select
+                  label="Status"
+                  data={[
+                    { value: "todo", label: "To do" },
+                    { value: "progress", label: "In progress" },
+                    { value: "completed", label: "Completed" },
+                  ]}
+                  value={g.status}
+                  onChange={(v) => v && patch(g.id, { status: v })}
+                  size="xs"
+                  radius="md"
+                  w={150}
+                  allowDeselect={false}
+                />
+                <Progress flex={1} value={g.progress} size="sm" radius="xl" color={g.status === "completed" ? "campaiLime" : "campaiCyan"} />
+              </Group>
+            </Card>
+          ))}
+        </Stack>
+      )}
+    </Card>
+  );
+}

@@ -9,6 +9,7 @@ import { createLearningStore } from "./lib/learning-store.mjs";
 import { createPracticeStore } from "./lib/practice-store.mjs";
 import { createCoachingStore } from "./lib/coaching-store.mjs";
 import { createPolicyStore } from "./lib/policy-store.mjs";
+import { createGoalsStore } from "./lib/goals-store.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
@@ -25,6 +26,7 @@ const learningStore = createLearningStore({ filePath: join(root, 'data', 'learni
 const practiceStore = createPracticeStore({ filePath: join(root, 'data', 'practice.json') });
 const coachingStore = createCoachingStore({ filePath: join(root, 'data', 'coaching.json') });
 const policyStore = createPolicyStore({ filePath: join(root, 'data', 'policy-acks.json') });
+const goalsStore = createGoalsStore({ filePath: join(root, 'data', 'goals.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
@@ -275,6 +277,44 @@ async function handleApi(request, response, url) {
     catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
     if (!b.policyId) { sendJson(response, 400, { error: 'policyId_vereist' }); return true; }
     sendJson(response, 200, await policyStore.ack(me.entraOid, String(b.policyId))); return true;
+  }
+
+  // Eigen ontwikkeldoelen + toekomstwens (medewerker, op entraOid)
+  if (url.pathname === '/api/goals' && request.method === 'GET') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    sendJson(response, 200, await goalsStore.get(me.entraOid)); return true;
+  }
+  if (url.pathname === '/api/goals/aspiration' && request.method === 'PUT') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    let b; try { b = await readRequestBody(request); } catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    sendJson(response, 200, await goalsStore.setAspiration(me.entraOid, String(b.aspiration || ''))); return true;
+  }
+  if (url.pathname === '/api/goals' && request.method === 'POST') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    let b; try { b = await readRequestBody(request); } catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    if (!b.title) { sendJson(response, 400, { error: 'titel_vereist' }); return true; }
+    sendJson(response, 201, await goalsStore.addGoal(me.entraOid, {
+      title: String(b.title), metric: String(b.metric || ''),
+      linkedDomain: domains.includes(b.linkedDomain) ? b.linkedDomain : '', due: String(b.due || ''),
+    })); return true;
+  }
+  const goalId = url.pathname.match(/^\/api\/goals\/([^/]+)$/);
+  if (goalId && request.method === 'PUT') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    let b; try { b = await readRequestBody(request); } catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    const patch = {};
+    if (Number.isInteger(b.progress)) patch.progress = Math.min(100, Math.max(0, b.progress));
+    if (['todo', 'progress', 'completed'].includes(b.status)) patch.status = b.status;
+    sendJson(response, 200, await goalsStore.updateGoal(me.entraOid, decodeURIComponent(goalId[1]), patch)); return true;
+  }
+  if (goalId && request.method === 'DELETE') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    sendJson(response, 200, await goalsStore.removeGoal(me.entraOid, decodeURIComponent(goalId[1]))); return true;
   }
 
   // Coaching/1:1's per medewerker (manager, staff-only)
