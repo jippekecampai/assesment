@@ -471,11 +471,11 @@ async function handleApi(request, response, url) {
     const approved = await questionBank.listApproved();
     const seed = testQuestions.map((q, i) => ({
       id: q.id ?? `seed-${i}`, domain: q.domain, type: q.type, prompt: q.prompt,
-      options: q.options, answer: q.answer, origin: 'seed', source: 'Seed',
+      options: q.options, answer: q.answer, origin: 'seed', source: 'Seed', uitleg: q.uitleg || '',
     }));
     const appr = approved.map((q) => ({
       id: q.id, domain: q.domain, type: q.type, prompt: q.prompt,
-      options: q.options, answer: q.answer, origin: 'approved', source: q.source || 'Goedgekeurd',
+      options: q.options, answer: q.answer, origin: 'approved', source: q.source || 'Goedgekeurd', uitleg: q.uitleg || '',
     }));
     sendJson(response, 200, [...seed, ...appr]); return true;
   }

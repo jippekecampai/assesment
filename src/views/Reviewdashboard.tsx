@@ -79,7 +79,8 @@ function exportReport(candidate: Candidate, result: CandidateResult, roleName: s
           return `<li style="${bg}">${String.fromCharCode(65 + idx)}. ${esc(o)}${tag}</li>`;
         })
         .join("");
-      return `<div class="q"><p class="qp"><span class="dom">${esc(d.domain)}</span> ${i + 1}. ${esc(d.prompt)} ${d.correct ? '<span class="ok">goed</span>' : '<span class="fout">fout</span>'}</p><ol>${opts}</ol></div>`;
+      const uitleg = d.uitleg ? `<p class="uitleg"><b>Uitleg:</b> ${esc(d.uitleg)}</p>` : "";
+      return `<div class="q"><p class="qp"><span class="dom">${esc(d.domain)}</span> ${i + 1}. ${esc(d.prompt)} ${d.correct ? '<span class="ok">goed</span>' : '<span class="fout">fout</span>'}</p><ol>${opts}</ol>${uitleg}</div>`;
     })
     .join("");
   const html = `<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Assessmentrapport ${esc(candidate.naam)}</title>
@@ -94,6 +95,7 @@ function exportReport(candidate: Candidate, result: CandidateResult, roleName: s
     .q{margin:0 0 14px;page-break-inside:avoid} .qp{font-weight:600;margin:0 0 4px} .dom{font-size:11px;color:#667;background:#eef;padding:1px 6px;border-radius:4px;margin-right:6px}
     ol{margin:4px 0 0 18px} li{padding:3px 6px;border-radius:4px;margin:2px 0;list-style:upper-alpha}
     .ok{color:#5b6b00;font-size:12px} .fout{color:#c92a2a;font-size:12px}
+    .uitleg{font-size:12px;color:#556;margin:4px 0 0;padding:6px 8px;background:#f5f7fa;border-radius:6px}
     .foot{margin-top:28px;color:#99a;font-size:11px;border-top:1px solid #eee;padding-top:8px}
     @media print{body{margin:12mm}}
   </style></head><body>
@@ -522,6 +524,17 @@ export function Reviewdashboard({ search }: { search: string }) {
                               <Text size="xs" c="campaiRed.7" fw={600}>
                                 Niet beantwoord
                               </Text>
+                            )}
+                            {detail.uitleg && (
+                              <Box
+                                mt={4}
+                                p="xs"
+                                style={{ background: "var(--mantine-color-gray-0)", borderRadius: 6 }}
+                              >
+                                <Text size="xs" c="dimmed">
+                                  <strong>Uitleg:</strong> {detail.uitleg}
+                                </Text>
+                              </Box>
                             )}
                           </Stack>
                         </Card>

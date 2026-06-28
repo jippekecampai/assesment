@@ -38,9 +38,13 @@ test('onbekende rol gooit', () => {
   assert.throws(() => selectQuestionsForRole('bestaat-niet'));
 });
 
-test('toClientQuestion verwijdert de antwoordsleutel', () => {
+test('toClientQuestion verwijdert de antwoordsleutel én de uitleg', () => {
   const qs = selectQuestionsForRole('servicedesk', []);
-  if (qs.length) { const c = toClientQuestion(qs[0]); assert.ok(!('answer' in c)); }
+  if (qs.length) {
+    const c = toClientQuestion(qs[0]);
+    assert.ok(!('answer' in c), 'answer mag niet naar de kandidaat');
+    assert.ok(!('uitleg' in c), 'uitleg mag niet naar de kandidaat (verraadt het antwoord)');
+  }
 });
 
 test('selectQuestionsForRole respecteert domains-override', () => {

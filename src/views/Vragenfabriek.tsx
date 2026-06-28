@@ -660,6 +660,13 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
                                     </Group>
                                   );
                                 })}
+                                {q.uitleg && (
+                                  <Box mt={2} p="xs" style={{ background: "var(--mantine-color-gray-0)", borderRadius: 6 }}>
+                                    <Text size="xs" c="dimmed">
+                                      <strong>Uitleg:</strong> {q.uitleg}
+                                    </Text>
+                                  </Box>
+                                )}
                               </Stack>
                             )}
                           </Card>

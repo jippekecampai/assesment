@@ -52,6 +52,7 @@ export type GradeDetail = {
   chosenIndex: number;
   correctIndex: number;
   correct: boolean;
+  uitleg?: string;
 };
 
 export type CandidateResult = {
@@ -101,6 +102,7 @@ export type BankQuestion = {
   answer: number;
   origin: "seed" | "approved";
   source: string;
+  uitleg?: string;
 };
 export const listAllQuestions = () => get<BankQuestion[]>("/api/questions/all");
 
