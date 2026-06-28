@@ -120,6 +120,10 @@ export type CoachingEntry = {
   createdBy: string;
   createdAt: string;
 };
+export type PolicyAcks = { entraOid: string; acks: Record<string, string> };
+export const getPolicyAcks = () => get<PolicyAcks>("/api/policy/acks");
+export const ackPolicy = (policyId: string) => post<PolicyAcks>("/api/policy/acks", { policyId });
+
 export const listCoaching = (learnerId: string) =>
   get<CoachingEntry[]>(`/api/coaching/${encodeURIComponent(learnerId)}`);
 export const addCoaching = (

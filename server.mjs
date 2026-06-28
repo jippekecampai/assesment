@@ -8,6 +8,7 @@ import { getMe } from "./lib/hub-me.mjs";
 import { createLearningStore } from "./lib/learning-store.mjs";
 import { createPracticeStore } from "./lib/practice-store.mjs";
 import { createCoachingStore } from "./lib/coaching-store.mjs";
+import { createPolicyStore } from "./lib/policy-store.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
@@ -23,6 +24,7 @@ const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.js
 const learningStore = createLearningStore({ filePath: join(root, 'data', 'learning.json') });
 const practiceStore = createPracticeStore({ filePath: join(root, 'data', 'practice.json') });
 const coachingStore = createCoachingStore({ filePath: join(root, 'data', 'coaching.json') });
+const policyStore = createPolicyStore({ filePath: join(root, 'data', 'policy-acks.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
@@ -257,6 +259,22 @@ async function handleApi(request, response, url) {
     }
     sendJson(response, 200, await practiceStore.addResult(me.entraOid, { domain: b.domain, score: b.score, total: b.total }));
     return true;
+  }
+
+  // Beleid/AI-geletterdheid: bevestiging "gelezen & begrepen" per medewerker (ISO 42001)
+  if (url.pathname === '/api/policy/acks' && request.method === 'GET') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    sendJson(response, 200, await policyStore.get(me.entraOid)); return true;
+  }
+  if (url.pathname === '/api/policy/acks' && request.method === 'POST') {
+    const me = await currentProfile(request);
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    let b;
+    try { b = await readRequestBody(request); }
+    catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    if (!b.policyId) { sendJson(response, 400, { error: 'policyId_vereist' }); return true; }
+    sendJson(response, 200, await policyStore.ack(me.entraOid, String(b.policyId))); return true;
   }
 
   // Coaching/1:1's per medewerker (manager, staff-only)
