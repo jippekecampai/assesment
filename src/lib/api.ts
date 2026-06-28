@@ -83,6 +83,7 @@ export type ApprovedQuestion = {
   prompt: string;
   options: string[];
   answer: number;
+  uitleg?: string;
   source: string;
   approvedBy: string;
   approvedAt: string;
@@ -164,9 +165,9 @@ export const removeCoaching = async (learnerId: string, id: string): Promise<voi
     throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
   }
 };
-export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
+export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; uitleg?: string; source?: string }) =>
   post<ApprovedQuestion>("/api/questions", q);
-export type DraftQuestionInput = { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string };
+export type DraftQuestionInput = { domain: string; type: string; prompt: string; options: string[]; answer: number; uitleg?: string; source?: string };
 export const generateQuestions = (domain: string, count: number) =>
   post<DraftQuestionInput[]>("/api/questions/generate", { domain, count });
 

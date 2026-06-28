@@ -27,6 +27,7 @@ interface Draft extends DraftQuestion {
   type?: string;
   options?: string[];
   answer?: number;
+  uitleg?: string;
 }
 
 const questionTypes = [
@@ -115,6 +116,7 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
   const [fType, setFType] = useState(questionTypes[0]);
   const [fSource, setFSource] = useState("");
   const [fPrompt, setFPrompt] = useState("");
+  const [fUitleg, setFUitleg] = useState("");
 
   // Genereer of importeer
   const [genDomain, setGenDomain] = useState(domains[0]);
@@ -131,12 +133,14 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
       prompt: fPrompt || "Conceptvraag wacht op senior review.",
       options: defaultDraftOptions(),
       answer: 1,
+      uitleg: fUitleg,
     };
     setDrafts((prev) => [next, ...prev]);
     setActiveIndex(0);
     recordAudit("Conceptvraag toegevoegd", `${fDomain} / ${fRole}`);
     setFSource("");
     setFPrompt("");
+    setFUitleg("");
     notifications.show({ message: "Conceptvraag toegevoegd voor review.", color: "campaiNavy" });
   }
 
@@ -159,6 +163,7 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
         prompt: d.prompt,
         options: d.options || defaultDraftOptions(),
         answer: Number.isInteger(d.answer) ? d.answer! : 1,
+        uitleg: d.uitleg || "",
         source: "Handmatig",
       });
       recordAudit("Conceptvraag goedgekeurd naar server-bank", `${d.domain} / ${d.role}`);
@@ -184,6 +189,7 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
         prompt: r.prompt,
         options: r.options,
         answer: r.answer,
+        uitleg: r.uitleg || "",
       }));
       setDrafts((prev) => [...newDrafts, ...prev]);
       setActiveIndex(0);
@@ -237,6 +243,7 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
           prompt: item.prompt,
           options: item.options,
           answer: item.answer,
+          uitleg: typeof item.uitleg === "string" ? item.uitleg : "",
         });
       } else {
         skipped++;
@@ -290,6 +297,14 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
                 rows={4}
                 value={fPrompt}
                 onChange={(e) => setFPrompt(e.currentTarget.value)}
+                radius="md"
+              />
+              <Textarea
+                label="Uitleg (waarom is het juiste antwoord goed?)"
+                placeholder="Korte toelichting — alleen zichtbaar voor reviewers, nooit voor de kandidaat."
+                rows={3}
+                value={fUitleg}
+                onChange={(e) => setFUitleg(e.currentTarget.value)}
                 radius="md"
               />
               <Button color="campaiNavy" radius="md" leftSection={<IconPlus size={16} />} onClick={addDraft}>
@@ -513,6 +528,15 @@ export function Vragenfabriek({ search = "" }: { search?: string }) {
                           size="sm"
                           w={120}
                           allowDeselect={false}
+                        />
+                        <Textarea
+                          label="Uitleg (alleen voor reviewers)"
+                          placeholder="Waarom is dit het juiste antwoord en de rest fout?"
+                          rows={3}
+                          value={draft.uitleg || ""}
+                          onChange={(e) => updateDraft(index, { uitleg: e.currentTarget.value })}
+                          radius="md"
+                          size="sm"
                         />
                         <Group gap="sm">
                           <Button variant="default" size="xs" onClick={() => saveDraft(index)}>

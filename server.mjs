@@ -490,7 +490,7 @@ async function handleApi(request, response, url) {
       sendJson(response, 400, { error: 'ongeldige_vraag' }); return true;
     }
     const identity = readIdentity(request);
-    const q = await questionBank.addApproved({ domain: b.domain, type: b.type || 'Scenario', prompt: b.prompt, options: b.options, answer: b.answer, source: b.source || 'Handmatig', approvedBy: identity.email || identity.name });
+    const q = await questionBank.addApproved({ domain: b.domain, type: b.type || 'Scenario', prompt: b.prompt, options: b.options, answer: b.answer, uitleg: typeof b.uitleg === 'string' ? b.uitleg : '', source: b.source || 'Handmatig', approvedBy: identity.email || identity.name });
     sendJson(response, 201, q); return true;
   }
   if (url.pathname === '/api/questions/flags' && request.method === 'GET') {
