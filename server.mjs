@@ -6,6 +6,7 @@ import { createHubClient, HubError } from "./lib/hub.mjs";
 import { getUserToken } from "./lib/auth.mjs";
 import { getMe } from "./lib/hub-me.mjs";
 import { createLearningStore } from "./lib/learning-store.mjs";
+import { createPracticeStore } from "./lib/practice-store.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
@@ -19,6 +20,7 @@ const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
 const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
 const learningStore = createLearningStore({ filePath: join(root, 'data', 'learning.json') });
+const practiceStore = createPracticeStore({ filePath: join(root, 'data', 'practice.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
@@ -207,6 +209,24 @@ async function handleApi(request, response, url) {
     catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
     const completed = Array.isArray(b.completedModules) ? b.completedModules.filter((x) => typeof x === 'string') : [];
     sendJson(response, 200, await learningStore.saveProgress(me.entraOid, completed));
+    return true;
+  }
+  if (url.pathname === '/api/learning/practice' && request.method === 'GET') {
+    const me = await currentProfile();
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    sendJson(response, 200, await practiceStore.getResults(me.entraOid));
+    return true;
+  }
+  if (url.pathname === '/api/learning/practice' && request.method === 'POST') {
+    const me = await currentProfile();
+    if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
+    let b;
+    try { b = await readRequestBody(request); }
+    catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    if (!domains.includes(b.domain) || !Number.isInteger(b.score) || !Number.isInteger(b.total) || b.total <= 0) {
+      sendJson(response, 400, { error: 'ongeldig_resultaat' }); return true;
+    }
+    sendJson(response, 200, await practiceStore.addResult(me.entraOid, { domain: b.domain, score: b.score, total: b.total }));
     return true;
   }
 

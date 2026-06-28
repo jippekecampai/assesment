@@ -103,6 +103,12 @@ export type BankQuestion = {
   source: string;
 };
 export const listAllQuestions = () => get<BankQuestion[]>("/api/questions/all");
+
+export type PracticeResult = { domain: string; score: number; total: number; at: string };
+export type PracticeProgress = { entraOid: string; results: PracticeResult[] };
+export const getPracticeResults = () => get<PracticeProgress>("/api/learning/practice");
+export const savePracticeResult = (input: { domain: string; score: number; total: number }) =>
+  post<PracticeProgress>("/api/learning/practice", input);
 export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
   post<ApprovedQuestion>("/api/questions", q);
 export type DraftQuestionInput = { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string };

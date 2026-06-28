@@ -19,6 +19,7 @@ import {
   IconSearch,
   IconSettings,
   IconShieldCheck,
+  IconTargetArrow,
   IconUserCircle,
   IconUserPlus,
   type Icon,
@@ -27,6 +28,7 @@ import {
 import { Reviewdashboard } from "./views/Reviewdashboard";
 import { Vragenfabriek } from "./views/Vragenfabriek";
 import { SkillsAcademy } from "./views/SkillsAcademy";
+import { Performanceloop } from "./views/Performanceloop";
 import { MedewerkerOverview } from "./views/MedewerkerOverview";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
@@ -36,6 +38,7 @@ import campaiLogo from "./assets/campai-logo.svg";
 export type ViewId =
   | "employeeOverview"
   | "academy"
+  | "performance"
   | "sollicitanten"
   | "candidateReviews"
   | "questions"
@@ -52,6 +55,7 @@ interface NavEntry {
 const navEntries: NavEntry[] = [
   { id: "employeeOverview", label: "Mijn overview", icon: IconUserCircle, group: "Medewerker" },
   { id: "academy", label: "Skills Academy", icon: IconBook2, group: "Medewerker" },
+  { id: "performance", label: "Performance loop", icon: IconTargetArrow, group: "Management" },
   { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
   { id: "candidateReviews", label: "Kandidaat reviews", icon: IconClipboardList, group: "Recruitment" },
   { id: "questions", label: "Vragenbank", icon: IconFileText, group: "Recruitment" },
@@ -62,6 +66,7 @@ const navEntries: NavEntry[] = [
 const viewTitles: Record<ViewId, string> = {
   employeeOverview: "Mijn overview",
   academy: "Skills Academy",
+  performance: "Performance loop",
   sollicitanten: "Sollicitanten",
   candidateReviews: "Kandidaat reviews",
   questions: "Vragenbank",
@@ -69,7 +74,7 @@ const viewTitles: Record<ViewId, string> = {
   admin: "Beheer",
 };
 
-const groupOrder = ["Medewerker", "Recruitment", "Governance"];
+const groupOrder = ["Medewerker", "Management", "Recruitment", "Governance"];
 
 export function App() {
   const [view, setView] = useState<ViewId>("employeeOverview");
@@ -142,6 +147,7 @@ export function App() {
         <Box key={view}>
           {view === "employeeOverview" && <MedewerkerOverview onOpenAcademy={() => setView("academy")} />}
           {view === "academy" && <SkillsAcademy />}
+          {view === "performance" && <Performanceloop />}
           {view === "sollicitanten" && <Sollicitanten />}
           {view === "candidateReviews" && <Reviewdashboard search={search} />}
           {view === "questions" && <Vragenfabriek />}
