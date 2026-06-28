@@ -62,6 +62,7 @@ import {
   loadCompleted,
   loadUpdates,
   moduleSourceLink,
+  moduleSourceLabel,
   moduleType,
   recommendedDomains,
   recommendedModules,
@@ -747,7 +748,7 @@ function ModuleModal({
               <Anchor href={moduleSourceLink(module)} target="_blank" size="sm">
                 <Group gap={4}>
                   <IconExternalLink size={14} />
-                  Open IT Glue / bron
+                  {moduleSourceLabel(module)}
                 </Group>
               </Anchor>
               <Box>

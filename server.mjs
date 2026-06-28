@@ -178,7 +178,34 @@ async function getHub() {
   return createHubClient({ userToken });
 }
 
-async function currentProfile() {
+// Profiel uit de Azure Easy Auth (Entra) principal-header. Dit is hoe identiteit
+// in de live-omgeving binnenkomt — geen aparte hub-token nodig.
+function profileFromPrincipal(request) {
+  const principal = request.headers['x-ms-client-principal'];
+  if (!principal) return null;
+  try {
+    const decoded = JSON.parse(Buffer.from(principal, 'base64').toString('utf8'));
+    const claims = decoded.claims || [];
+    const claim = (...types) => {
+      for (const t of types) { const c = claims.find((x) => x.typ === t); if (c) return c.val; }
+      return null;
+    };
+    const entraOid = claim('http://schemas.microsoft.com/identity/claims/objectidentifier', 'oid');
+    if (!entraOid) return null;
+    return {
+      name: claim('name', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name') || decoded.userDetails || null,
+      email: decoded.userDetails || claim('preferred_username', 'emails', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress') || null,
+      jobTitle: claim('jobTitle', 'jobtitle') || null,
+      entraOid,
+      department: claim('department', 'http://schemas.microsoft.com/identity/claims/department') || null,
+    };
+  } catch { return null; }
+}
+
+async function currentProfile(request) {
+  // 1) Live: Entra Easy Auth principal. 2) Dev: optioneel hub-token (OBO).
+  const fromPrincipal = profileFromPrincipal(request);
+  if (fromPrincipal) return fromPrincipal;
   const token = await getUserToken();
   if (!token) return null;
   return getMe(token);
@@ -191,18 +218,18 @@ async function handleApi(request, response, url) {
   }
 
   if (url.pathname === '/api/me' && request.method === 'GET') {
-    const me = await currentProfile();
+    const me = await currentProfile(request);
     sendJson(response, 200, me ? { authenticated: true, ...me } : { authenticated: false });
     return true;
   }
   if (url.pathname === '/api/learning/me' && request.method === 'GET') {
-    const me = await currentProfile();
+    const me = await currentProfile(request);
     if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
     sendJson(response, 200, await learningStore.getProgress(me.entraOid));
     return true;
   }
   if (url.pathname === '/api/learning/me' && request.method === 'PUT') {
-    const me = await currentProfile();
+    const me = await currentProfile(request);
     if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
     let b;
     try { b = await readRequestBody(request); }
@@ -212,13 +239,13 @@ async function handleApi(request, response, url) {
     return true;
   }
   if (url.pathname === '/api/learning/practice' && request.method === 'GET') {
-    const me = await currentProfile();
+    const me = await currentProfile(request);
     if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
     sendJson(response, 200, await practiceStore.getResults(me.entraOid));
     return true;
   }
   if (url.pathname === '/api/learning/practice' && request.method === 'POST') {
-    const me = await currentProfile();
+    const me = await currentProfile(request);
     if (!me?.entraOid) { sendJson(response, 401, { error: 'geen_identiteit' }); return true; }
     let b;
     try { b = await readRequestBody(request); }

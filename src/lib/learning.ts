@@ -90,8 +90,37 @@ export function moduleType(module: TrainingModule): string {
   return "Article";
 }
 
+// Documentatiebron per domein: officiële Microsoft Learn-cursussen waar dat logisch
+// is, vendor-docs voor specifieke producten, en IT Glue voor interne/MSP-kennis.
+const DOMAIN_SOURCES: Record<string, { label: string; url: string }> = {
+  Azure: { label: "Microsoft Learn · AZ-900", url: "https://learn.microsoft.com/en-us/training/courses/az-900t00" },
+  "Microsoft 365": { label: "Microsoft Learn · MS-900", url: "https://learn.microsoft.com/en-us/training/courses/ms-900t01" },
+  "AI / Copilot": { label: "Microsoft Learn · AI-900", url: "https://learn.microsoft.com/en-us/training/courses/ai-900t00" },
+  "SharePoint / Teams": { label: "Microsoft Learn · MS-700", url: "https://learn.microsoft.com/en-us/training/courses/ms-700t00" },
+  "SharePoint / Azure Migrations": {
+    label: "Microsoft Learn · migraties",
+    url: "https://learn.microsoft.com/en-us/training/paths/migrate-data-sharepoint-onedrive/",
+  },
+  Servers: { label: "Microsoft Learn · Windows Server", url: "https://learn.microsoft.com/en-us/training/paths/windows-server-administration/" },
+  Fortigate: { label: "Fortinet Docs", url: "https://docs.fortinet.com/product/fortigate" },
+  Inforcer: { label: "Inforcer docs", url: "https://docs.inforcer.com/" },
+};
+
+export function moduleSource(module: TrainingModule): { label: string; url: string } {
+  return (
+    DOMAIN_SOURCES[module.domain] || {
+      label: "IT Glue / bron",
+      url: `https://campai.eu.itglue.com/search?query=${encodeURIComponent(module.title)}`,
+    }
+  );
+}
+
 export function moduleSourceLink(module: TrainingModule): string {
-  return `https://campai.eu.itglue.com/search?query=${encodeURIComponent(module.title)}`;
+  return moduleSource(module).url;
+}
+
+export function moduleSourceLabel(module: TrainingModule): string {
+  return moduleSource(module).label;
 }
 
 export function statusLabel(status: string): string {
