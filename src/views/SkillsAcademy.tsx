@@ -11,6 +11,7 @@ import {
   Group,
   Modal,
   Progress,
+  Radio,
   ScrollArea,
   Select,
   SimpleGrid,
@@ -34,7 +35,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 
-import { getMe, getLearningProgress, saveLearningProgress, type MeProfile } from "../lib/api";
+import { getMe, getLearningProgress, saveLearningProgress, listAllQuestions, type MeProfile, type BankQuestion } from "../lib/api";
 import {
   coachingMoments,
   developmentGoals,
@@ -396,7 +397,11 @@ export function SkillsAcademy() {
                   <Text size="sm" c="dimmed">Modules, badges en praktijkbewijs voor MSP-domeinen.</Text>
                 </Tabs.Panel>
                 <Tabs.Panel value="test">
-                  <Text size="sm" c="dimmed">Toetsen horen bij Skills Academy en meten leerprogressie, niet sollicitantselectie.</Text>
+                  <Text size="sm" c="dimmed" mb="md">
+                    Oefen vrijblijvend per domein met dezelfde kennisbank als de assessments.
+                    Dit meet leerprogressie — het is géén HR-beoordeling of sollicitantselectie.
+                  </Text>
+                  <PracticeQuiz />
                 </Tabs.Panel>
                 <Tabs.Panel value="coaching">
                   <Text size="sm" c="dimmed">1:1s, blockers en ontwikkeldoelen worden hier voorbereid.</Text>
@@ -980,7 +985,164 @@ function ModuleModal({
   );
 }
 
+// Oefen-modus voor medewerkers: kies een domein, oefen met de gedeelde kennisbank.
+// Puur leren (geen score-registratie/HR-beoordeling). Antwoorden client-side gecheckt.
+function PracticeQuiz() {
+  const [domain, setDomain] = useState<string>(domains[0]);
+  const [questions, setQuestions] = useState<BankQuestion[] | null>(null);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  async function start() {
+    setLoading(true);
+    setSubmitted(false);
+    setAnswers({});
+    try {
+      const all = await listAllQuestions();
+      const pool = all.filter((q) => q.domain === domain);
+      const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+      setQuestions(shuffled);
+    } catch {
+      notifications.show({ message: "Vragen laden mislukt — draait de server?", color: "red" });
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  const total = questions?.length ?? 0;
+  const score = questions ? questions.filter((q) => answers[q.id] === q.answer).length : 0;
+  const allAnswered = questions ? questions.every((q) => answers[q.id] != null) : false;
+
+  return (
+    <Stack gap="md">
+      <Group align="flex-end" gap="md" wrap="wrap">
+        <Select
+          label="Domein"
+          data={domains}
+          value={domain}
+          onChange={(v) => v && setDomain(v)}
+          radius="md"
+          size="sm"
+          w={260}
+          allowDeselect={false}
+          searchable
+        />
+        <Button color="campaiNavy" radius="md" size="sm" onClick={start} loading={loading}>
+          {questions ? "Nieuwe oefenronde" : "Start oefening"}
+        </Button>
+      </Group>
+
+      {questions && questions.length === 0 && (
+        <Text size="sm" c="dimmed">
+          Nog geen vragen in dit domein.
+        </Text>
+      )}
+
+      {questions && questions.length > 0 && (
+        <>
+          {submitted && (
+            <Card withBorder radius="md" padding="md" bg="campaiNavy.0">
+              <Group justify="space-between" align="center">
+                <Text fw={700} c="campaiNavy.8">
+                  Resultaat: {score} / {total} goed
+                </Text>
+                <Badge
+                  variant="filled"
+                  radius="sm"
+                  color={score / total >= 0.7 ? "campaiLime" : score / total >= 0.5 ? "campaiCyan" : "campaiRed"}
+                >
+                  {Math.round((score / total) * 100)}%
+                </Badge>
+              </Group>
+              <Text size="xs" c="dimmed" mt={4}>
+                Alleen voor jouw eigen ontwikkeling — dit wordt nergens als beoordeling vastgelegd.
+              </Text>
+            </Card>
+          )}
+
+          <Stack gap="sm">
+            {questions.map((q, qi) => (
+              <Card key={q.id} withBorder radius="md" padding="md">
+                <Text size="sm" fw={600} c="campaiNavy.8" mb="xs">
+                  {qi + 1}. {q.prompt}
+                </Text>
+                <Radio.Group
+                  value={answers[q.id] != null ? String(answers[q.id]) : null}
+                  onChange={(v) => !submitted && setAnswers((a) => ({ ...a, [q.id]: Number(v) }))}
+                >
+                  <Stack gap={6}>
+                    {q.options.map((opt, i) => {
+                      const chosen = answers[q.id] === i;
+                      const correct = i === q.answer;
+                      const bg = submitted
+                        ? correct
+                          ? "var(--mantine-color-campaiLime-0, #f4f7d9)"
+                          : chosen
+                            ? "var(--mantine-color-campaiRed-0, #fbe6e6)"
+                            : "transparent"
+                        : "transparent";
+                      const border = submitted
+                        ? correct
+                          ? "var(--mantine-color-campaiLime-5, #b6c200)"
+                          : chosen
+                            ? "var(--mantine-color-campaiRed-5, #e03131)"
+                            : "var(--mantine-color-gray-3, #dee2e6)"
+                        : "var(--mantine-color-gray-3, #dee2e6)";
+                      return (
+                        <Box
+                          key={i}
+                          style={{
+                            background: bg,
+                            borderLeft: `3px solid ${border}`,
+                            borderRadius: 6,
+                            padding: "6px 10px",
+                          }}
+                        >
+                          <Radio
+                            value={String(i)}
+                            disabled={submitted}
+                            label={
+                              <Group gap={6} wrap="nowrap">
+                                <Text size="sm">{opt}</Text>
+                                {submitted && correct && (
+                                  <Badge variant="filled" color="campaiLime" radius="sm" size="xs">
+                                    Juist
+                                  </Badge>
+                                )}
+                              </Group>
+                            }
+                          />
+                        </Box>
+                      );
+                    })}
+                  </Stack>
+                </Radio.Group>
+              </Card>
+            ))}
+          </Stack>
+
+          {!submitted && (
+            <Group>
+              <Button
+                color="campaiNavy"
+                radius="md"
+                disabled={!allAnswered}
+                onClick={() => setSubmitted(true)}
+              >
+                Nakijken
+              </Button>
+              {!allAnswered && (
+                <Text size="xs" c="dimmed">
+                  Beantwoord eerst alle vragen.
+                </Text>
+              )}
+            </Group>
+          )}
+        </>
+      )}
+    </Stack>
+  );
+}
 
 
