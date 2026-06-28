@@ -48,7 +48,7 @@ function defaultDraftOptions(): string[] {
   ];
 }
 
-export function Vragenfabriek() {
+export function Vragenfabriek({ search = "" }: { search?: string }) {
   const [drafts, setDrafts] = useState<Draft[]>(() => seedDrafts.map((d) => ({ ...d })));
   const [activeIndex, setActiveIndex] = useState(0);
   const [approvedQuestions, setApprovedQuestions] = useState<ApprovedQuestion[]>([]);
@@ -562,7 +562,15 @@ export function Vragenfabriek() {
 
             <Stack gap="xs">
               {(bankDomain === "Alle" ? domains : [bankDomain]).map((domain) => {
-                const qs = allQuestions.filter((q) => q.domain === domain);
+                const q = search.trim().toLowerCase();
+                const qs = allQuestions.filter(
+                  (item) =>
+                    item.domain === domain &&
+                    (!q ||
+                      item.domain.toLowerCase().includes(q) ||
+                      item.prompt.toLowerCase().includes(q) ||
+                      item.type.toLowerCase().includes(q)),
+                );
                 if (qs.length === 0) return null;
                 return (
                   <Box key={domain}>

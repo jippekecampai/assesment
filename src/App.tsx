@@ -150,7 +150,7 @@ export function App() {
           {view === "performance" && <Performanceloop />}
           {view === "sollicitanten" && <Sollicitanten />}
           {view === "candidateReviews" && <Reviewdashboard search={search} />}
-          {view === "questions" && <Vragenfabriek />}
+          {view === "questions" && <Vragenfabriek search={search} />}
           {view === "governance" && <Beleid />}
           {view === "admin" && <Beheer />}
         </Box>

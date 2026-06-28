@@ -11,7 +11,7 @@ import {
   type MeProfile,
   type PracticeResult,
 } from "../lib/api";
-import { roles, trainingModules } from "../lib/data";
+import { domains, roles, trainingModules } from "../lib/data";
 import { learnerLevel } from "../lib/learning";
 import { ViewHead } from "./_shared";
 
@@ -93,6 +93,16 @@ export function MedewerkerOverview({ onOpenAcademy }: { onOpenAcademy: () => voi
   if (!acks["ai-geletterdheid"]) aiMissing.push("bevestig 'Wat is AI'");
   if (!acks["gouden-regels"]) aiMissing.push("bevestig de 10 gouden regels");
   if (!aiPracticeOk) aiMissing.push(`oefen AI / Copilot tot ≥${AI_LITERACY_THRESHOLD}%${aiBest !== null ? ` (nu ${aiBest}%)` : ""}`);
+
+  // #4 Te doen voor de medewerker (afgeleid uit beleid/AI/oefenen/modules).
+  const openPolicies = POLICY_IDS.filter((id) => !acks[id]).length;
+  const openModules = trainingModules.length - completedModules.length;
+  const weakDomain = domains.find((d) => (bestByDomain.get(d) ?? 0) < 70);
+  const todos: string[] = [];
+  if (openPolicies > 0) todos.push(`Bevestig ${openPolicies} beleidsonderdeel${openPolicies === 1 ? "" : "en"} in Beleid (gelezen & begrepen).`);
+  if (!aiLiterate) todos.push("Rond je AI-geletterdheid af (ISO 42001) — zie de kaart hierboven.");
+  if (weakDomain) todos.push(`Oefen "${weakDomain}" in de Skills Academy (nog onder 70%).`);
+  if (openModules > 0) todos.push(`Werk aan ${openModules} openstaande leermodule${openModules === 1 ? "" : "s"}.`);
 
   return (
     <>
@@ -248,6 +258,42 @@ export function MedewerkerOverview({ onOpenAcademy }: { onOpenAcademy: () => voi
             </Card>
           </Grid.Col>
         </Grid>
+
+        {me?.authenticated && (
+          <Card withBorder padding="lg" radius="md">
+            <Box mb="md">
+              <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+                Te doen
+              </Text>
+              <Title order={3} fz="lg" c="campaiNavy.7">
+                Jouw openstaande acties
+              </Title>
+            </Box>
+            {todos.length === 0 ? (
+              <Group gap="sm">
+                <ThemeIcon variant="light" color="campaiLime" radius="xl" size={24}>
+                  <IconCircleCheck size={14} />
+                </ThemeIcon>
+                <Text size="sm" c="dimmed">
+                  Niets openstaand — goed bezig!
+                </Text>
+              </Group>
+            ) : (
+              <Stack gap="sm">
+                {todos.map((t, i) => (
+                  <Group key={i} gap="sm" wrap="nowrap" align="flex-start">
+                    <ThemeIcon variant="light" color="campaiCyan" radius="xl" size={24}>
+                      <Text size="xs" fw={700}>
+                        {i + 1}
+                      </Text>
+                    </ThemeIcon>
+                    <Text size="sm">{t}</Text>
+                  </Group>
+                ))}
+              </Stack>
+            )}
+          </Card>
+        )}
 
         <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
           <OverviewCard icon={<IconTargetArrow size={18} />} title="Ontwikkeling" text="Doelen, blockers en voortgang horen bij medewerkerontwikkeling, niet bij recruitment." />

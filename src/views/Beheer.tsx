@@ -30,7 +30,15 @@ import {
 } from "../lib/data";
 import { initials } from "../lib/scoring";
 import { clearAudit, formatAuditTime, loadAudit, recordAudit, type AuditEntry } from "../lib/learning";
-import { getMe, type MeProfile } from "../lib/api";
+import {
+  getMe,
+  listCandidates,
+  getCoverage,
+  listFlags,
+  listAllQuestions,
+  type MeProfile,
+  type DomainCoverage,
+} from "../lib/api";
 import { ViewHead } from "./_shared";
 
 function readCount(key: string): number {
@@ -67,9 +75,20 @@ function InfoGrid({ items }: { items: Array<[string, string, string]> }) {
 export function Beheer() {
   const [audit, setAudit] = useState<AuditEntry[]>(() => loadAudit());
   const [me, setMe] = useState<MeProfile | null>(null);
+  // Live operationele cijfers (echte API).
+  const [stats, setStats] = useState<{ cand: number; done: number; questions: number; flags: number }>({ cand: 0, done: 0, questions: 0, flags: 0 });
+  const [coverage, setCoverage] = useState<DomainCoverage>({});
 
   useEffect(() => {
     getMe().then(setMe).catch(() => setMe({ authenticated: false }));
+    Promise.allSettled([listCandidates(), getCoverage(), listFlags(), listAllQuestions()]).then(
+      ([c, cov, f, q]) => {
+        if (c.status === "fulfilled") setStats((s) => ({ ...s, cand: c.value.length, done: c.value.filter((x) => x.status === "afgerond").length }));
+        if (cov.status === "fulfilled") setCoverage(cov.value);
+        if (f.status === "fulfilled") setStats((s) => ({ ...s, flags: f.value.length }));
+        if (q.status === "fulfilled") setStats((s) => ({ ...s, questions: q.value.length }));
+      },
+    );
   }, []);
 
   const profile = me?.authenticated
@@ -123,6 +142,52 @@ export function Beheer() {
       </ViewHead>
 
       <Stack gap="lg">
+        {/* Live operationele cijfers */}
+        <Card withBorder padding="lg" radius="md">
+          <Box mb="md">
+            <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
+              Operationeel
+            </Text>
+            <Title order={3} fz="lg" c="campaiNavy.7">
+              Live cijfers
+            </Title>
+          </Box>
+          <SimpleGrid cols={{ base: 2, md: 4 }} spacing="sm" mb="lg">
+            {[
+              ["Sollicitanten", String(stats.cand)],
+              ["Afgerond", String(stats.done)],
+              ["Vragen (seed + goedgekeurd)", String(stats.questions)],
+              ["Gemarkeerde vragen", String(stats.flags)],
+            ].map(([label, value]) => (
+              <Card key={label} withBorder padding="md" radius="md" bg="gray.0">
+                <Text fw={800} ff="heading" fz={26} c="campaiNavy.7">
+                  {value}
+                </Text>
+                <Text size="xs" tt="uppercase" c="dimmed" lts={0.4} fw={600}>
+                  {label}
+                </Text>
+              </Card>
+            ))}
+          </SimpleGrid>
+          <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700} mb="xs">
+            Dekking per domein (rood = onder 5)
+          </Text>
+          <SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }} spacing="xs">
+            {domains.map((d) => {
+              const total = coverage[d]?.total ?? 0;
+              const low = total < 5;
+              return (
+                <Group key={d} justify="space-between" wrap="nowrap" px="xs" py={4} style={{ border: "1px solid var(--mantine-color-gray-2)", borderRadius: 8 }}>
+                  <Text size="xs" truncate>{d}</Text>
+                  <Badge color={low ? "red" : "campaiLime"} variant="filled" radius="sm" size="sm">
+                    {total}
+                  </Badge>
+                </Group>
+              );
+            })}
+          </SimpleGrid>
+        </Card>
+
         <Grid>
           <Grid.Col span={{ base: 12, md: 5 }}>
             <Card withBorder padding="lg" radius="md" h="100%">

@@ -423,7 +423,39 @@ export function SkillsAcademy() {
                   <Tabs.Tab value="team">Team</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="learn">
-                  <Text size="sm" c="dimmed">Modules, badges en praktijkbewijs voor MSP-domeinen.</Text>
+                  <Text size="sm" c="dimmed" mb="md">
+                    Modules, badges en praktijkbewijs voor MSP-domeinen. Start met AI-geletterdheid (ISO 42001).
+                  </Text>
+                  <Card withBorder radius="md" padding="md" bg="campaiNavy.0">
+                    <Group gap="sm" mb="xs">
+                      <ThemeIcon variant="light" color="campaiNavy" radius="md" size={30}>
+                        <IconInfoCircle size={16} />
+                      </ThemeIcon>
+                      <Title order={4} fz="md" c="campaiNavy.7">
+                        Module: Wat is AI? (AI-geletterdheid)
+                      </Title>
+                    </Group>
+                    <Text size="sm" c="gray.8" mb="xs">
+                      De basis die we van iedereen verwachten — kort en praktisch:
+                    </Text>
+                    <Stack gap={4} mb="sm">
+                      {[
+                        "AI voorspelt de meest waarschijnlijke output uit patronen; het 'begrijpt' niets en heeft geen oordeel.",
+                        "Generatieve AI (Copilot) kan overtuigend klinken maar fouten maken ('hallucineren') — controleer altijd.",
+                        "Deel nooit klantdata, persoonsgegevens of wachtwoorden met externe AI-tools.",
+                        "Jij blijft eindverantwoordelijk voor wat je met AI oplevert.",
+                      ].map((p) => (
+                        <Text key={p} size="xs" c="gray.7">
+                          • {p}
+                        </Text>
+                      ))}
+                    </Stack>
+                    <Text size="xs" c="dimmed">
+                      <strong>Toets jezelf:</strong> doe de oefening in het tabblad <strong>Toetsen</strong>
+                      {" "}(domein <em>AI / Copilot</em>) en bevestig het AI-beleid in <strong>Beleid</strong>. Je
+                      AI-geletterdheidsstatus (ISO 42001) verschijnt dan in <strong>Mijn overview</strong>.
+                    </Text>
+                  </Card>
                 </Tabs.Panel>
                 <Tabs.Panel value="test">
                   <Text size="sm" c="dimmed" mb="md">
