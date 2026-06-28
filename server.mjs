@@ -7,6 +7,7 @@ import { getUserToken } from "./lib/auth.mjs";
 import { getMe } from "./lib/hub-me.mjs";
 import { createLearningStore } from "./lib/learning-store.mjs";
 import { createPracticeStore } from "./lib/practice-store.mjs";
+import { createCoachingStore } from "./lib/coaching-store.mjs";
 import { buildSourceMaterial } from "./lib/source-material.mjs";
 import { createStore } from './lib/candidate-store.mjs';
 import { startAssessment, submitAssessment, AssessmentError } from './lib/assessment-service.mjs';
@@ -21,6 +22,7 @@ const port = Number(process.env.PORT || 4173);
 const candidateStore = createStore({ filePath: join(root, 'data', 'candidates.json') });
 const learningStore = createLearningStore({ filePath: join(root, 'data', 'learning.json') });
 const practiceStore = createPracticeStore({ filePath: join(root, 'data', 'practice.json') });
+const coachingStore = createCoachingStore({ filePath: join(root, 'data', 'coaching.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 function requireStaff(request, response) {
@@ -255,6 +257,34 @@ async function handleApi(request, response, url) {
     }
     sendJson(response, 200, await practiceStore.addResult(me.entraOid, { domain: b.domain, score: b.score, total: b.total }));
     return true;
+  }
+
+  // Coaching/1:1's per medewerker (manager, staff-only)
+  const coachAdd = url.pathname.match(/^\/api\/coaching\/([^/]+)$/);
+  if (coachAdd && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, await coachingStore.list(decodeURIComponent(coachAdd[1]))); return true;
+  }
+  if (coachAdd && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const learnerId = decodeURIComponent(coachAdd[1]);
+    let b;
+    try { b = await readRequestBody(request); }
+    catch { sendJson(response, 400, { error: 'ongeldige_body' }); return true; }
+    if (!b.title || !b.date) { sendJson(response, 400, { error: 'titel_en_datum_vereist' }); return true; }
+    const identity = readIdentity(request);
+    const entry = await coachingStore.add(learnerId, {
+      type: b.type, title: String(b.title), date: String(b.date),
+      focus: String(b.focus || ''), action: String(b.action || ''),
+      createdBy: identity.email || identity.name,
+    });
+    sendJson(response, 201, entry); return true;
+  }
+  const coachDel = url.pathname.match(/^\/api\/coaching\/([^/]+)\/([^/]+)$/);
+  if (coachDel && request.method === 'DELETE') {
+    if (!requireStaff(request, response)) return true;
+    await coachingStore.remove(decodeURIComponent(coachDel[1]), decodeURIComponent(coachDel[2]));
+    sendJson(response, 200, { ok: true }); return true;
   }
 
   if (url.pathname === "/api/results" && request.method === "GET") {

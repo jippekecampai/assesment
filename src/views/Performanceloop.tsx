@@ -1,7 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  ActionIcon,
   Badge,
   Box,
+  Button,
   Card,
   Grid,
   Group,
@@ -10,13 +12,15 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Textarea,
+  TextInput,
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import { IconTargetArrow } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconPlus, IconTargetArrow, IconTrash } from "@tabler/icons-react";
 
 import {
-  coachingMoments,
   developmentGoals,
   domains,
   learners,
@@ -27,6 +31,7 @@ import {
 } from "../lib/data";
 import { roleScore } from "../lib/scoring";
 import { learningRoleFor, recommendedDomains, statusColor, statusLabel } from "../lib/learning";
+import { listCoaching, addCoaching, removeCoaching, type CoachingEntry } from "../lib/api";
 import { ViewHead } from "./_shared";
 
 function shortDomain(domain: string): string {
@@ -53,7 +58,49 @@ export function Performanceloop() {
     [learner, learningRole],
   );
   const myGoals = developmentGoals.filter((g) => g.learnerId === learner?.id);
-  const myCoaching = coachingMoments.filter((c) => c.learnerId === learner?.id);
+
+  // Coaching/1:1's: server-bewaard en bewerkbaar per medewerker.
+  const [coaching, setCoaching] = useState<CoachingEntry[]>([]);
+  const [cType, setCType] = useState<string>("1:1");
+  const [cTitle, setCTitle] = useState("");
+  const [cDate, setCDate] = useState("");
+  const [cFocus, setCFocus] = useState("");
+  const [cAction, setCAction] = useState("");
+  const [cSaving, setCSaving] = useState(false);
+
+  function refreshCoaching(id: string) {
+    listCoaching(id)
+      .then(setCoaching)
+      .catch(() => setCoaching([]));
+  }
+  useEffect(() => {
+    if (learner?.id) refreshCoaching(learner.id);
+  }, [learner?.id]);
+
+  async function addCoachingEntry() {
+    if (!learner?.id || !cTitle || !cDate) return;
+    setCSaving(true);
+    try {
+      await addCoaching(learner.id, { type: cType, title: cTitle, date: cDate, focus: cFocus, action: cAction });
+      setCTitle(""); setCDate(""); setCFocus(""); setCAction("");
+      notifications.show({ message: "Coachmoment opgeslagen.", color: "campaiNavy" });
+      refreshCoaching(learner.id);
+    } catch {
+      notifications.show({ message: "Opslaan mislukt.", color: "red" });
+    } finally {
+      setCSaving(false);
+    }
+  }
+
+  async function deleteCoachingEntry(id: string) {
+    if (!learner?.id) return;
+    try {
+      await removeCoaching(learner.id, id);
+      refreshCoaching(learner.id);
+    } catch {
+      notifications.show({ message: "Verwijderen mislukt.", color: "red" });
+    }
+  }
 
   return (
     <Stack gap="xl">
@@ -194,16 +241,83 @@ export function Performanceloop() {
               <Title order={3} fz="lg" c="campaiNavy.7">
                 Coachmomenten
               </Title>
+              <Text size="xs" c="dimmed" mt={4}>
+                Leg per medewerker 1:1's en reviews vast. Ondersteunt het gesprek; geen automatische
+                HR-beoordeling.
+              </Text>
             </Box>
-            {myCoaching.length === 0 ? (
+
+            {/* Nieuw coachmoment */}
+            <Card withBorder padding="sm" radius="md" mb="sm" bg="gray.0">
+              <Stack gap="xs">
+                <Group grow>
+                  <Select
+                    label="Type"
+                    data={["1:1", "Review"]}
+                    value={cType}
+                    onChange={(v) => v && setCType(v)}
+                    size="xs"
+                    radius="md"
+                    allowDeselect={false}
+                  />
+                  <TextInput
+                    label="Datum"
+                    type="date"
+                    value={cDate}
+                    onChange={(e) => setCDate(e.currentTarget.value)}
+                    size="xs"
+                    radius="md"
+                  />
+                </Group>
+                <TextInput
+                  label="Titel"
+                  placeholder="Bv. Skill-gap check Azure"
+                  value={cTitle}
+                  onChange={(e) => setCTitle(e.currentTarget.value)}
+                  size="xs"
+                  radius="md"
+                />
+                <TextInput
+                  label="Focus"
+                  placeholder="Waar ligt de nadruk op?"
+                  value={cFocus}
+                  onChange={(e) => setCFocus(e.currentTarget.value)}
+                  size="xs"
+                  radius="md"
+                />
+                <Textarea
+                  label="Actie / afspraak"
+                  placeholder="Concrete vervolgstap"
+                  value={cAction}
+                  onChange={(e) => setCAction(e.currentTarget.value)}
+                  size="xs"
+                  radius="md"
+                  autosize
+                  minRows={2}
+                />
+                <Button
+                  color="campaiNavy"
+                  radius="md"
+                  size="xs"
+                  leftSection={<IconPlus size={14} />}
+                  onClick={addCoachingEntry}
+                  loading={cSaving}
+                  disabled={!cTitle || !cDate}
+                >
+                  Coachmoment toevoegen
+                </Button>
+              </Stack>
+            </Card>
+
+            {coaching.length === 0 ? (
               <Text size="sm" c="dimmed">
-                Geen coachmomenten gepland voor deze medewerker.
+                Nog geen coachmomenten vastgelegd voor deze medewerker.
               </Text>
             ) : (
               <Stack gap="sm">
-                {myCoaching.map((moment, index) => (
-                  <Card key={index} withBorder padding="sm" radius="md">
-                    <Group justify="space-between" wrap="nowrap" mb={2}>
+                {coaching.map((moment) => (
+                  <Card key={moment.id} withBorder padding="sm" radius="md">
+                    <Group justify="space-between" wrap="nowrap" mb={2} align="flex-start">
                       <Badge
                         variant="light"
                         color={moment.type === "Review" ? "campaiNavy" : "campaiCyan"}
@@ -212,19 +326,34 @@ export function Performanceloop() {
                       >
                         {moment.type}
                       </Badge>
-                      <Text size="xs" c="dimmed" ff="monospace">
-                        {moment.date}
-                      </Text>
+                      <Group gap={6} wrap="nowrap">
+                        <Text size="xs" c="dimmed" ff="monospace">
+                          {moment.date}
+                        </Text>
+                        <ActionIcon
+                          variant="subtle"
+                          color="campaiRed"
+                          size="sm"
+                          onClick={() => deleteCoachingEntry(moment.id)}
+                          aria-label="Verwijder coachmoment"
+                        >
+                          <IconTrash size={14} />
+                        </ActionIcon>
+                      </Group>
                     </Group>
                     <Text size="sm" fw={600} c="campaiNavy.8">
                       {moment.title}
                     </Text>
-                    <Text size="xs" c="dimmed" mt={2}>
-                      Focus: {moment.focus}
-                    </Text>
-                    <Text size="xs" c="gray.7" mt={2}>
-                      Actie: {moment.action}
-                    </Text>
+                    {moment.focus && (
+                      <Text size="xs" c="dimmed" mt={2}>
+                        Focus: {moment.focus}
+                      </Text>
+                    )}
+                    {moment.action && (
+                      <Text size="xs" c="gray.7" mt={2}>
+                        Actie: {moment.action}
+                      </Text>
+                    )}
                   </Card>
                 ))}
               </Stack>

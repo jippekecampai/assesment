@@ -109,6 +109,30 @@ export type PracticeProgress = { entraOid: string; results: PracticeResult[] };
 export const getPracticeResults = () => get<PracticeProgress>("/api/learning/practice");
 export const savePracticeResult = (input: { domain: string; score: number; total: number }) =>
   post<PracticeProgress>("/api/learning/practice", input);
+
+export type CoachingEntry = {
+  id: string;
+  type: "1:1" | "Review";
+  title: string;
+  date: string;
+  focus: string;
+  action: string;
+  createdBy: string;
+  createdAt: string;
+};
+export const listCoaching = (learnerId: string) =>
+  get<CoachingEntry[]>(`/api/coaching/${encodeURIComponent(learnerId)}`);
+export const addCoaching = (
+  learnerId: string,
+  input: { type: string; title: string; date: string; focus: string; action: string },
+) => post<CoachingEntry>(`/api/coaching/${encodeURIComponent(learnerId)}`, input);
+export const removeCoaching = async (learnerId: string, id: string): Promise<void> => {
+  const res = await fetch(`/api/coaching/${encodeURIComponent(learnerId)}/${encodeURIComponent(id)}`, { method: "DELETE" });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, (data as any).error || `HTTP ${res.status}`, (data as any).error);
+  }
+};
 export const addQuestion = (q: { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string }) =>
   post<ApprovedQuestion>("/api/questions", q);
 export type DraftQuestionInput = { domain: string; type: string; prompt: string; options: string[]; answer: number; source?: string };
