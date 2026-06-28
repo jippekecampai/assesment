@@ -98,6 +98,9 @@ export function SkillsAcademy() {
   // SSO state
   const [me, setMe] = useState<MeProfile | null>(null);
   const [serverCompleted, setServerCompleted] = useState<string[] | null>(null);
+  // hydrated = de eerste server-pull is GESLAAGD. Pas daarna mag de client schrijven,
+  // anders kan een mislukte/niet-geladen pull gevulde remote-data overschrijven.
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     getMe().then(setMe).catch(() => setMe({ authenticated: false }));
@@ -106,8 +109,15 @@ export function SkillsAcademy() {
   useEffect(() => {
     if (me?.authenticated === true) {
       getLearningProgress()
-        .then((p) => setServerCompleted(p.completedModules))
-        .catch(() => setServerCompleted([]));
+        .then((p) => { setServerCompleted(p.completedModules); setHydrated(true); })
+        .catch(() => {
+          // NIET op [] zetten: dat zou een lege staat kunnen wegschrijven.
+          setHydrated(false);
+          notifications.show({
+            message: "Je leervoortgang kon niet worden geladen — wijzigingen worden nu niet bewaard om dataverlies te voorkomen.",
+            color: "red",
+          });
+        });
     }
   }, [me]);
 
@@ -177,6 +187,15 @@ export function SkillsAcademy() {
   }
 
   function saveModuleUpdate(moduleId: string, status: string, comment: string) {
+    // Veiligheidsgate: voor SSO nooit schrijven vóór een geslaagde pull (voorkomt
+    // dat een lege/niet-geladen staat gevulde server-voortgang overschrijft).
+    if (isSso && !hydrated) {
+      notifications.show({
+        message: "Je voortgang is nog niet geladen — wijziging niet opgeslagen (voorkomt overschrijven van je data).",
+        color: "red",
+      });
+      return;
+    }
     const nextUpdates = {
       ...updates,
       [moduleId]: { ...updates[moduleId], status, comment, updatedAt: new Date().toISOString() },
