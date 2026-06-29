@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   AppShell,
   Box,
+  Burger,
   Button,
   Group,
   NavLink,
@@ -10,6 +11,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconBook2,
   IconBriefcase,
@@ -79,11 +81,22 @@ const groupOrder = ["Medewerker", "Management", "Recruitment", "Governance"];
 export function App() {
   const [view, setView] = useState<ViewId>("employeeOverview");
   const [search, setSearch] = useState("");
+  const [mobileNavOpened, { toggle: toggleMobileNav, close: closeMobileNav }] =
+    useDisclosure(false);
+
+  const openView = (next: ViewId) => {
+    setView(next);
+    closeMobileNav();
+  };
 
   return (
     <AppShell
       header={{ height: 64 }}
-      navbar={{ width: 280, breakpoint: "sm" }}
+      navbar={{
+        width: 280,
+        breakpoint: "sm",
+        collapsed: { mobile: !mobileNavOpened },
+      }}
       padding="lg"
       styles={{
         main: { background: "var(--mantine-color-gray-0)" },
@@ -94,6 +107,13 @@ export function App() {
       <AppShell.Header>
         <Group h="100%" px="lg" justify="space-between" wrap="nowrap" gap="md">
           <Group gap="sm" wrap="nowrap">
+            <Burger
+              opened={mobileNavOpened}
+              onClick={toggleMobileNav}
+              hiddenFrom="sm"
+              size="sm"
+              aria-label="Menu openen"
+            />
             <Box component="img" src={campaiLogo} alt="Campai" h={46} style={{ display: "block" }} />
           </Group>
           <TextInput
@@ -134,7 +154,7 @@ export function App() {
                       color="campaiNavy"
                       variant="filled"
                       styles={{ root: { borderRadius: 10 } }}
-                      onClick={() => setView(entry.id)}
+                      onClick={() => openView(entry.id)}
                     />
                   ))}
               </Stack>
