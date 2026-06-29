@@ -91,7 +91,7 @@ export function App() {
 
   return (
     <AppShell
-      header={{ height: 64 }}
+      header={{ height: 96 }}
       navbar={{
         width: 280,
         breakpoint: "sm",
@@ -114,7 +114,7 @@ export function App() {
               size="sm"
               aria-label="Menu openen"
             />
-            <Box component="img" src={campaiLogo} alt="Campai" h={46} style={{ display: "block" }} />
+            <Box component="img" src={campaiLogo} alt="Campai" h={72} style={{ display: "block" }} />
           </Group>
           <TextInput
             placeholder="Zoeken op domein, module of kandidaat"
