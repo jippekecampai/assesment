@@ -18,6 +18,8 @@ import { roles, domains, testQuestions } from './lib/assessment-content.mjs';
 import { createQuestionBank } from './lib/question-bank.mjs';
 import { createFlagStore } from './lib/flag-store.mjs';
 import { generateQuestions, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
+import { recordEvents, canSeeLogboek } from './lib/toezicht.mjs';
+import { explain, UITLEG_MAX, UITLEG_UIT_DOMEINEN } from './lib/uitleg.mjs';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
@@ -390,7 +392,7 @@ async function handleApi(request, response, url) {
 
   if (url.pathname === '/api/candidates' && request.method === 'GET') {
     if (!requireStaff(request, response)) return true;
-    const list = (await candidateStore.listCandidates()).map(({ serverQuestions, ...c }) => c);
+    const list = (await candidateStore.listCandidates()).map(({ serverQuestions, toezicht, ...c }) => c);
     sendJson(response, 200, list); return true;
   }
   if (url.pathname === '/api/candidates' && request.method === 'POST') {
@@ -421,7 +423,10 @@ async function handleApi(request, response, url) {
   }
   if (url.pathname === '/api/assessment/start' && request.method === 'POST') {
     const body = await readRequestBody(request);
-    try { sendJson(response, 200, await startAssessment(candidateStore, String(body.code || ''), questionBank)); }
+    try {
+      const data = await startAssessment(candidateStore, String(body.code || ''), questionBank);
+      sendJson(response, 200, { ...data, uitleg: { aan: aiConfigured(), max: UITLEG_MAX, uitDomeinen: UITLEG_UIT_DOMEINEN } });
+    }
     catch (e) {
       if (!(e instanceof AssessmentError)) console.error('assessment/start fout:', e);
       sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' });
@@ -435,6 +440,44 @@ async function handleApi(request, response, url) {
       if (!(e instanceof AssessmentError)) console.error('assessment/submit fout:', e);
       sendJson(response, e instanceof AssessmentError ? (e.code === 'already_done' ? 410 : 401) : 500, { error: e.code || 'server_error' });
     }
+    return true;
+  }
+
+  // Toezicht (kandidaat, zonder Entra-login; staat bij Easy Auth in excludedPaths net als start/submit).
+  if (url.pathname === '/api/assessment/event' && request.method === 'POST') {
+    const body = await readRequestBody(request);
+    try { sendJson(response, 200, await recordEvents(candidateStore, String(body.code || ''), body.events)); }
+    catch (e) {
+      if (!(e instanceof AssessmentError)) console.error('assessment/event fout:', e);
+      sendJson(response, e instanceof AssessmentError ? 409 : 500, { error: e.code || 'server_error' });
+    }
+    return true;
+  }
+  if (url.pathname === '/api/assessment/uitleg' && request.method === 'POST') {
+    if (!aiConfigured()) { sendJson(response, 503, { error: 'ai_not_configured' }); return true; }
+    const body = await readRequestBody(request);
+    try {
+      sendJson(response, 200, await explain(candidateStore, String(body.code || ''), {
+        questionId: String(body.questionId || ''), vraag: body.vraag, history: body.history,
+      }));
+    } catch (e) {
+      if (e instanceof AssessmentError) {
+        sendJson(response, e.code === 'uitleg_max' ? 429 : 409, { error: e.code });
+      } else {
+        if (!(e instanceof AiError)) console.error('assessment/uitleg fout:', e);
+        sendJson(response, 502, { error: 'ai_error' });
+      }
+    }
+    return true;
+  }
+  const tz = url.pathname.match(/^\/api\/candidates\/([^/]+)\/toezicht$/);
+  if (tz && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    if (!canSeeLogboek(request.headers['x-ms-client-principal'])) { sendJson(response, 403, { error: 'geen_logboekrol' }); return true; }
+    const all = await candidateStore.listCandidates();
+    const c = all.find((x) => x.id === decodeURIComponent(tz[1]));
+    if (!c) { sendJson(response, 404, { error: 'not_found' }); return true; }
+    sendJson(response, 200, c.toezicht || { events: [], samenvatting: null });
     return true;
   }
 

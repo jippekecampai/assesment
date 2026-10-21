@@ -1,5 +1,9 @@
 export type ClientQuestion = { id: string; domain: string; type: string; prompt: string; options: string[] };
-export type StartResponse = { candidate: { naam: string; functie: string }; questions: ClientQuestion[] };
+export type StartResponse = {
+  candidate: { naam: string; functie: string };
+  questions: ClientQuestion[];
+  uitleg?: { aan: boolean; max: number; uitDomeinen: string[] };
+};
 export type SubmitResponse = { totaalScore: number; domeinScores: Record<string, number> };
 export type CandidateStatus = "uitgenodigd" | "bezig" | "afgerond";
 export type Candidate = {
@@ -44,6 +48,32 @@ export const saveLearningProgress = (completedModules: string[]) =>
 export const startAssessment = (code: string) => post<StartResponse>("/api/assessment/start", { code });
 export const submitAssessment = (code: string, answers: { questionId: string; choice: number }[]) =>
   post<SubmitResponse>("/api/assessment/submit", { code, answers });
+// Toezicht tijdens de assessment (zie lib/toezicht.mjs). keepalive: een batch komt ook aan als de tab sluit.
+export type WegReden = "ander-venster" | "ander-tabblad" | "volledig-scherm-verlaten";
+export type ToezichtEvent = {
+  type: "start" | "weg" | "plak" | "kopieer" | "herladen" | "geen-volledig-scherm" | "uitleg" | "uitleg-geblokkeerd";
+  at?: string;
+  sec?: number;
+  reden?: WegReden | "onbekend";
+  vraag?: number;
+};
+export const sendToezicht = (code: string, events: ToezichtEvent[]) =>
+  fetch("/api/assessment/event", {
+    method: "POST",
+    keepalive: true,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ code, events }),
+  });
+export type UitlegTurn = { role: "user" | "assistant"; content: string };
+export const vraagUitleg = (code: string, questionId: string, vraag: string, history: UitlegTurn[]) =>
+  post<{ antwoord?: string; geblokkeerd?: boolean }>("/api/assessment/uitleg", { code, questionId, vraag, history });
+export type ToezichtSamenvatting = {
+  weg: number; wegSec: number; langsteWegSec: number; plak: number; kopieer: number;
+  uitleg: number; uitlegGeblokkeerd: number; herladen: number; volledigScherm: boolean;
+};
+export type Toezicht = { events: ToezichtEvent[]; samenvatting: ToezichtSamenvatting | null };
+export const getToezicht = (id: string) => get<Toezicht>(`/api/candidates/${encodeURIComponent(id)}/toezicht`);
+
 export type GradeDetail = {
   questionId: string;
   domain: string;

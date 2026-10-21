@@ -1,10 +1,13 @@
 // src/kiosk/ResultScreen.tsx
+import { useEffect } from "react";
 import { Card, Center, Group, Progress, RingProgress, Stack, Text, Title } from "@mantine/core";
 import type { SubmitResponse } from "../lib/api";
 
 const color = (s: number) => (s >= 75 ? "campaiLime" : s >= 60 ? "campaiCyan" : "campaiRed");
 
 export function ResultScreen({ result }: { result: SubmitResponse }) {
+  // Toezicht is voorbij (de runner is weg), dus volledig scherm mag uit.
+  useEffect(() => { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); }, []);
   const domains = Object.entries(result.domeinScores).sort((a, b) => b[1] - a[1]);
   return (
     <Center mih="100vh" bg="campaiNavy.0" p="md">

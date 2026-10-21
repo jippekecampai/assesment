@@ -29,6 +29,7 @@ import {
   flagQuestion,
 } from "../lib/api";
 import { ViewHead } from "./_shared";
+import { ToezichtKaart } from "./ToezichtKaart";
 
 function scoreColor(score: number): string {
   if (score >= 75) return "campaiLime";
@@ -421,6 +422,8 @@ export function Reviewdashboard({ search }: { search: string }) {
                 </Grid>
 
                 <Divider />
+
+                <ToezichtKaart candidateId={selectedCandidate.id} />
 
                 {/* Per-question evidence: volledige vraag + alle opties, juist + gekozen gemarkeerd */}
                 <Box>

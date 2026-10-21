@@ -1,12 +1,13 @@
 // src/kiosk/Kiosk.tsx
 import { useState } from "react";
 import { StartScreen } from "./StartScreen";
+import { ToezichtIntro } from "./ToezichtIntro";
 import { AssessmentRunner } from "./AssessmentRunner";
 import { ResultScreen } from "./ResultScreen";
 import type { StartResponse, SubmitResponse } from "../lib/api";
 
 export default function Kiosk() {
-  const [phase, setPhase] = useState<'start' | 'running' | 'done'>('start');
+  const [phase, setPhase] = useState<'start' | 'intro' | 'running' | 'done'>('start');
   const [code, setCode] = useState<string>("");
   const [startData, setStartData] = useState<StartResponse | null>(null);
   const [result, setResult] = useState<SubmitResponse | null>(null);
@@ -17,10 +18,14 @@ export default function Kiosk() {
         onStarted={(c, d) => {
           setCode(c);
           setStartData(d);
-          setPhase('running');
+          setPhase('intro');
         }}
       />
     );
+  }
+
+  if (phase === 'intro' && startData) {
+    return <ToezichtIntro naam={startData.candidate.naam} uitlegAan={Boolean(startData.uitleg?.aan)} onStart={() => setPhase('running')} />;
   }
 
   if (phase === 'running' && startData) {
