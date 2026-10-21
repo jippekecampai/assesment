@@ -25,3 +25,12 @@
 .toets-balk span.nu { outline: 2px solid var(--mantine-color-campaiNavy-7); outline-offset: 1px; }
 @media (prefers-reduced-motion: no-preference) { .toetsvraag { animation: toets-in .18s ease-out; } }
 @keyframes toets-in { from { transform: translateY(4px); opacity: .6; } to { transform: none; opacity: 1; } }
+/* Examen: alleen het examen gaat volledig scherm, met eigen achtergrond en scroll. */
+.examen-kader:fullscreen { background: var(--mantine-color-gray-0); overflow-y: auto; padding: 32px max(16px, env(safe-area-inset-left, 0px)); }
+.examen-kader::backdrop { background: var(--mantine-color-gray-0); }
+/* Kaarten in het toetsenoverzicht: hele kaart klikbaar, rustige hover. */
+.toets-kaart { display: block; width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-body); transition: border-color .15s, box-shadow .15s, transform .15s; }
+.toets-kaart:hover { border-color: var(--mantine-color-campaiNavy-3); box-shadow: 0 4px 14px rgba(0, 40, 80, .08); }
+.toets-kaart:focus-visible { outline: 3px solid var(--mantine-color-campaiCyan-5); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .toets-kaart:hover { transform: translateY(-1px); } }

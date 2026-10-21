@@ -1,0 +1,189 @@
+{
+  "domain": "Basic IT & Troubleshooting",
+  "vragen": [
+    {
+      "id": "basic-it-troubleshooting-x01",
+      "prompt": "Een medewerker kan één interne webapplicatie niet bereiken via de naam, maar wel via het IP-adres. Collega's hebben nergens last van. Wat is de meest gerichte stap?",
+      "options": [
+        "De netwerkkaart van de laptop vervangen, omdat de verbinding kennelijk onbetrouwbaar is.",
+        "Met nslookup de naamresolutie toetsen, het hosts-bestand nakijken en de DNS-cache legen.",
+        "De webapplicatie op de server herstarten, zodat de dienst weer voor iedereen bereikbaar is.",
+        "De firewall op de laptop uitzetten, omdat die de verbinding naar de applicatie kan blokkeren."
+      ],
+      "answer": 1,
+      "uitleg": "Werkt het IP-adres wel en de naam niet, dan zit het probleem in de naamresolutie op dit toestel: een verouderde DNS-cache, een afwijkende DNS-server of een regel in het hosts-bestand. Een defecte netwerkkaart of een blokkerende firewall zou ook verkeer naar het IP-adres raken. De server herstarten heeft geen zin, want collega's kunnen er gewoon bij.",
+      "illustratie": "osi"
+    },
+    {
+      "id": "basic-it-troubleshooting-x02",
+      "prompt": "Een pc kan nergens meer bij en blijkt een adres in de reeks 169.254.x.x te hebben. Wat betekent dat en wat controleer je?",
+      "options": [
+        "De DNS-server is onbereikbaar, dus je zet handmatig een publieke DNS-server op de netwerkkaart.",
+        "Het adres is dubbel in gebruik, dus je geeft de pc handmatig een vast adres in hetzelfde subnet.",
+        "Er zit malware op de pc die het adres wijzigt, dus je start meteen een volledige Defender-scan.",
+        "De pc kreeg geen antwoord van DHCP; je controleert de verbinding, switchpoort en DHCP-server."
+      ],
+      "answer": 3,
+      "uitleg": "Een adres in 169.254.x.x (APIPA) kiest Windows zelf wanneer er geen DHCP-server antwoordt, dus je zoekt het in de verbinding of bij DHCP. Een DNS-probleem geeft geen APIPA-adres, want DNS komt pas na het verkrijgen van een adres. Handmatig een vast adres zetten maskeert de oorzaak, en malware is hier geen logische eerste verklaring.",
+      "illustratie": "subnet"
+    },
+    {
+      "id": "basic-it-troubleshooting-x03",
+      "prompt": "Niemand op een afdeling kan nog printen. Op de printserver staat bovenaan de wachtrij één taak vast met de status 'Fout'. Wat doe je eerst?",
+      "options": [
+        "De vastgelopen taak verwijderen en zo nodig de Print Spooler-service op de printserver herstarten.",
+        "Op alle werkplekken de printerdriver verwijderen en daarna opnieuw installeren via de printserver.",
+        "De printer laten vervangen, omdat een taak met de foutstatus meestal op een hardwaredefect wijst.",
+        "Alle gebruikers vragen hun pc te herstarten, zodat de wachtrij op de server vanzelf wordt geleegd."
+      ],
+      "answer": 0,
+      "uitleg": "Eén vastgelopen taak blokkeert de hele wachtrij; die verwijderen en zo nodig de spooler herstarten is de gerichte eerste stap. Drivers op alle werkplekken herinstalleren pakt een serverprobleem op de verkeerde plek aan. Hardware vervangen is voorbarig, en herstarten van werkplekken leegt de wachtrij op de server niet."
+    },
+    {
+      "id": "basic-it-troubleshooting-x04",
+      "prompt": "De C-schijf van een laptop zit op 99% en Windows-updates mislukken daardoor. Wat is de verstandigste aanpak?",
+      "options": [
+        "Handmatig de map C:\\Windows\\WinSxS leegmaken, omdat die vaak vele gigabytes in beslag neemt.",
+        "Het wisselbestand uitschakelen, zodat er direct een flink aantal gigabytes vrijkomt op de schijf.",
+        "Met een analysetool zien wat de ruimte inneemt en opruimen via Schijfopruiming of Opslaginzicht.",
+        "De laptop vervangen door een model met een grotere SSD, omdat deze schijf te klein is geworden."
+      ],
+      "answer": 2,
+      "uitleg": "Eerst meten waar de ruimte heen gaat, vaak een gebruikersmap, downloads of oude updatebestanden, en dan opruimen met de ingebouwde tools. WinSxS handmatig leegmaken kan Windows onherstelbaar beschadigen; die map ruim je alleen op via de ondersteunde tools. Het wisselbestand uitzetten veroorzaakt instabiliteit, en vervangen is voorbarig zonder te weten wat de ruimte vult."
+    },
+    {
+      "id": "basic-it-troubleshooting-x05",
+      "prompt": "Een gebruiker meldt dat zijn pc sinds vanochtend erg traag is; gisteren was er niets aan de hand. Wat is de meest gerichte eerste stap?",
+      "options": [
+        "Windows opnieuw installeren, omdat traagheid meestal komt door een vervuild besturingssysteem.",
+        "Extra werkgeheugen bestellen, omdat traagheid vrijwel altijd door te weinig RAM wordt veroorzaakt.",
+        "In Taakbeheer of Resource Monitor kijken welk proces de CPU, het geheugen of de schijf belast.",
+        "De schijf laten defragmenteren, ook als er een SSD in zit, zodat de schijf weer optimaal werkt."
+      ],
+      "answer": 2,
+      "uitleg": "Een plotselinge vertraging heeft meestal een concrete oorzaak, zoals een proces dat vastloopt, een update of een scan, en Taakbeheer of Resource Monitor laat die direct zien. Herinstalleren of RAM bijplaatsen is ongericht bij een probleem dat gisteren nog niet bestond. Een SSD defragmenteren helpt niet en slijt de schijf onnodig."
+    },
+    {
+      "id": "basic-it-troubleshooting-x06",
+      "prompt": "Na een BIOS-update vraagt een laptop bij het opstarten om de BitLocker-herstelsleutel. Het toestel wordt beheerd met Intune. Wat doe je?",
+      "options": [
+        "De identiteit van de gebruiker verifiëren en de herstelsleutel opzoeken bij het apparaat in Entra ID.",
+        "De schijf opnieuw formatteren, omdat de gegevens zonder sleutel van de gebruiker niet te redden zijn.",
+        "De gebruiker vragen zijn accountwachtwoord in te voeren, omdat dat de versleutelde schijf ontgrendelt.",
+        "De laptop een paar keer herstarten, omdat de vraag na een BIOS-update meestal vanzelf weer verdwijnt."
+      ],
+      "answer": 0,
+      "uitleg": "Een firmware-update verandert de metingen van de TPM, waardoor BitLocker om de herstelsleutel vraagt; bij een beheerd toestel staat die sleutel bij het apparaat in Entra ID of Intune. Verifieer wel eerst wie er belt, want de sleutel geeft toegang tot alle data. Formatteren is onnodig dataverlies, het accountwachtwoord ontgrendelt de schijf niet en herstarten verandert niets aan de vraag."
+    },
+    {
+      "id": "basic-it-troubleshooting-x07",
+      "prompt": "Een domein-pc kan zich niet meer aanmelden en in de logboeken staan Kerberos-fouten. De klok van de pc loopt twintig minuten achter. Wat is de oorzaak en de aanpak?",
+      "options": [
+        "Het computeraccount is verlopen; je haalt de pc uit het domein en voegt hem daarna opnieuw toe.",
+        "De netwerkkaart is defect; je vervangt hem en controleert daarna opnieuw of aanmelden lukt.",
+        "Het wachtwoord van de gebruiker is verlopen; je reset het en laat de gebruiker opnieuw inloggen.",
+        "Kerberos staat maar enkele minuten tijdsverschil toe; je herstelt de tijdsynchronisatie met w32tm."
+      ],
+      "answer": 3,
+      "uitleg": "Kerberos weigert standaard tickets bij meer dan vijf minuten tijdsverschil, dus twintig minuten afwijking verklaart de fouten direct; de tijdsync herstellen lost het op. Opnieuw aan het domein koppelen helpt niet zolang de klok verkeerd staat. Een defecte netwerkkaart of een verlopen wachtwoord geeft andere foutmeldingen."
+    },
+    {
+      "id": "basic-it-troubleshooting-x08",
+      "prompt": "Een medewerker is net toegevoegd aan een AD-groep die toegang geeft tot een netwerkshare, maar krijgt nog steeds 'Toegang geweigerd'. Collega's in dezelfde groep kunnen er wel bij. Wat is de waarschijnlijkste oorzaak?",
+      "options": [
+        "De rechten op de share zijn beschadigd en moeten opnieuw voor de hele groep worden ingesteld.",
+        "Het toegangstoken bevat het nieuwe lidmaatschap nog niet; de gebruiker moet opnieuw aanmelden.",
+        "De gebruiker heeft een te lang wachtwoord, waardoor de server de aanmelding niet meer accepteert.",
+        "De fileserver heeft te weinig licenties voor het aantal gelijktijdige gebruikers op die share."
+      ],
+      "answer": 1,
+      "uitleg": "Groepslidmaatschap wordt bij het aanmelden in het toegangstoken gezet, dus een nieuwe groep werkt pas na af- en weer aanmelden (en eventueel na replicatie tussen domeincontrollers). De sharerechten zijn in orde, want collega's in dezelfde groep kunnen erbij. Wachtwoordlengte en licenties geven geen 'Toegang geweigerd' voor één persoon."
+    },
+    {
+      "id": "basic-it-troubleshooting-x09",
+      "prompt": "Een werkplek krijgt sinds een week af en toe een blauw scherm. Wat is de meest gerichte aanpak?",
+      "options": [
+        "De stopcode en minidumps bekijken en nagaan welke driver of update rond die tijd veranderde.",
+        "Het geheugen en de schijf direct vervangen, omdat blauwe schermen vrijwel altijd hardware zijn.",
+        "Windows opnieuw installeren, zodat eventueel beschadigde systeembestanden worden vervangen.",
+        "De gebruiker vragen de pc vaker af te sluiten, omdat een lange uptime blauwe schermen geeft."
+      ],
+      "answer": 0,
+      "uitleg": "De stopcode en de minidump wijzen vaak direct naar de veroorzaker, en de timing koppelt die aan een recente driver of update. Hardware vervangen of opnieuw installeren is ongericht zolang je de oorzaak niet kent. Lange uptime is geen gebruikelijke oorzaak van een blauw scherm."
+    },
+    {
+      "id": "basic-it-troubleshooting-x10",
+      "prompt": "Op één bureau werkt de bekabelde netwerkverbinding niet, wifi wel. De netwerkkabel is al vervangen. Wat controleer je nu?",
+      "options": [
+        "De DNS-instellingen van de laptop, omdat bekabeld en wifi elk een eigen DNS-server gebruiken.",
+        "Of de laptop via wifi een adres kreeg dat het bekabelde adres blokkeert en ongeldig maakt.",
+        "Of het linklampje brandt en of de wandpoort is doorgepatcht naar een actieve switchpoort.",
+        "Of wifi uit moet, omdat Windows nooit twee netwerkverbindingen tegelijk kan gebruiken."
+      ],
+      "answer": 2,
+      "uitleg": "Met een nieuwe kabel is de volgende schakel de fysieke laag: brandt er een linklampje en is de wandpoort doorverbonden naar een actieve, juist geconfigureerde switchpoort. DNS verklaart niet dat er helemaal geen bekabelde verbinding is. Een wifi-adres blokkeert de bekabelde verbinding niet, en Windows kan prima meerdere verbindingen tegelijk hebben.",
+      "illustratie": "osi"
+    },
+    {
+      "id": "basic-it-troubleshooting-x11",
+      "prompt": "Windows meldt op een pc een IP-adresconflict. Een collega blijkt een nieuwe netwerkprinter handmatig een vast adres te hebben gegeven. Wat is de structurele oplossing?",
+      "options": [
+        "De pc een vast adres geven, zodat DHCP het adres van de printer niet meer aan de pc uitdeelt.",
+        "De DHCP-server herstarten, zodat alle apparaten in het netwerk opnieuw een adres ophalen.",
+        "De printer van het netwerk halen en hem voortaan alleen via USB op één werkplek aansluiten.",
+        "De printer een DHCP-reservering of een vast adres buiten de scope geven en dat documenteren."
+      ],
+      "answer": 3,
+      "uitleg": "Het conflict ontstaat doordat het vaste adres van de printer binnen de DHCP-scope valt; een reservering of een adres buiten de scope voorkomt dat structureel. De pc een vast adres geven verschuift het probleem en vergroot de beheerlast. DHCP herstarten lost niets blijvend op, en de printer via USB aansluiten neemt functionaliteit weg.",
+      "illustratie": "subnet"
+    },
+    {
+      "id": "basic-it-troubleshooting-x12",
+      "prompt": "Een gebruiker meldt telefonisch: 'Het planningsprogramma loopt steeds vast.' Welke vragen leveren je het meeste op voor de diagnose?",
+      "options": [
+        "Of de gebruiker de computer al opnieuw heeft opgestart voordat hij de servicedesk belde.",
+        "Sinds wanneer het gebeurt, bij welke handeling, of er een melding is en wat er veranderde.",
+        "Of collega's op dezelfde afdeling ook wel eens problemen hebben met andere programma's.",
+        "Welke Windows-versie er op de computer staat, inclusief het volledige buildnummer ervan."
+      ],
+      "answer": 1,
+      "uitleg": "Tijdstip, reproduceerbare handeling, foutmelding en recente wijzigingen bakenen het probleem af en wijzen vaak al naar de oorzaak. Of de pc herstart is, zegt weinig over waarom het programma vastloopt. Problemen met andere programma's verbreden de vraag onnodig, en het buildnummer haal je zelf uit het beheertool."
+    },
+    {
+      "id": "basic-it-troubleshooting-x13",
+      "prompt": "Excel crasht bij een gebruiker telkens bij het opstarten, maar start normaal als je het opent met 'excel /safe'. Wat is de logische volgende stap?",
+      "options": [
+        "De invoegtoepassingen één voor één uitschakelen om te vinden welke de crash veroorzaakt.",
+        "Office volledig verwijderen en opnieuw installeren, omdat de installatie beschadigd is.",
+        "Het Windows-profiel van de gebruiker opnieuw aanmaken, omdat de instellingen corrupt zijn.",
+        "De gebruiker voortaan in de veilige modus laten werken, omdat Excel daar stabiel draait."
+      ],
+      "answer": 0,
+      "uitleg": "De veilige modus laadt geen invoegtoepassingen en aanpassingen; werkt Excel dan wel, dan is een add-in de meest waarschijnlijke oorzaak en vind je die door ze een voor een uit te zetten. Office herinstalleren of een nieuw profiel aanmaken is een zwaar middel voor een probleem dat al is afgebakend. In de veilige modus blijven werken ontneemt de gebruiker functies."
+    },
+    {
+      "id": "basic-it-troubleshooting-x14",
+      "prompt": "Een medewerker wijzigde gisteren zijn wachtwoord. Sindsdien wordt zijn AD-account steeds opnieuw geblokkeerd, ook nadat je het hebt ontgrendeld. Wat is de waarschijnlijkste oorzaak?",
+      "options": [
+        "Het nieuwe wachtwoord voldoet niet aan het beleid, waardoor het domein het account blokkeert.",
+        "Het account is gehackt en een aanvaller probeert actief in te loggen met het oude wachtwoord.",
+        "Er is een replicatieprobleem, waardoor de domeincontrollers het nieuwe wachtwoord niet kennen.",
+        "Een ander apparaat, zoals een telefoon of gekoppelde schijf, gebruikt nog het oude wachtwoord."
+      ],
+      "answer": 3,
+      "uitleg": "Na een wachtwoordwijziging is een telefoon, een tweede pc, een gekoppelde netwerkschijf of een opgeslagen inlog de meest voorkomende bron van herhaalde blokkades; gebeurtenis 4740 op de domeincontroller toont vanaf welk apparaat het gebeurt. Een wachtwoord dat niet aan het beleid voldoet wordt bij het wijzigen al geweigerd. Een aanval of een replicatieprobleem is mogelijk, maar minder waarschijnlijk dan deze alledaagse oorzaak."
+    },
+    {
+      "id": "basic-it-troubleshooting-x15",
+      "prompt": "Een cumulatieve Windows-update mislukt op één pc steeds met dezelfde foutcode, terwijl alle andere pc's hem zonder problemen installeren. Wat doe je eerst?",
+      "options": [
+        "De update op alle pc's terugdraaien, omdat hij kennelijk niet betrouwbaar te installeren is.",
+        "De foutcode opzoeken, vrije ruimte controleren en systeembestanden herstellen met DISM en sfc.",
+        "Windows Update op deze pc permanent uitschakelen, zodat de foutmelding niet meer terugkomt.",
+        "Een nieuwe pc voor de gebruiker bestellen, omdat oudere hardware updates vaak blijft weigeren."
+      ],
+      "answer": 1,
+      "uitleg": "Omdat de update elders slaagt, zit de oorzaak op deze pc: de foutcode wijst de richting, en schijfruimte en beschadigde systeembestanden (DISM en sfc) zijn de gebruikelijke verdachten. Terugdraaien op alle pc's straft de werkende toestellen. Updates uitzetten laat de pc ongepatcht, en vervangen is voorbarig."
+    }
+  ]
+}

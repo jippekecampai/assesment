@@ -1,0 +1,190 @@
+{
+  "domain": "Inforcer",
+  "vragen": [
+    {
+      "id": "inforcer-x01",
+      "prompt": "Je wilt de standaard-baseline uitrollen bij een kleine klant zonder Entra ID P1-licenties. De baseline bevat een aantal Conditional Access-policies. Wat is de juiste aanpak?",
+      "options": [
+        "De CA-policies gewoon meenemen; de benodigde P1-licentie wordt dan vanzelf voor de tenant geactiveerd.",
+        "De hele baseline voor deze klant overslaan tot de klant alle licenties heeft die de baseline vraagt.",
+        "Een variant zonder CA gebruiken, Security Defaults overwegen en het licentiegat aan de klant melden.",
+        "De CA-policies handmatig in de tenant namaken, omdat handmatig gemaakte policies geen licentie vragen."
+      ],
+      "answer": 2,
+      "uitleg": "Conditional Access vereist Entra ID P1; zonder die licentie is Security Defaults de gangbare basisbescherming, en het gat hoort als advies bij de klant. Licenties worden nooit vanzelf geactiveerd en handmatig gemaakte CA-policies hebben dezelfde licentie nodig. De hele baseline overslaan laat de rest van de beveiliging onnodig liggen.",
+      "illustratie": "baseline"
+    },
+    {
+      "id": "inforcer-x02",
+      "prompt": "Een collega wil één instelling aanpassen in de standaard-baseline die bij veertig klanten is uitgerold. Wat hoort er bij die wijziging?",
+      "options": [
+        "Een nieuwe baselineversie met changelog, review door een tweede engineer en een gefaseerde uitrol.",
+        "De instelling direct in de baseline wijzigen; de tenants nemen het bij de volgende sync vanzelf over.",
+        "De wijziging per tenant in het admin center doorvoeren, zodat de baseline zelf ongewijzigd blijft.",
+        "Een kopie van de baseline per klant maken, zodat elke klant voortaan zijn eigen losse variant houdt."
+      ],
+      "answer": 0,
+      "uitleg": "Een baseline is gedeelde configuratie: een wijziging raakt veertig tenants tegelijk, dus versiebeheer, een tweede paar ogen en gefaseerd uitrollen horen erbij. Direct wijzigen zonder review vergroot de impact van een fout. Handmatig per tenant werken of per klant kopiëren laat de baseline en de werkelijkheid uit elkaar lopen."
+    },
+    {
+      "id": "inforcer-x03",
+      "prompt": "Na remediatie verschijnt bij één tenant na een paar dagen steeds dezelfde afwijking van de baseline opnieuw. Wat is de meest waarschijnlijke verklaring en aanpak?",
+      "options": [
+        "De baseline is beschadigd geraakt; je verwijdert hem en bouwt hem helemaal opnieuw op vanaf nul.",
+        "Het is een weergavefout in de rapportage; je markeert de afwijking als opgelost en sluit hem af.",
+        "De tenant heeft te weinig licenties; je bestelt er extra zodat de instelling voortaan blijft staan.",
+        "Iets of iemand zet de instelling terug, zoals een lokale beheerder of script; dat zoek je in de auditlog."
+      ],
+      "answer": 3,
+      "uitleg": "Een afwijking die na herstel steeds terugkomt wijst op een actor die de instelling wijzigt; de auditlog van de tenant laat zien wie of wat dat doet. Dat de afwijking bij één tenant speelt en de andere tenants in orde zijn, maakt een beschadigde baseline onwaarschijnlijk. Een weergavefout aannemen of licenties bijkopen zonder bewijs lost de oorzaak niet op."
+    },
+    {
+      "id": "inforcer-x04",
+      "prompt": "Je deelt je klanttenants in ringen in voor het uitrollen van baseline-wijzigingen. Welke indeling is het meest verstandig?",
+      "options": [
+        "Ring 0 bevat de grootste klanten, zodat problemen meteen bij de belangrijkste tenants opvallen.",
+        "Ring 0 is de eigen tenant of een testtenant, dan een kleine groep klanten en daarna de rest.",
+        "Alle tenants in één ring, omdat meerdere ringen leiden tot verschillen tussen klanten.",
+        "De ringen alfabetisch op klantnaam indelen, zodat de volgorde voor iedereen voorspelbaar is."
+      ],
+      "answer": 1,
+      "uitleg": "Uitrollen in ringen beperkt de schade van een fout: eerst waar een probleem het minst kost (eigen of testtenant), dan een kleine pilotgroep, dan de rest. Beginnen bij de grootste klanten zet juist de meeste impact op het spel. Eén ring heft het voordeel op, en een alfabetische indeling zegt niets over risico."
+    },
+    {
+      "id": "inforcer-x05",
+      "prompt": "Een klant krijgt een goedgekeurde uitzondering op een instelling uit de baseline. Wat leg je minimaal vast?",
+      "options": [
+        "Alleen de naam van de instelling, zodat de drift-melding voor deze klant voortaan wegblijft.",
+        "Instelling, reden, risico, wie akkoord gaf en wanneer de uitzondering opnieuw wordt bekeken.",
+        "Een screenshot van de instelling in de tenant, opgeslagen in de gedeelde map van het team.",
+        "Niets apart, want een uitzondering blijkt vanzelf uit de drift-rapportage van die tenant."
+      ],
+      "answer": 1,
+      "uitleg": "Een uitzondering is een bewuste risicoacceptatie: reden, risico, akkoord en een herbeoordelingsmoment maken haar uitlegbaar en voorkomen dat ze eeuwig blijft staan. Alleen de melding onderdrukken of een screenshot bewaren zegt niets over waarom. Zonder vastlegging is een uitzondering in de rapportage niet te onderscheiden van ongewenste drift."
+    },
+    {
+      "id": "inforcer-x06",
+      "prompt": "De directeur van een klant, niet technisch, wil maandelijks weten hoe het met de beveiliging van hun Microsoft 365-omgeving staat. Wat lever je?",
+      "options": [
+        "De volledige ruwe export van alle instellingen, zodat de klant zelf alles kan nalopen.",
+        "Niets periodiek; je meldt je alleen als er een concreet beveiligingsincident is geweest.",
+        "Een technische lijst van alle policy-namen met hun JSON-configuratie als bijlage.",
+        "Een korte samenvatting van de alignment, open afwijkingen, uitzonderingen en advies."
+      ],
+      "answer": 3,
+      "uitleg": "Een niet-technische beslisser heeft een samenvatting nodig: hoe ver de omgeving van de baseline afwijkt, wat er openstaat, welke risico's bewust zijn geaccepteerd en wat je adviseert. Een ruwe export of JSON-lijst is voor hem onleesbaar. Alleen bij incidenten rapporteren maakt de waarde van het beheer onzichtbaar.",
+      "illustratie": "klantupdate"
+    },
+    {
+      "id": "inforcer-x07",
+      "prompt": "Je controleert een nieuwe Conditional Access-baseline die vanavond naar een groep tenants gaat en ziet dat het break-glass-account niet is uitgesloten. Wat doe je?",
+      "options": [
+        "De uitrol tegenhouden tot het break-glass-account in elke CA-policy van de baseline is uitgesloten.",
+        "De uitrol laten doorgaan; bij een lock-out kom je altijd via Microsoft Support weer binnen.",
+        "Het break-glass-account na de uitrol per tenant handmatig als uitzondering op de policy toevoegen.",
+        "Het break-glass-account verwijderen, omdat een account zonder MFA toch al een risico vormt."
+      ],
+      "answer": 0,
+      "uitleg": "Zonder uitgesloten noodaccount kan een fout in een CA-policy alle beheerders buitensluiten, dus de uitrol wacht tot dat in de baseline zelf geregeld is. Achteraf per tenant handmatig herstellen is te laat en foutgevoelig. Herstel via Microsoft Support kan dagen duren, en het noodaccount verwijderen haalt juist je vangnet weg.",
+      "illustratie": "ca"
+    },
+    {
+      "id": "inforcer-x08",
+      "prompt": "Microsoft kondigt aan dat een instelling uit je baseline verdwijnt en wordt vervangen door een nieuwe instelling. Wat is de juiste aanpak?",
+      "options": [
+        "Niets doen; de oude instelling blijft in de baseline staan en wordt door Microsoft genegeerd.",
+        "De oude instelling meteen uit de baseline halen, ook als de vervanger nog niet beschikbaar is.",
+        "De vervanger in een nieuwe baselineversie opnemen, valideren in een testtenant en dan uitrollen.",
+        "Per klant afwachten tot de drift-rapportage een fout toont en het dan per tenant oplossen."
+      ],
+      "answer": 2,
+      "uitleg": "Een baseline moet meebewegen met het platform: de vervanger komt in een nieuwe versie die je eerst test en daarna gefaseerd uitrolt. Niets doen laat de bescherming stilletjes vervallen. Te vroeg verwijderen opent een gat, en wachten op fouten maakt van gepland werk een reeks verstoringen."
+    },
+    {
+      "id": "inforcer-x09",
+      "prompt": "Wat is voor een MSP het belangrijkste voordeel van baselines als vastgelegde, geversioneerde configuratie (policy-as-code)?",
+      "options": [
+        "Je hoeft de onderliggende Microsoft 365-instellingen zelf niet meer inhoudelijk te kennen.",
+        "Klanten kunnen hun eigen instellingen niet meer wijzigen, ook niet als ze global admin zijn.",
+        "Microsoft geeft extra ondersteuning aan tenants die met een vaste baseline worden beheerd.",
+        "Je kunt per tenant de gewenste staat aantonen, afwijkingen meten en wijzigingen terugvolgen."
+      ],
+      "answer": 3,
+      "uitleg": "Vastgelegde configuratie maakt de gewenste staat expliciet, zodat je afwijkingen kunt meten, wijzigingen kunt reviewen en per versie kunt terugvolgen wat er veranderde. Kennis van de instellingen blijft nodig om baselines goed te bouwen en te beoordelen. Een global admin houdt technisch altijd de mogelijkheid om te wijzigen, en Microsoft biedt geen extra ondersteuning op basis van een baseline.",
+      "illustratie": "baseline"
+    },
+    {
+      "id": "inforcer-x10",
+      "prompt": "Een klant met een eigen IT-beheerder past regelmatig zelf instellingen aan, die vervolgens als drift in je rapportage opduiken. Wat is de beste aanpak?",
+      "options": [
+        "Met de klant afspreken wie wat beheert en legitieme wijzigingen als uitzondering vastleggen.",
+        "De global admin-rechten van de IT-beheerder van de klant zonder overleg direct intrekken.",
+        "Automatische remediatie aanzetten, zodat elke wijziging van de beheerder meteen terugspringt.",
+        "Deze tenant uit de drift-rapportage halen, zodat de meldingen niet meer in je overzicht staan."
+      ],
+      "answer": 0,
+      "uitleg": "Het echte probleem is onduidelijk eigenaarschap; heldere afspraken en vastgelegde uitzonderingen maken drift weer betekenisvol. Rechten zonder overleg intrekken of wijzigingen stilzwijgend terugdraaien beschadigt de relatie en kan legitiem werk breken. De tenant uit de rapportage halen verbergt het risico in plaats van het te beheersen."
+    },
+    {
+      "id": "inforcer-x11",
+      "prompt": "Na een uitrol toont de rapportage dat één policy bij drie van de twintig tenants niet is toegepast. Wat doe je eerst?",
+      "options": [
+        "De uitrol bij alle twintig tenants terugdraaien, zodat alles weer gelijk staat aan de vorige versie.",
+        "Per tenant de foutmelding bekijken en zoeken wat die drie gemeen hebben, zoals licentie of rechten.",
+        "De uitrol blijven herhalen tot hij overal slaagt, want het is meestal een tijdelijke storing.",
+        "De policy uit de baseline halen, omdat een policy die niet overal werkt geen standaard kan zijn."
+      ],
+      "answer": 1,
+      "uitleg": "Zeventien geslaagde tenants laten zien dat de policy zelf werkt; de oorzaak zit in iets wat de drie mislukte tenants delen, zoals een ontbrekende licentie, onvoldoende rechten of een conflicterende instelling. Alles terugdraaien of de policy schrappen is een te grove reactie. Blind herhalen negeert de foutmelding die de oorzaak meestal al noemt."
+    },
+    {
+      "id": "inforcer-x12",
+      "prompt": "Een baseline-update blijkt bij de klanten in ring 1 het aanmelden in een veelgebruikte bedrijfsapplicatie te breken. Wat is de beste eerste reactie?",
+      "options": [
+        "Doorrollen naar de overige ringen, zodat het probleem daarna overal tegelijk kan worden opgelost.",
+        "Alle getroffen gebruikers een nieuw wachtwoord geven en kijken of het aanmelden dan weer lukt.",
+        "De uitrol pauzeren, ring 1 terugzetten naar de vorige versie en de oorzaak in een test uitzoeken.",
+        "De klanten vragen voorlopig een andere applicatie te gebruiken tot de volgende baselineversie."
+      ],
+      "answer": 2,
+      "uitleg": "Ringen zijn er juist om hier te stoppen: pauzeer de uitrol, herstel de getroffen tenants met de vorige versie en zoek de oorzaak zonder klanten te belasten. Doorrollen vergroot de schade. Wachtwoorden resetten raakt de oorzaak niet, en de klant laten omwerken schuift jouw probleem naar hen door.",
+      "illustratie": "rto"
+    },
+    {
+      "id": "inforcer-x13",
+      "prompt": "Je beheert klanten met sterk verschillende licenties, van Business Basic tot E5. Hoe structureer je je baselines?",
+      "options": [
+        "Eén baseline voor iedereen met alleen instellingen die ook in Business Basic beschikbaar zijn.",
+        "Per klant een volledig eigen baseline bouwen, zodat elke tenant precies krijgt wat hij nodig heeft.",
+        "De E5-baseline overal uitrollen; instellingen zonder licentie worden door de tenant genegeerd.",
+        "Een gedeelde kern met aanvullende lagen per licentieniveau, en uitzonderingen per klant vastgelegd."
+      ],
+      "answer": 3,
+      "uitleg": "Een gedeelde kern houdt beheer schaalbaar, en lagen per licentieniveau benutten wat een klant werkelijk heeft. Alleen de kleinste gemene deler laat bij E5-klanten veel bescherming liggen. Per klant een eigen baseline is niet te onderhouden, en een E5-baseline overal uitrollen levert fouten of misleidende rapportage op in plaats van stil negeren."
+    },
+    {
+      "id": "inforcer-x14",
+      "prompt": "De mate waarin een klanttenant aan de baseline voldoet (alignment) daalt plotseling flink, terwijl jij niets hebt uitgerold. Wat doe je?",
+      "options": [
+        "Uitzoeken welke instellingen afwijken en via de auditlog nagaan wie of wat ze wanneer wijzigde.",
+        "Direct alle afwijkingen automatisch terugzetten, zodat de score zo snel mogelijk weer herstelt.",
+        "Afwachten tot volgende maand, omdat zo'n score bij tenants wel vaker tijdelijk schommelt.",
+        "De baseline zo aanpassen dat de huidige instellingen van de klant er weer volledig aan voldoen."
+      ],
+      "answer": 0,
+      "uitleg": "Een plotselinge daling zonder eigen wijziging kan op een fout van een beheerder wijzen, maar ook op een gecompromitteerd account; eerst begrijpen wat er veranderde is dus essentieel. Blind terugzetten kan legitiem werk breken en wist sporen van een mogelijk incident. Afwachten of de baseline aanpassen negeert een signaal dat aandacht verdient."
+    },
+    {
+      "id": "inforcer-x15",
+      "prompt": "Je koppelt een nieuwe klanttenant aan je multi-tenant baselinebeheer. Welke vorm van beheertoegang is het verstandigst?",
+      "options": [
+        "Een gedeeld global admin-account per klant waarvan het wachtwoord in het team bekend is.",
+        "Gedelegeerde toegang (GDAP) met alleen de benodigde rollen, en vastgelegd wie wat mag.",
+        "Permanente global admin-rechten voor alle engineers, zodat niemand ooit vastloopt bij een klus.",
+        "Aanmelden met het account van de IT-contactpersoon van de klant, met diens toestemming."
+      ],
+      "answer": 1,
+      "uitleg": "Granular Delegated Admin Privileges geeft per klant tijdgebonden toegang met alleen de rollen die nodig zijn, en elke actie blijft herleidbaar naar een persoon. Een gedeeld account is niet herleidbaar en lastig in te trekken. Permanente global admin voor iedereen vergroot de schade bij een gecompromitteerd account, en het account van de klant lenen maakt elke actie onherleidbaar."
+    }
+  ]
+}

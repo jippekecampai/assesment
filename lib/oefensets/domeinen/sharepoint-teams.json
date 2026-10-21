@@ -1,0 +1,186 @@
+{
+  "domain": "SharePoint / Teams",
+  "vragen": [
+    {
+      "id": "sharepoint-teams-x01",
+      "prompt": "Bij een rechtencontrole van een projectsite blijken honderden losse bestanden en mappen met unieke machtigingen te zijn gedeeld. Niemand heeft nog overzicht. Wat is de beste structurele aanpak?",
+      "options": [
+        "Alle unieke machtigingen in één keer verwijderen zodat iedereen weer alles van de site ziet.",
+        "Een lijst bijhouden van alle uitzonderingen zodat je per bestand weet wie toegang heeft.",
+        "De site op alleen-lezen zetten totdat elke gebruiker zelf aangeeft wat hij nodig heeft.",
+        "Rechten op siteniveau via groepen inrichten en unieke machtigingen gericht terugbrengen."
+      ],
+      "answer": 3,
+      "uitleg": "Overerving vanaf de site, toegekend via groepen, is beheersbaar; unieke machtigingen per bestand zijn dat niet en brengen we gericht terug in overleg met de eigenaar. Alles in één keer verwijderen kan vertrouwelijke stukken voor iedereen openzetten, een lijst van uitzonderingen bestendigt de wildgroei, en alleen-lezen blokkeert het werk."
+    },
+    {
+      "id": "sharepoint-teams-x02",
+      "prompt": "Een medewerker synchroniseert met de OneDrive-app meerdere grote documentbibliotheken, samen ruim 400.000 bestanden. Hij klaagt over een trage pc en sync die blijft hangen. Wat adviseer je?",
+      "options": [
+        "Een snellere pc aanschaffen, omdat de OneDrive-app elke hoeveelheid bestanden aankan.",
+        "Alleen de mappen synchroniseren die hij echt nodig heeft en de rest via de browser openen.",
+        "Alle bestanden offline beschikbaar maken zodat de app ze niet steeds hoeft op te halen.",
+        "De bibliotheken als netwerkschijf koppelen in plaats van ze met de app te synchroniseren."
+      ],
+      "answer": 1,
+      "uitleg": "Microsoft adviseert om niet meer dan ongeveer 300.000 bestanden in totaal te synchroniseren, omdat daarboven de prestaties merkbaar teruglopen; dus beperk je de sync tot wat nodig is. Een snellere pc lost de limiet niet op, alles offline houden maakt de belasting groter, en een netwerkschijfkoppeling naar SharePoint is traag en niet ondersteund als werkwijze."
+    },
+    {
+      "id": "sharepoint-teams-x03",
+      "prompt": "Een team heeft één eigenaar, en die medewerker gaat over een maand uit dienst. Wat regel je vóór zijn vertrek?",
+      "options": [
+        "Het account van de vertrekker na vertrek actief houden zodat het team een eigenaar houdt.",
+        "Het team archiveren, omdat een team zonder de oorspronkelijke eigenaar niet meer werkt.",
+        "Minstens één, liefst twee nieuwe eigenaren aanwijzen die het team actief gaan beheren.",
+        "Alle leden van het team eigenaar maken zodat er altijd wel iemand verantwoordelijk is."
+      ],
+      "answer": 2,
+      "uitleg": "Een team zonder eigenaar kan niemand beheren, en Microsoft adviseert minstens twee eigenaren; die wijs je vóór het vertrek aan. Een account van een vertrokken medewerker actief houden is een beveiligingsrisico, archiveren is niet nodig omdat het team gewoon doorwerkt, en iedereen eigenaar maken haalt het beheer juist weg."
+    },
+    {
+      "id": "sharepoint-teams-x04",
+      "prompt": "Een klant wil een gedeeld kanaal (shared channel) gebruiken met een partnerorganisatie die ook Microsoft 365 heeft. Het lukt niet om iemand van de partner toe te voegen; gasttoegang staat wel aan. Wat ontbreekt waarschijnlijk?",
+      "options": [
+        "B2B direct connect, aan beide kanten toegestaan in de cross-tenant access settings.",
+        "Een gastaccount voor de externe persoon, aangemaakt in de tenant van de eigen klant.",
+        "Een Teams-licentie voor de externe persoon, af te nemen in de tenant van de klant.",
+        "Een sensitivity label op het team dat extern delen voor deze partner expliciet toestaat."
+      ],
+      "answer": 0,
+      "uitleg": "Gedeelde kanalen met een andere organisatie werken via B2B direct connect, en dat moet in de cross-tenant access settings van beide tenants worden toegestaan; gasttoegang staat daar los van. Een gastaccount is voor gewone teams, de externe persoon gebruikt zijn eigen licentie, en een label alleen opent B2B direct connect niet."
+    },
+    {
+      "id": "sharepoint-teams-x05",
+      "prompt": "De opslag van een SharePoint-site loopt snel vol, terwijl het aantal documenten nauwelijks groeit. Medewerkers slaan grote bestanden vaak tussentijds op. Wat is de meest gerichte maatregel?",
+      "options": [
+        "De prullenbak van de site leegmaken, omdat verwijderde bestanden de meeste opslag innemen.",
+        "Versiebeheer voor de bibliotheek volledig uitzetten zodat er geen versies meer bijkomen.",
+        "Limieten op de versiegeschiedenis instellen en oude versies van grote bestanden opschonen.",
+        "Extra tenantopslag bijkopen, omdat het gebruik van opslag nu eenmaal blijft groeien."
+      ],
+      "answer": 2,
+      "uitleg": "Elke tussentijdse opslag van een groot bestand maakt een nieuwe versie die opslag kost; met limieten op de versiegeschiedenis en het opschonen van oude versies pak je de werkelijke groei aan. De prullenbak is hier niet de oorzaak, versiebeheer helemaal uitzetten neemt je herstelmogelijkheid weg, en bijkopen negeert de oorzaak."
+    },
+    {
+      "id": "sharepoint-teams-x06",
+      "prompt": "Een medewerker heeft 40 dagen geleden per ongeluk een map uit een SharePoint-bibliotheek verwijderd en de prullenbak van de site daarna geleegd. Wat is de snelste herstelroute?",
+      "options": [
+        "Een herstel aanvragen bij Microsoft-support, omdat geleegde items alleen zij terugzetten.",
+        "De map terugzetten vanuit de OneDrive-prullenbak van de medewerker die hem verwijderde.",
+        "Niets meer, omdat items na het legen van de prullenbak direct definitief zijn verwijderd.",
+        "Als sitecollectiebeheerder de map terugzetten uit de tweede-fase-prullenbak."
+      ],
+      "answer": 3,
+      "uitleg": "Items die uit de prullenbak van de site worden geleegd, gaan naar de tweede-fase-prullenbak, en binnen de totale bewaartermijn van 93 dagen kan een sitecollectiebeheerder ze daar terugzetten. Microsoft-support is pas nodig als dat niet meer lukt, de OneDrive-prullenbak gaat over OneDrive en niet over een teamsite, en geleegde items zijn niet direct weg."
+    },
+    {
+      "id": "sharepoint-teams-x07",
+      "prompt": "Een klant wil voor elk nieuw team automatisch vastleggen of het privé of openbaar is, of gasten mogen worden toegevoegd en of externe delen mag. Waarmee regel je dat in één keer?",
+      "options": [
+        "Retentielabels die per document vastleggen hoe lang het team bewaard moet blijven.",
+        "Sensitivity labels die zijn ingeschakeld voor groepen en sites (containerlabels).",
+        "Een naamgevingsbeleid dat per team een voor- of achtervoegsel aan de naam toevoegt.",
+        "Een Teams-vergaderbeleid dat bepaalt wie vergaderingen in het team mag starten."
+      ],
+      "answer": 1,
+      "uitleg": "Sensitivity labels voor groepen en sites bepalen op containerniveau onder meer privacy, gasttoegang en de instelling voor externe delen. Retentielabels gaan over bewaren, een naamgevingsbeleid alleen over de teamnaam, en een vergaderbeleid regelt vergaderopties en niet de toegang tot het team."
+    },
+    {
+      "id": "sharepoint-teams-x08",
+      "prompt": "Een medewerker is uit dienst en zijn account is verwijderd. Collega's merken dat opnamen van vergaderingen die hij organiseerde niet meer te openen zijn. Waar zat het probleem?",
+      "options": [
+        "Opnamen staan in de OneDrive van de organisator en volgen het opruimen van die OneDrive.",
+        "Opnamen staan in Microsoft Stream classic, dat na uitdiensttreding automatisch alles wist.",
+        "Opnamen staan in de mailbox van de organisator, die na verwijdering niet meer bestaat.",
+        "Opnamen staan op de SharePoint-site van de tenant, waar de rechten van de vertrekker vervallen."
+      ],
+      "answer": 0,
+      "uitleg": "Opnamen van gewone vergaderingen buiten een kanaal komen in de OneDrive van de organisator, en die wordt na het verwijderen van het account volgens het bewaarbeleid opgeruimd; vóór vertrek moet je die bestanden dus overdragen. Stream classic is uitgefaseerd, de mailbox is niet de opslagplek, en kanaalvergaderingen komen in de site van het team, niet in een algemene tenantsite."
+    },
+    {
+      "id": "sharepoint-teams-x09",
+      "prompt": "Een klant heeft losse sites per afdeling en wil één intranet met gedeelde navigatie, een gezamenlijke uitstraling en zoeken over alle afdelingssites. Wat is de juiste inrichting?",
+      "options": [
+        "Alle afdelingssites omzetten naar subsites onder één nieuwe topsite.",
+        "Een hubsite inrichten en de afdelingssites daaraan koppelen.",
+        "Alle afdelingsinhoud samenvoegen in één grote site met een map per afdeling.",
+        "Op elke afdelingssite handmatig dezelfde links naar de andere sites toevoegen."
+      ],
+      "answer": 1,
+      "uitleg": "Een hubsite geeft gekoppelde sites gedeelde navigatie, uitstraling en zoeken, terwijl elke site zijn eigen rechten houdt. Subsites zijn de oude, starre structuur die Microsoft afraadt, alles in één site maakt rechten en beheer lastig, en handmatige links moet je bij elke wijziging overal bijwerken."
+    },
+    {
+      "id": "sharepoint-teams-x10",
+      "prompt": "Een klant wil dat alleen medewerkers van ICT en de afdelingsmanagers nieuwe teams kunnen aanmaken. Hoe regel je dat?",
+      "options": [
+        "In het Teams-beheercentrum de knop 'Team maken' verbergen voor alle andere gebruikers.",
+        "Alle andere gebruikers een licentie zonder Teams geven zodat ze geen teams meer maken.",
+        "Het aanmaken van Microsoft 365-groepen beperken tot een daarvoor bedoelde beveiligingsgroep.",
+        "Medewerkers vragen geen teams meer aan te maken en wekelijks nieuwe teams verwijderen."
+      ],
+      "answer": 2,
+      "uitleg": "Een team is een Microsoft 365-groep, dus je beperkt het aanmaken van groepen tot een beveiligingsgroep via de Entra ID-instellingen. Alleen een knop verbergen houdt andere routes open, zoals Outlook of SharePoint, een licentie zonder Teams neemt het werken in teams weg, en vragen en opruimen is geen afdwingbare maatregel."
+    },
+    {
+      "id": "sharepoint-teams-x11",
+      "prompt": "Een medewerker deelt een document met een 'specifieke personen'-link met een collega. Die collega stuurt de mail door naar een derde collega, die 'geen toegang' krijgt. Wat is hier aan de hand?",
+      "options": [
+        "Zo'n link werkt alleen voor de genoemde personen; doorsturen geeft geen toegang.",
+        "De link is verlopen, omdat elke deellink standaard na een dag ongeldig wordt.",
+        "De derde collega mist een licentie waarmee hij gedeelde documenten mag openen.",
+        "De site staat extern delen niet toe, waardoor ook interne links worden geblokkeerd."
+      ],
+      "answer": 0,
+      "uitleg": "Een link voor specifieke personen is gekoppeld aan de genoemde mensen, dus doorsturen werkt bewust niet; de eigenaar moet de derde collega toevoegen. Links verlopen niet standaard na een dag, een ontbrekende licentie geeft een andere melding, en de instelling voor extern delen raakt interne collega's niet.",
+      "illustratie": "delen"
+    },
+    {
+      "id": "sharepoint-teams-x12",
+      "prompt": "Een klant werkt met diepe mappenstructuren per klant en per jaar en kan documenten daardoor slecht terugvinden. Wat stel je voor in SharePoint?",
+      "options": [
+        "Nog een mappenniveau toevoegen per maand zodat elke map minder bestanden bevat.",
+        "Alle documenten hernoemen met klantnaam en jaar zodat zoeken op naam makkelijker gaat.",
+        "Per klant een aparte site aanmaken zodat elke map een eigen site krijgt.",
+        "Metadatakolommen voor klant en jaar, met gefilterde weergaven in plaats van mappen."
+      ],
+      "answer": 3,
+      "uitleg": "Met metadatakolommen kun je filteren, sorteren en weergaven maken over klant en jaar heen, wat diepe mappen niet bieden. Een extra mappenniveau maakt paden langer en zoeken lastiger, hernoemen is foutgevoelig en geeft geen filtermogelijkheid, en een site per klant geeft vooral meer beheer."
+    },
+    {
+      "id": "sharepoint-teams-x13",
+      "prompt": "De compliance-officer van een klant eist dat Teams-chatberichten zeven jaar bewaard blijven, ook als medewerkers ze verwijderen. Wat richt je in?",
+      "options": [
+        "Een back-up van alle Teams-chats via export naar een gedeelde netwerkschijf.",
+        "Een instelling in het Teams-beheercentrum die verwijderen van berichten blokkeert.",
+        "Een retentiebeleid in Microsoft Purview voor Teams-chats en kanaalberichten.",
+        "Een sensitivity label op elk team dat de berichten voor zeven jaar vastzet."
+      ],
+      "answer": 2,
+      "uitleg": "Retentiebeleid in Microsoft Purview bewaart Teams-chats en kanaalberichten voor de afgesproken termijn, ook als een gebruiker ze verwijdert. Een export naar een netwerkschijf is geen beheerde bewaring, het blokkeren van verwijderen via een berichtenbeleid regelt geen bewaartermijn, en sensitivity labels gaan over toegang en niet over bewaren."
+    },
+    {
+      "id": "sharepoint-teams-x14",
+      "prompt": "Een site-eigenaar wil voor één site 'iedereen'-links toestaan, maar die optie is in de site-instellingen grijs. De beheerder heeft niets aan de site veranderd. Wat is de verklaring?",
+      "options": [
+        "De site-eigenaar heeft een andere licentie nodig om iedereen-links te mogen gebruiken.",
+        "Een site kan niet ruimer delen dan het organisatiebrede deelniveau in SharePoint toestaat.",
+        "De site is te groot en daarom blokkeert SharePoint automatisch alle iedereen-links.",
+        "De optie wordt pas actief nadat de site een sensitivity label heeft gekregen."
+      ],
+      "answer": 1,
+      "uitleg": "Het deelniveau van een site kan gelijk of strenger zijn dan het organisatieniveau, maar nooit ruimer; staat de organisatie geen iedereen-links toe, dan is de optie grijs. Een licentie of de omvang van de site speelt geen rol, en een sensitivity label kan het delen juist beperken, niet verder openzetten dan de organisatie toestaat."
+    },
+    {
+      "id": "sharepoint-teams-x15",
+      "prompt": "Medewerkers van een klant voegen zelf apps van derden toe aan Teams, waarvan sommige toegang vragen tot bedrijfsgegevens. De klant wil hier grip op. Wat is de beste aanpak?",
+      "options": [
+        "Alleen goedgekeurde apps toestaan en app-toestemming via beheerders laten lopen.",
+        "Alle apps van derden in één keer verwijderen en Teams verder ongewijzigd laten.",
+        "Medewerkers een lijst sturen met apps die ze beter niet kunnen gebruiken.",
+        "Teams in de browser verplichten, omdat apps van derden daar niet werken."
+      ],
+      "answer": 0,
+      "uitleg": "Met app-beheer in het Teams-beheercentrum en een toestemmingsbeleid in Entra ID bepaal je welke apps zijn toegestaan en wie toestemming mag geven voor toegang tot gegevens. Eenmalig verwijderen voorkomt geen nieuwe installaties, een lijst is niet afdwingbaar, en apps werken in de browserversie van Teams net zo goed."
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 // src/kiosk/useToezicht.ts
 // Toezicht tijdens de assessment: volledig scherm, weggaan uit het scherm vastleggen en melden,
-// plakken en kopiëren tegenhouden. Alles gaat in batches naar /api/assessment/event (lib/toezicht.mjs).
+// plakken en kopiëren tegenhouden. Alles gaat in batches naar /api/assessment/event (lib/toezicht.mjs), of bij een
+// examen naar het eigen endpoint van de poging (verstuur).
 import { useCallback, useEffect, useRef, useState } from "react";
 import { sendToezicht, type ToezichtEvent, type WegReden } from "../lib/api";
 
@@ -15,8 +16,9 @@ export const kanVolledigScherm = () => {
   const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
   return Boolean(el.requestFullscreen || el.webkitRequestFullscreen);
 };
-export async function vraagVolledigScherm(): Promise<boolean> {
-  const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void };
+// el: welk deel van de pagina volledig scherm wordt (standaard de hele pagina; bij een examen alleen het examen).
+export async function vraagVolledigScherm(doel?: HTMLElement | null): Promise<boolean> {
+  const el = (doel ?? document.documentElement) as HTMLElement & { webkitRequestFullscreen?: () => void };
   try {
     if (el.requestFullscreen) await el.requestFullscreen({ navigationUI: "hide" });
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
@@ -27,8 +29,10 @@ export async function vraagVolledigScherm(): Promise<boolean> {
   }
 }
 
-export function useToezicht(code: string, vraag: number) {
+export function useToezicht(code: string, vraag: number, verstuur?: (events: ToezichtEvent[]) => Promise<unknown>) {
   const queue = useRef<ToezichtEvent[]>([]);
+  const verstuurRef = useRef(verstuur);
+  verstuurRef.current = verstuur;
   const vraagRef = useRef(vraag);
   vraagRef.current = vraag;
   const weg = useRef<{ van: number; reden: WegReden; vraag: number } | null>(null);
@@ -41,7 +45,7 @@ export function useToezicht(code: string, vraag: number) {
   const flush = useCallback(async () => {
     if (!queue.current.length) return;
     const batch = queue.current.splice(0, queue.current.length);
-    try { await sendToezicht(code, batch); } catch { queue.current.unshift(...batch); }
+    try { await (verstuurRef.current ? verstuurRef.current(batch) : sendToezicht(code, batch)); } catch { queue.current.unshift(...batch); }
   }, [code]);
 
   const log = useCallback((e: ToezichtEvent) => {

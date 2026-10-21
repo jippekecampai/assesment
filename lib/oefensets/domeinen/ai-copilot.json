@@ -1,0 +1,187 @@
+{
+  "domain": "AI / Copilot",
+  "vragen": [
+    {
+      "id": "ai-copilot-x01",
+      "prompt": "Bij de voorbereiding op een Copilot-uitrol blijkt dat tientallen SharePoint-sites gedeeld zijn met 'Iedereen behalve externe gebruikers'. Opschonen kost weken. Wat is een passende tussenmaatregel?",
+      "options": [
+        "De uitrol doorzetten, omdat Copilot alleen bestanden toont die een gebruiker zelf al eens heeft geopend.",
+        "Restricted Content Discovery op die sites zetten: ze verdwijnen uit Copilot en zoeken, de toegang blijft.",
+        "Alle getroffen sites tijdelijk op alleen-lezen zetten, zodat Copilot de inhoud ervan niet kan gebruiken.",
+        "De zoekindex van de hele tenant uitzetten, zodat Copilot geen bestanden meer uit SharePoint vindt."
+      ],
+      "answer": 1,
+      "uitleg": "Met Restricted Content Discovery haal je een site uit de resultaten van Copilot en organisatiebreed zoeken, terwijl gebruikers met toegang er gewoon kunnen blijven werken; zo koop je tijd voor het echte opschonen. Copilot toont alles waar een gebruiker recht op heeft, ook bestanden die hij nooit opende. Alleen-lezen verandert niets aan wie mag lezen, en de zoekindex uitzetten breekt zoeken voor iedereen.",
+      "illustratie": "delen"
+    },
+    {
+      "id": "ai-copilot-x02",
+      "prompt": "Een klant vraagt hoe je vóór de Copilot-uitrol snel ziet welke SharePoint-sites het meest overgedeeld zijn. Welk hulpmiddel gebruik je?",
+      "options": [
+        "Het Copilot-gebruiksrapport in het Microsoft 365-beheercentrum, dat toont welke sites Copilot gebruikt.",
+        "De Secure Score in Microsoft Defender, die per site een score geeft voor het risico op oversharing.",
+        "De rapporten voor data access governance in SharePoint Advanced Management, met overgedeelde sites.",
+        "Het opslagrapport in het SharePoint-beheercentrum, dat de grootste sites en hun eigenaren laat zien."
+      ],
+      "answer": 2,
+      "uitleg": "SharePoint Advanced Management heeft rapporten voor data access governance die laten zien welke sites gedeeld zijn met grote groepen of veel deellinks hebben. Daarmee prioriteer je het opschonen. Het Copilot-gebruiksrapport toont adoptie, geen rechten; Secure Score geeft geen beeld per site; en opslaggebruik zegt niets over wie toegang heeft.",
+      "illustratie": "delen"
+    },
+    {
+      "id": "ai-copilot-x03",
+      "prompt": "Een medewerker kan een document met het label 'Vertrouwelijk - versleuteld' openen en lezen, maar Copilot weigert het samen te vatten. Wat is de verklaring?",
+      "options": [
+        "Copilot kan versleutelde documenten nooit verwerken; daarvoor moet het label eerst worden verwijderd.",
+        "Het document is te groot voor Copilot; je moet het eerst opsplitsen in kleinere delen.",
+        "De medewerker heeft geen Copilot-licentie voor Word, alleen voor Teams en Outlook.",
+        "Het label geeft wel leesrecht, maar niet het gebruiksrecht EXTRACT dat Copilot nodig heeft."
+      ],
+      "answer": 3,
+      "uitleg": "Bij versleutelde labels werkt Copilot met de gebruiksrechten van de gebruiker; om inhoud te mogen samenvatten moet hij naast VIEW ook EXTRACT hebben. Zonder dat recht kan hij het document lezen, maar niet laten verwerken. Copilot kan versleutelde inhoud wel verwerken als de rechten kloppen, en de licentie geldt voor alle Microsoft 365-apps."
+    },
+    {
+      "id": "ai-copilot-x04",
+      "prompt": "Een klant wil zeker weten dat Microsoft 365 Copilot nooit inhoud verwerkt van bestanden en e-mails met het label 'Strikt vertrouwelijk', ook niet voor wie er toegang toe heeft. Wat richt je in?",
+      "options": [
+        "Een DLP-beleid in Purview voor de locatie Microsoft 365 Copilot dat items met dat label uitsluit.",
+        "Een Conditional Access-policy die Copilot blokkeert voor gebruikers die toegang hebben tot zulke bestanden.",
+        "Een retentiebeleid op het label, zodat de inhoud na verloop van tijd uit de Copilot-index verdwijnt.",
+        "Een transportregel in Exchange die het label van e-mails verwijdert voordat Copilot ze kan zien."
+      ],
+      "answer": 0,
+      "uitleg": "Purview DLP kent een aparte locatie voor Microsoft 365 Copilot, waarmee je items met bepaalde gevoeligheidslabels uitsluit van samenvatting en verwerking. Gebruikers houden dan wel gewoon toegang tot het bestand zelf. Conditional Access is te grof en kijkt niet naar labels, retentie bepaalt hoe lang iets bewaard wordt, en een label verwijderen haalt juist de bescherming weg."
+    },
+    {
+      "id": "ai-copilot-x05",
+      "prompt": "Een medewerker laat Copilot in Word een notitie maken op basis van twee bronbestanden. Het nieuwe document krijgt automatisch het label 'Vertrouwelijk'. Ze vraagt waarom. Wat leg je uit?",
+      "options": [
+        "Copilot geeft elk document dat het maakt standaard het hoogste label, ongeacht welke bronnen het gebruikt.",
+        "Het label komt uit een standaardlabel voor Word dat de beheerder voor alle nieuwe documenten heeft ingesteld.",
+        "Het label is een fout van Copilot; je kunt het veilig verwijderen omdat het een nieuw document betreft.",
+        "Copilot neemt het label met de hoogste prioriteit van de gebruikte bronbestanden over in het nieuwe document."
+      ],
+      "answer": 3,
+      "uitleg": "Als Copilot inhoud maakt op basis van gelabelde bestanden, neemt de uitvoer het label met de hoogste prioriteit van die bronnen over. Zo lekt vertrouwelijke inhoud niet via een ongelabeld nieuw document. Copilot kiest niet standaard het hoogste label, een standaardlabel zou bij elk nieuw document verschijnen, en het label verwijderen haalt bescherming weg van inhoud die vertrouwelijk is."
+    },
+    {
+      "id": "ai-copilot-x06",
+      "prompt": "Een medewerker laat Copilot een binnengekomen externe e-mail samenvatten. In de samenvatting staat ineens een verzoek om 'je wachtwoord te bevestigen via deze link'. Wat is hier vermoedelijk aan de hand?",
+      "options": [
+        "Een hallucinatie van Copilot zonder verband met de e-mail; je meldt het als bug bij Microsoft Support.",
+        "Een prompt-injectie: de mail bevat verborgen instructies voor de AI; behandel het als phishing.",
+        "Een melding van Microsoft zelf; Copilot geeft beveiligingsberichten van het platform op deze manier door.",
+        "Een fout in de licentie van de medewerker; zonder volledige licentie voegt Copilot reclameteksten toe."
+      ],
+      "answer": 1,
+      "uitleg": "Aanvallers verstoppen instructies in e-mails of documenten, bijvoorbeeld in onzichtbare tekst, zodat een AI-assistent die verwerkt en doorgeeft. Dat is indirecte prompt-injectie en hoort in het phishing- of incidentproces. Toevallig een link met een wachtwoordverzoek verzinnen is onwaarschijnlijk, Microsoft stuurt geen beveiligingsberichten via samenvattingen, en licenties voegen geen teksten toe."
+    },
+    {
+      "id": "ai-copilot-x07",
+      "prompt": "Een maker bij een klant heeft in Copilot Studio een agent gepubliceerd met de instelling 'Geen authenticatie'. De agent kan HR-beleid uit SharePoint opzoeken. Wat is het risico en wat doe je?",
+      "options": [
+        "Iedereen met de link kan hem zonder aanmelding gebruiken; zet Entra-authenticatie aan en beperk dit via DLP.",
+        "Geen risico: zonder authenticatie kan de agent geen SharePoint-inhoud ophalen, dus hij toont niets gevoeligs.",
+        "Alleen interne gebruikers kunnen de agent openen, omdat Copilot Studio-agents nooit extern bereikbaar zijn.",
+        "Het risico is beperkt tot kosten, omdat anonieme gesprekken zwaarder worden belast in de facturering."
+      ],
+      "answer": 0,
+      "uitleg": "Een agent zonder authenticatie is bereikbaar voor iedereen die het kanaal of de link heeft, ook buiten de organisatie; alles wat de agent kan beantwoorden, ligt dan open. Je zet authenticatie aan en kunt in het Power Platform-DLP-beleid voorkomen dat makers agents zonder authenticatie publiceren. De agent is wel extern bereikbaar, en het probleem is vertrouwelijkheid, niet kosten."
+    },
+    {
+      "id": "ai-copilot-x08",
+      "prompt": "Een agent in Copilot Studio heeft een actie die gegevens uit een financiële applicatie ophaalt. De verbinding is ingesteld met de inloggegevens van de maker, een controller. Waarom is dat een probleem?",
+      "options": [
+        "De verbinding verloopt zodra de controller zijn wachtwoord wijzigt, waardoor de agent dan niet meer werkt.",
+        "De controller ziet in zijn eigen logboek alle vragen van collega's, wat in strijd is met de privacy.",
+        "Elke gebruiker van de agent haalt gegevens op met de rechten van de controller, ook zonder eigen rechten.",
+        "De agent werkt dan alleen in Teams en niet op de website, omdat de verbinding aan één gebruiker hangt."
+      ],
+      "answer": 2,
+      "uitleg": "Bij inloggegevens van de maker draait de actie altijd als die maker, dus elke gebruiker krijgt indirect de rechten van de controller. Gebruik daarom de inloggegevens van de eindgebruiker, zodat ieder alleen ziet wat hij mag zien. Een verlopende verbinding is een beheerprobleem maar niet het kernrisico, en de andere twee beweringen gaan niet over hoe rechten werken."
+    },
+    {
+      "id": "ai-copilot-x09",
+      "prompt": "Bij een klant bouwen steeds meer medewerkers agents in Copilot Studio, allemaal in de standaardomgeving van Power Platform. Wat adviseer je voor governance?",
+      "options": [
+        "Copilot Studio voor iedereen uitzetten, omdat agents van eindgebruikers nooit veilig te beheren zijn.",
+        "Alle agents in de standaardomgeving laten, omdat Microsoft die omgeving standaard al volledig afschermt.",
+        "Een omgevingsstrategie met aparte omgevingen voor ontwikkeling en productie en DLP-beleid per omgeving.",
+        "Elke medewerker een eigen omgeving geven, zodat agents van verschillende makers elkaar niet raken."
+      ],
+      "answer": 2,
+      "uitleg": "Met aparte omgevingen scheid je experimenteren van productie, en met DLP-beleid per omgeving bepaal je welke connectors en publicatievormen zijn toegestaan. Zo houd je overzicht zonder innovatie te blokkeren. Alles uitzetten duwt medewerkers naar onbeheerde tools, de standaardomgeving is juist voor iedereen toegankelijk, en een omgeving per persoon maakt beheer onoverzichtelijk."
+    },
+    {
+      "id": "ai-copilot-x10",
+      "prompt": "Bij een klant blijkt dat Copilot salarisgegevens heeft getoond aan meerdere medewerkers, door een te ruim gedeelde HR-map. De rechten zijn inmiddels gecorrigeerd. Wat is de volgende stap?",
+      "options": [
+        "In Purview Audit nagaan wie wat via Copilot zag, en met de klant beoordelen of het een meldplichtig datalek is.",
+        "Niets meer: de rechten zijn hersteld, dus het incident is afgehandeld en hoeft niet verder te worden onderzocht.",
+        "De Copilot-licenties van de betrokken medewerkers intrekken, zodat zij de gegevens niet nog eens kunnen opvragen.",
+        "De betrokken medewerkers vragen of ze de gegevens hebben gezien en het antwoord in het ticket vastleggen."
+      ],
+      "answer": 0,
+      "uitleg": "Het herstellen van rechten stopt het lek, maar je moet nog vaststellen wie wat heeft gezien; de Copilot-interacties en bestandstoegang staan in het auditlog. Persoonsgegevens die onbevoegd zijn ingezien, kunnen een meldplichtig datalek zijn, en die beoordeling hoort bij de klant als verwerkingsverantwoordelijke. Licenties intrekken is overbodig na het herstel, en medewerkers zelf laten rapporteren is onvolledig en onbetrouwbaar."
+    },
+    {
+      "id": "ai-copilot-x11",
+      "prompt": "De functionaris gegevensbescherming van een klant wil kunnen nagaan welke vragen een medewerker aan Microsoft 365 Copilot heeft gesteld. Waar vind je die gegevens?",
+      "options": [
+        "Nergens: Microsoft legt prompts niet vast, zodat er achteraf niets over het gebruik te vinden is.",
+        "In Microsoft Purview, via het auditlog en eDiscovery, waar Copilot-interacties worden vastgelegd.",
+        "In het Copilot-gebruiksrapport in het beheercentrum, dat per gebruiker de gestelde vragen toont.",
+        "In de mailbox van Microsoft Support, die prompts op verzoek van de beheerder kan opsturen."
+      ],
+      "answer": 1,
+      "uitleg": "Copilot-interacties worden vastgelegd in de tenant en zijn via Purview Audit en eDiscovery te vinden, binnen de rechten en het bewaarbeleid van de klant. Het gebruiksrapport toont aantallen en adoptie, geen inhoud van vragen. Microsoft Support heeft geen toegang tot de prompts van een klant om op te sturen."
+    },
+    {
+      "id": "ai-copilot-x12",
+      "prompt": "Een klant houdt een gevoelig HR-gesprek in Teams en wil Copilot wel tijdens het gesprek kunnen gebruiken, maar niet dat er achteraf een transcriptie bestaat. Wat adviseer je?",
+      "options": [
+        "De opname starten en die direct na de vergadering verwijderen, zodat de transcriptie ook verdwijnt.",
+        "Copilot tenant-breed uitzetten voor Teams, omdat het in vergaderingen altijd een transcriptie maakt.",
+        "De vergadering als webinar plannen, omdat Copilot in webinars geen gegevens van deelnemers bewaart.",
+        "Copilot in de vergaderopties op 'alleen tijdens de vergadering' zetten, zonder transcriptie."
+      ],
+      "answer": 3,
+      "uitleg": "Teams heeft een vergaderoptie waarmee Copilot alleen tijdens de vergadering werkt, zonder dat er een transcriptie wordt bewaard. Dat past precies bij de vraag. Achteraf verwijderen laat een periode open waarin de transcriptie bestaat, alles uitzetten neemt de functie voor iedereen weg, en een webinar verandert niets aan hoe Copilot met transcripties omgaat."
+    },
+    {
+      "id": "ai-copilot-x13",
+      "prompt": "Een consultant vraagt Copilot Chat, met zoeken op het web aan, om marktinformatie bij de codenaam van een vertrouwelijke overname. Waarom is dat onverstandig?",
+      "options": [
+        "Copilot slaat alle prompts op in een openbaar archief, waardoor anderen de codenaam later kunnen vinden.",
+        "Copilot maakt van de prompt een zoekopdracht naar Bing, waardoor de codenaam buiten de tenant terechtkomt.",
+        "Copilot gebruikt de prompt om het taalmodel te trainen, waardoor andere klanten de codenaam te zien krijgen.",
+        "Copilot deelt de prompt met de collega's van de consultant, omdat webzoekopdrachten in de tenant openbaar zijn."
+      ],
+      "answer": 1,
+      "uitleg": "Bij webgrounding genereert Copilot een zoekopdracht op basis van de prompt en stuurt die naar Bing; vertrouwelijke termen gaan zo buiten de dienstgrens van Microsoft 365. Laat zulke termen weg of zet webzoeken uit. Prompts worden niet openbaar opgeslagen, niet gebruikt om de basismodellen te trainen en niet gedeeld met collega's."
+    },
+    {
+      "id": "ai-copilot-x14",
+      "prompt": "Medewerkers van een klant klagen dat Copilot 'vage, algemene antwoorden' geeft. Wat leer je ze als eerste om betere resultaten te krijgen?",
+      "options": [
+        "Het doel, de context, de bronnen en de gewenste vorm in de prompt noemen, en bestanden expliciet aanwijzen.",
+        "De prompt zo kort mogelijk houden, omdat Copilot met minder tekst minder snel van het onderwerp afdwaalt.",
+        "De vraag in het Engels stellen, omdat Copilot in het Nederlands alleen algemene antwoorden kan geven.",
+        "Dezelfde vraag een paar keer opnieuw stellen, omdat Copilot elke keer een beter antwoord oplevert."
+      ],
+      "answer": 0,
+      "uitleg": "Copilot werkt beter naarmate je duidelijker bent over wat je wilt, waarvoor, op basis van welke bronnen en in welke vorm; door bestanden expliciet te noemen, gebruikt hij de juiste inhoud. Juist een korte prompt geeft algemene antwoorden. Copilot werkt goed in het Nederlands, en steeds opnieuw vragen zonder de prompt te verbeteren geeft geen structureel beter resultaat."
+    },
+    {
+      "id": "ai-copilot-x15",
+      "prompt": "Een klant start met dertig Copilot-licenties als pilot en wil ze allemaal aan het IT-team geven, 'omdat die er het handigst mee zijn'. Wat adviseer je?",
+      "options": [
+        "De licenties aan het IT-team geven, omdat zij de techniek begrijpen en later de rest kunnen trainen.",
+        "De licenties aan het management geven, omdat zij bepalen of de uitrol na de pilot doorgaat of niet.",
+        "De licenties willekeurig verdelen, zodat de pilot een eerlijk beeld geeft van de hele organisatie.",
+        "Verdelen over verschillende rollen met concrete taken, met champions en een vast meetmoment."
+      ],
+      "answer": 3,
+      "uitleg": "Een pilot moet laten zien wat Copilot oplevert in het echte werk van verschillende functies; daarom kies je rollen met concrete taken en meet je vooraf afgesproken effecten. Alleen IT of alleen management geeft een eenzijdig beeld van het nut voor de rest van de organisatie. Willekeurig verdelen levert gebruikers op zonder duidelijke taak, waardoor de pilot weinig zegt."
+    }
+  ]
+}

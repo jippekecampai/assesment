@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-21 — v2.4: examens voor een rol en 20 oefenvragen per onderwerp
+
+- **Examens** als eigen categorie: Cloud Engineer (45 vragen) en AI Engineer (40, gebaseerd op het AI-werk in de tickets). Slagen = hooguit 1 fout. Uitleg vragen en illustraties mogen; geen uitslag per vraag tijdens het examen. Antwoorden blijven op de server; de server rekent de uitslag uit. Examen in volledig scherm (alleen het examen), weggaan en plakken worden vastgelegd.
+- **Beoordelen → Examens:** uitslagen per deelnemer met score per onderwerp en toezicht (alleen beoordelaarsrol).
+- **Oefenen per onderwerp:** 20 vragen per domein (5 uit de Vragenbank + 15 extra, alleen voor oefenen; niet in de sollicitantentoets).
+- **Overzicht** opnieuw ingedeeld: Examens, Verplicht (AI-geletterdheid), Oefenen per onderwerp, met icoon en status per kaart.
+
 ## 2026-10-21 — v2.3: uitleg-illustratie bij elke oefening
 
 - Elke oefenset start met een uitleg en een interactieve illustratie; elke vraag zonder eigen illustratie valt terug op die van haar onderwerp.

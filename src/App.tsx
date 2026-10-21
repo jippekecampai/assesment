@@ -13,7 +13,7 @@ import {
   type Icon,
 } from "@tabler/icons-react";
 
-import { Reviewdashboard } from "./views/Reviewdashboard";
+import { Beoordelen } from "./views/Beoordelen";
 import { Vragenfabriek } from "./views/Vragenfabriek";
 import { Performanceloop } from "./views/Performanceloop";
 import { Sollicitanten } from "./views/Sollicitanten";
@@ -45,7 +45,7 @@ const groupOrder = ["Recruitment", "Training", "Management"];
 
 // Zoeken staat alleen boven de schermen die er iets mee doen.
 const zoekPlaceholder: Partial<Record<ViewId, string>> = {
-  candidateReviews: "Zoek een kandidaat of functie",
+  candidateReviews: "Zoek een naam of examen",
   questions: "Zoek in de vragen",
 };
 
@@ -128,7 +128,7 @@ export function App() {
       <AppShell.Main>
         <Box key={view}>
           {view === "sollicitanten" && <Sollicitanten />}
-          {view === "candidateReviews" && <Reviewdashboard search={search} />}
+          {view === "candidateReviews" && <Beoordelen search={search} />}
           {view === "questions" && <Vragenfabriek search={search} />}
           {view === "oefenen" && <Oefenen />}
           {view === "voortgang" && <MijnVoortgang />}

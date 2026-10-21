@@ -1,0 +1,188 @@
+{
+  "domain": "Kaseya Stack",
+  "vragen": [
+    {
+      "id": "kaseya-stack-x01",
+      "prompt": "Een laptop staat in Datto RMM al twee dagen als offline, terwijl de gebruiker gewoon op die laptop werkt en internet heeft. Wat controleer je eerst?",
+      "options": [
+        "Of de laptop nog aan de juiste site in Datto RMM gekoppeld is, en zo nodig verplaats je hem naar een nieuwe site.",
+        "Of de licentie van de klant in Datto RMM is verlopen, omdat apparaten dan automatisch als offline worden getoond.",
+        "Of de laptop opnieuw geïnstalleerd moet worden, omdat een offline agent meestal op een beschadigd profiel wijst.",
+        "Of de RMM-agentservice op de laptop draait en of de uitgaande verbinding niet door firewall of proxy wordt geblokkeerd."
+      ],
+      "answer": 3,
+      "uitleg": "Een apparaat dat werkt maar offline staat, betekent meestal dat de agent niet draait of zijn platform niet kan bereiken, bijvoorbeeld door een gestopte service, een proxy of een nieuwe firewallregel. Dat controleer je eerst. Een andere site verandert niets aan de verbinding, een licentieprobleem treft niet één laptop, en herinstalleren is een veel te zware eerste stap.",
+      "illustratie": "rmm"
+    },
+    {
+      "id": "kaseya-stack-x02",
+      "prompt": "Je wilt via Datto RMM een nieuwe versie van een boekhoudpakket uitrollen naar alle 120 werkplekken van een klant. Wat is de verstandigste aanpak?",
+      "options": [
+        "De component als job meteen op alle werkplekken tegelijk draaien, buiten kantoortijd zodat niemand er last van heeft.",
+        "De component eerst als job op een kleine testgroep draaien, de resultaten controleren en dan gefaseerd uitbreiden.",
+        "De gebruikers via een melding vragen de installatie zelf te starten, zodat ze kunnen kiezen wanneer het uitkomt.",
+        "De component in de patch-policy van de site opnemen, zodat de installatie meeloopt met de Windows-updates."
+      ],
+      "answer": 1,
+      "uitleg": "Met een testgroep zie je fouten, zoals een ontbrekende afhankelijkheid of een vastlopende installatie, voordat ze alle 120 werkplekken raken. Buiten kantoortijd uitrollen verkleint de overlast maar niet de schade als het misgaat. Gebruikers zelf laten installeren is onbetrouwbaar, en een patch-policy is bedoeld voor updates, niet voor het uitrollen van software met een component."
+    },
+    {
+      "id": "kaseya-stack-x03",
+      "prompt": "Een monitor in Datto RMM op CPU-gebruik van een klantserver gaat elke paar minuten aan en uit en maakt zo tientallen Autotask-tickets per dag. Wat doe je?",
+      "options": [
+        "De drempel en duur van de monitor bijstellen, zodat alleen een aanhoudend probleem alert geeft.",
+        "De monitor uitschakelen voor deze server, omdat de alerts kennelijk geen echt probleem aangeven.",
+        "Een Autotask-workflowregel maken die de dubbele tickets automatisch sluit zodra ze binnenkomen.",
+        "De alerts laten doorlopen en de tickets aan het einde van de dag in één keer handmatig afsluiten."
+      ],
+      "answer": 0,
+      "uitleg": "Een flapperende monitor is een afstemmingsprobleem: met een realistische drempel en een minimale duur meld je alleen echte problemen. Uitschakelen laat je blind voor een echte overbelasting. Tickets automatisch of handmatig wegwerken bestrijdt het symptoom en vervuilt de rapportage, terwijl de ruis blijft.",
+      "illustratie": "rmm"
+    },
+    {
+      "id": "kaseya-stack-x04",
+      "prompt": "Eén klantserver draait een applicatie die niet tegen automatische herstarts kan. De patch-policy van de site herstart servers na updates. Hoe los je dit netjes op?",
+      "options": [
+        "Patching voor deze server volledig uitzetten, omdat elke herstart een risico vormt voor de applicatie.",
+        "De bestaande site-policy aanpassen zodat geen enkele server van de klant nog automatisch herstart.",
+        "De server via een filter of groep onder een aparte patch-policy zonder automatische herstart brengen.",
+        "De server buiten Datto RMM houden en laten patchen door de leverancier van de applicatie."
+      ],
+      "answer": 2,
+      "uitleg": "Met een aparte policy voor deze ene server blijft hij gepatcht, terwijl je de herstart in een afgesproken venster laat plaatsvinden. Patching uitzetten laat beveiligingslekken open. De site-policy aanpassen treft alle andere servers onnodig, en de server buiten beheer halen maakt hem onzichtbaar voor monitoring en rapportage."
+    },
+    {
+      "id": "kaseya-stack-x05",
+      "prompt": "Bij het controleren van tijdregistraties in Autotask zie je dat een collega werk aan een projectmatige migratie heeft geschreven op het servicecontract van de klant. Wat doe je?",
+      "options": [
+        "De tijd laten staan, omdat het servicecontract het werk van deze klant toch al voor het grootste deel dekt.",
+        "De tijd vóór 'Approve and Post' naar het juiste contract of project verplaatsen, zodat de factuur klopt.",
+        "De tijdregistratie verwijderen en de collega vragen de uren opnieuw in te voeren op de juiste plek.",
+        "De tijd laten staan en een creditfactuur maken zodra de klant vragen stelt over de factuur van die maand."
+      ],
+      "answer": 1,
+      "uitleg": "Zolang tijd nog niet is goedgekeurd en geboekt, kun je hem corrigeren; zo kloppen zowel de factuur als het verbruik van het contract. Laten staan geeft een verkeerd beeld van de contractmarge en kan meerwerk onterecht gratis maken. Verwijderen kost dubbel werk en geeft risico op verloren uren, en achteraf crediteren is reactief en ondermijnt het vertrouwen van de klant."
+    },
+    {
+      "id": "kaseya-stack-x06",
+      "prompt": "Een klant wil automatisch een e-mail ontvangen zodra een van zijn tickets de status 'Wacht op klant' krijgt. Hoe regel je dat in Autotask?",
+      "options": [
+        "Met een workflowregel die bij die statuswijziging de contactpersoon van het ticket mailt.",
+        "Met een afspraak dat de engineer bij elke statuswijziging zelf de klant mailt.",
+        "Met een SLA-instelling die de klant automatisch mailt zodra de klok op deze status wordt gepauzeerd.",
+        "Met een terugkerend ticket dat de klant wekelijks een overzicht stuurt van al zijn wachtende tickets."
+      ],
+      "answer": 0,
+      "uitleg": "Workflowregels in Autotask reageren op gebeurtenissen zoals een statuswijziging en kunnen dan een notificatie versturen. Dat is betrouwbaar en consistent. Een handmatige afspraak wordt vergeten, een SLA-instelling regelt de meting en geen klantmail, en een wekelijks overzicht is niet de directe melding die de klant vraagt."
+    },
+    {
+      "id": "kaseya-stack-x07",
+      "prompt": "Een klant stuurt over dezelfde storing drie e-mails, waardoor er in Autotask drie tickets zijn ontstaan. Wat is de beste afhandeling?",
+      "options": [
+        "Twee tickets sluiten als 'dubbel' en alleen in het derde ticket verder werken aan de storing.",
+        "Alle drie de tickets open laten en per ticket dezelfde voortgang terugkoppelen.",
+        "De tickets laten staan en aan het einde van de week de dubbele tickets in één keer opschonen.",
+        "De tickets samenvoegen tot één ticket, zodat alle communicatie en tijd op één plek blijven."
+      ],
+      "answer": 3,
+      "uitleg": "Samenvoegen bewaart de inhoud en notities van alle tickets in één dossier, zodat niets verloren gaat en de klant één aanspreekpunt heeft. Dubbele tickets sluiten zonder samenvoegen laat informatie achter in gesloten tickets. Drie tickets naast elkaar bijhouden kost dubbel werk en vertekent de rapportage over aantallen en doorlooptijd."
+    },
+    {
+      "id": "kaseya-stack-x08",
+      "prompt": "Een engineer schrijft in een ticketnotitie dat de klant 'weer eens niet heeft gereageerd'. De notitie staat zo ingesteld dat de klant haar ziet. Wat is de juiste werkwijze voor dit soort opmerkingen?",
+      "options": [
+        "Interne opmerkingen in de titel van het ticket zetten, omdat de klant die in de klantportal niet ziet.",
+        "Interne opmerkingen alleen mondeling bespreken, omdat alle ticketnotities voor de klant zichtbaar zijn.",
+        "De notitie laten staan, omdat het eerlijk is en de klant zo weet dat hij sneller moet reageren.",
+        "Interne opmerkingen in een notitie die alleen intern zichtbaar is, en klantteksten zakelijk houden."
+      ],
+      "answer": 3,
+      "uitleg": "Autotask kent per notitie een zichtbaarheidsinstelling, zodat je interne informatie kunt vastleggen zonder dat de klant die ziet. Dat houdt het dossier volledig en de klantcommunicatie professioneel. De titel is juist zichtbaar voor de klant, niet alle notities zijn openbaar, en een verwijtende notitie naar de klant schaadt de relatie."
+    },
+    {
+      "id": "kaseya-stack-x09",
+      "prompt": "In IT Glue staat het wachtwoord van het domeinbeheerdersaccount van een klant. De klant eist dat alleen de senior engineers dat wachtwoord kunnen zien. Hoe richt je dat in?",
+      "options": [
+        "Het wachtwoord uit IT Glue halen en het alleen mondeling doorgeven aan de senior engineers.",
+        "Het wachtwoord in een apart document zetten met de titel 'alleen voor senior engineers'.",
+        "De toegang tot dat wachtwoord in IT Glue beperken tot een groep met alleen de senior engineers.",
+        "Het wachtwoord in IT Glue laten staan en elke maand het auditlog controleren op wie het opende."
+      ],
+      "answer": 2,
+      "uitleg": "IT Glue laat je de toegang tot een wachtwoord beperken tot specifieke groepen of gebruikers, zodat anderen het niet kunnen openen. Mondeling doorgeven maakt het onbeheerbaar en niet herleidbaar. Een titel beschermt niets, en het auditlog achteraf bekijken laat zien wie het zag, maar voorkomt het niet."
+    },
+    {
+      "id": "kaseya-stack-x10",
+      "prompt": "Tijdens een review zie je dat in een oud Autotask-ticket het beheerderswachtwoord van een klantfirewall als platte tekst in een notitie staat. Wat doe je?",
+      "options": [
+        "Het wachtwoord laten wijzigen, alleen in IT Glue vastleggen en de notitie opschonen.",
+        "De notitie verwijderen en verder niets doen, omdat het ticket al lang gesloten is.",
+        "Het wachtwoord in IT Glue zetten en de notitie laten staan als verwijzing voor collega's.",
+        "Niets doen, omdat alleen eigen medewerkers en de klant toegang hebben tot de ticketnotities."
+      ],
+      "answer": 0,
+      "uitleg": "Een wachtwoord dat als platte tekst in een ticket heeft gestaan, moet je als uitgelekt beschouwen: het kan via e-mailnotificaties, exports of de klantportal zijn verspreid. Daarom wijzig je het en beheer je het daarna alleen in IT Glue. Alleen verwijderen laat het oude, mogelijk gelekte wachtwoord geldig, en de notitie laten staan of niets doen houdt het lek in stand."
+    },
+    {
+      "id": "kaseya-stack-x11",
+      "prompt": "IT Glue haalt de apparaten van een klant via de koppeling met Datto RMM binnen als configuraties. Een collega maakt voor nieuwe servers ook nog handmatig een configuratie aan. Wat is het gevolg en wat is beter?",
+      "options": [
+        "Er gebeurt niets, omdat IT Glue handmatige en gesynchroniseerde configuraties automatisch samenvoegt.",
+        "Dubbele configuraties; beter is documentatie te koppelen aan de gesynchroniseerde configuratie.",
+        "De handmatige configuratie overschrijft de gesynchroniseerde, waardoor de RMM-gegevens verloren gaan.",
+        "De koppeling met Datto RMM stopt, omdat IT Glue geen handmatige configuraties toestaat."
+      ],
+      "answer": 1,
+      "uitleg": "Als een apparaat al via de RMM-koppeling binnenkomt, levert een handmatige configuratie een dubbel record op, waardoor documentatie en wachtwoorden op twee plekken terechtkomen. Je koppelt je documentatie daarom aan de gesynchroniseerde configuratie. Er is geen automatische samenvoeging die dit oplost, en de koppeling stopt er niet door."
+    },
+    {
+      "id": "kaseya-stack-x12",
+      "prompt": "Datto EDR meldt op een fileserver van een klant gedrag dat lijkt op ransomware: veel bestanden worden snel hernoemd en versleuteld. Wat is je eerste actie?",
+      "options": [
+        "De server direct hard uitzetten, zodat de versleuteling stopt en er geen bestanden meer verloren gaan.",
+        "Eerst de laatste Datto-back-up van de server terugzetten, zodat de klant zo snel mogelijk weer kan werken.",
+        "De server via Datto EDR isoleren van het netwerk en direct het incidentproces met de SOC starten.",
+        "De gebruiker bellen die als laatste bestanden heeft geopend en vragen wat hij precies heeft gedaan."
+      ],
+      "answer": 2,
+      "uitleg": "Isoleren via de EDR stopt verspreiding naar andere systemen, terwijl het systeem bereikbaar blijft voor onderzoek; daarna volgt het incidentproces. Hard uitzetten wist sporen in het geheugen en kan de schade niet terugdraaien. Terugzetten vóór je weet hoe de aanvaller binnenkwam, kan de besmetting terugbrengen, en de gebruiker bellen is pas zinvol als de server ingedamd is."
+    },
+    {
+      "id": "kaseya-stack-x13",
+      "prompt": "De back-ups van een klantserver op een Datto BCDR-apparaat slagen al weken, maar de screenshotverificatie faalt elke keer. Hoe beoordeel je dat?",
+      "options": [
+        "Als ernstig: het is niet bewezen dat de server uit de back-up kan opstarten, dus je zoekt het nu uit.",
+        "Als onbelangrijk: de back-ups slagen, dus de gegevens zijn veilig en terugzetten zal gewoon werken.",
+        "Als cosmetisch: screenshotverificatie faalt vaak door een time-out en zegt weinig over herstelbaarheid.",
+        "Als iets voor later: bij een echte storing kun je altijd nog losse bestanden uit de back-up halen."
+      ],
+      "answer": 0,
+      "uitleg": "De screenshotverificatie start de back-up virtueel op en bewijst zo dat de server te herstellen is; faalt die steeds, dan weet je niet of herstel van het hele systeem lukt. Een geslaagde back-up zegt alleen dat er gegevens zijn gekopieerd. Een time-out kan een oorzaak zijn, maar dat moet je aantonen, en losse bestanden terughalen is geen herstel van een server."
+    },
+    {
+      "id": "kaseya-stack-x14",
+      "prompt": "De enige applicatieserver van een klant is door een hardwaredefect uitgevallen; vervangende hardware duurt drie dagen. Er staat een Datto BCDR-apparaat op locatie. Wat is de snelste manier om de klant weer te laten werken?",
+      "options": [
+        "De laatste back-up terugzetten op een werkstation en dat tijdelijk als server inzetten.",
+        "Wachten op de nieuwe hardware en de back-up daarna in één keer volledig terugzetten.",
+        "De applicatie op een nieuwe Azure-VM installeren en de data daarna handmatig overzetten.",
+        "De server lokaal virtualiseren op het BCDR-apparaat vanuit het laatste goede punt."
+      ],
+      "answer": 3,
+      "uitleg": "Een Datto BCDR-apparaat kan een beschermd systeem lokaal als virtuele machine opstarten, zodat de klant binnen korte tijd weer werkt; later zet je terug naar de nieuwe hardware. Een werkstation is niet berekend op de rol en de drivers verschillen. Drie dagen wachten is onnodig, en een nieuwe installatie in Azure kost veel meer tijd dan virtualiseren.",
+      "illustratie": "rto"
+    },
+    {
+      "id": "kaseya-stack-x15",
+      "prompt": "Een klant zegt: 'We hebben geen back-up van Microsoft 365 nodig, Microsoft bewaart alles toch.' Wat is het sterkste tegenargument?",
+      "options": [
+        "Microsoft bewaart gegevens alleen in de Verenigde Staten, waardoor een Europese back-up wettelijk verplicht is.",
+        "Microsoft garandeert de beschikbaarheid van de dienst, maar geen herstel na verwijdering, ransomware of fouten.",
+        "Microsoft verwijdert alle gegevens die ouder zijn dan een jaar, tenzij er een aparte back-up is ingericht.",
+        "Microsoft rekent per hersteld bestand een vergoeding, waardoor een eigen back-up altijd goedkoper uitvalt."
+      ],
+      "answer": 1,
+      "uitleg": "Onder het gedeelde-verantwoordelijkheidsmodel zorgt Microsoft voor een beschikbare dienst, maar is de klant verantwoordelijk voor zijn eigen gegevens. Prullenbakken en versiebeheer hebben beperkte termijnen en helpen niet goed bij grootschalige versleuteling of een kwaadwillende beheerder. De andere argumenten kloppen feitelijk niet: Microsoft biedt Europese opslag, verwijdert niet na een jaar en rekent geen kosten per hersteld bestand."
+    }
+  ]
+}

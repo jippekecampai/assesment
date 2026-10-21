@@ -1,0 +1,190 @@
+{
+  "domain": "SharePoint / Azure Migrations",
+  "vragen": [
+    {
+      "id": "sharepoint-azure-migrations-x01",
+      "prompt": "Een klant heeft vijf fileservers op drie locaties en wil die naar SharePoint en OneDrive migreren, centraal gepland en gevolgd. Welke Microsoft-tool past het best?",
+      "options": [
+        "Migration Manager in het SharePoint-beheercentrum, met agents op de servers.",
+        "Handmatig slepen van bestanden in de browser, per locatie door een medewerker.",
+        "Robocopy naar een gesynchroniseerde OneDrive-map op een centrale werkplek.",
+        "Azure Storage Explorer, waarmee je bestanden direct naar een bibliotheek kopieert."
+      ],
+      "answer": 0,
+      "uitleg": "Migration Manager werkt met agents op de bronservers en geeft centraal overzicht over taken, voortgang en rapporten. Handmatig slepen is niet beheersbaar en verliest metadata, kopiëren via een gesynchroniseerde map is traag en foutgevoelig, en Storage Explorer is voor Azure Storage en niet voor SharePoint-bibliotheken.",
+      "illustratie": "migratie"
+    },
+    {
+      "id": "sharepoint-azure-migrations-x02",
+      "prompt": "Een klant kan maar één weekend downtime hebben voor een migratie van 2 TB fileserverdata naar SharePoint. Hoe plan je de overzetting?",
+      "options": [
+        "In het weekend zelf de volledige 2 TB overzetten zodat de data zo actueel mogelijk is.",
+        "De bron op vrijdag uitzetten en maandag gebruikers vragen te melden wat ze missen.",
+        "Vooraf een volledige kopie, vlak voor de overstap een delta, daarna bron alleen-lezen.",
+        "Gebruikers zelf hun eigen mappen laten slepen naar SharePoint in de weken voor de overstap."
+      ],
+      "answer": 2,
+      "uitleg": "Een volledige kopie vooraf, gevolgd door een incrementele ronde vlak voor de overstap, houdt het weekendvenster klein; daarna zet je de bron op alleen-lezen zodat niemand er nog naar schrijft. De hele 2 TB in één weekend past waarschijnlijk niet in het venster, uitzetten en afwachten geeft geen validatie, en gebruikers laten slepen leidt tot dubbele en ontbrekende data.",
+      "illustratie": "migratie"
+    },
+    {
+      "id": "sharepoint-azure-migrations-x03",
+      "prompt": "Bij de discovery van een fileserver blijkt dat veel NTFS-rechten zijn toegekend aan lokale accounts en aan verwijderde accounts die als SID worden getoond. Wat doe je vóór de migratie naar SharePoint?",
+      "options": [
+        "Niets, omdat de migratietool lokale accounts automatisch omzet naar Entra ID-gebruikers.",
+        "De rechten opschonen en een identiteitsmapping naar Entra ID-gebruikers en -groepen maken.",
+        "De lokale accounts eerst als gastgebruiker uitnodigen zodat hun rechten blijven werken.",
+        "Alle rechten weglaten en na de migratie iedereen lid maken van de bezoekersgroep."
+      ],
+      "answer": 1,
+      "uitleg": "SharePoint kent alleen Entra ID-identiteiten; lokale accounts en verweesde SID's moeten worden opgeschoond en via een mapping aan echte gebruikers of groepen gekoppeld. De tool zet lokale accounts niet vanzelf om, gasten zijn voor externen en niet voor interne accounts, en iedereen bezoeker maken negeert de bedoelde afscherming."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x04",
+      "prompt": "Een klant wil tien on-premises VM's naar Azure verplaatsen en vraagt welke VM-groottes hij nodig heeft en wat dat kost. Wat is de eerste stap?",
+      "options": [
+        "Elke VM in Azure aanmaken met precies dezelfde specificaties als on-premises.",
+        "De duurste VM-reeks kiezen zodat er zeker geen prestatieproblemen ontstaan.",
+        "Alle VM's eerst migreren en pas daarna in Azure de groottes gaan bijstellen.",
+        "Met Azure Migrate de servers ontdekken en een prestatiegerichte assessment maken."
+      ],
+      "answer": 3,
+      "uitleg": "Azure Migrate verzamelt met een appliance gegevens over gebruik en afhankelijkheden en adviseert passende groottes met een kostenraming. Specificaties één op één overnemen leidt vaak tot overdimensionering, de duurste reeks is verspilling, en eerst migreren zonder assessment maakt de kosten onvoorspelbaar.",
+      "illustratie": "cloud"
+    },
+    {
+      "id": "sharepoint-azure-migrations-x05",
+      "prompt": "Voor de definitieve migratie van een bedrijfskritische server met Azure Migrate wil de klant zeker weten dat de applicatie in Azure werkt. Wat doe je eerst?",
+      "options": [
+        "De definitieve migratie direct uitvoeren en de bron daarna meteen uitzetten.",
+        "De applicatie testen op de on-premises server, omdat Azure precies hetzelfde werkt.",
+        "De migratie uitvoeren in het productienetwerk zodat gebruikers direct kunnen testen.",
+        "Een testmigratie in een geïsoleerd netwerk doen en daar de applicatie testen."
+      ],
+      "answer": 3,
+      "uitleg": "Azure Migrate biedt een testmigratie naar een geïsoleerd netwerk, zodat je de applicatie in Azure kunt controleren zonder de bron of productie te raken. Direct migreren en uitzetten haalt je terugvaloptie weg, testen op de oude server zegt niets over Azure, en testen in productie kan conflicten met de draaiende bron geven."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x06",
+      "prompt": "Een klant wil alles van de fileserver naar SharePoint, inclusief de databestanden van een lokaal boekhoudpakket en een Access-database die meerdere mensen tegelijk gebruiken. Wat adviseer je?",
+      "options": [
+        "Die bestanden niet in SharePoint zetten, maar op Azure Files, een server of naar SaaS.",
+        "Ze in een aparte bibliotheek zetten en de OneDrive-app ze laten synchroniseren.",
+        "Ze in SharePoint zetten en versiebeheer uitzetten zodat de bestanden niet botsen.",
+        "Ze in SharePoint zetten en gebruikers vragen ze om de beurt te openen."
+      ],
+      "answer": 0,
+      "uitleg": "Databases en applicatiebestanden die meerdere gebruikers tegelijk openen werken niet betrouwbaar via SharePoint en sync, met corruptie en conflicten als gevolg; die horen op een bestandsshare zoals Azure Files, een server, of in een SaaS-versie van het pakket. Synchroniseren of versiebeheer uitzetten lost dat niet op, en om de beurt openen is niet werkbaar."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x07",
+      "prompt": "Een klant migreert Windows Server-VM's naar Azure en heeft Windows Server-licenties met actieve Software Assurance. Hoe beperk je de rekenkosten?",
+      "options": [
+        "Linux-VM's kiezen en Windows Server daarop zelf met de eigen licentie installeren.",
+        "De licenties na de migratie opzeggen, omdat Azure-VM's altijd zonder licentie draaien.",
+        "Azure Hybrid Benefit toepassen, zodat de eigen licenties de Windows-kosten dekken.",
+        "Alleen spot-VM's gebruiken, omdat die standaard geen Windows-licentiekosten hebben."
+      ],
+      "answer": 2,
+      "uitleg": "Met Azure Hybrid Benefit zet je bestaande Windows Server-licenties met Software Assurance in, zodat je in Azure alleen de basisrekenkosten betaalt. Windows op een Linux-VM installeren kan niet, Azure-VM's met Windows hebben wel licentiekosten zonder de regeling, en spot-VM's kunnen worden onderbroken en zijn ongeschikt voor productie."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x08",
+      "prompt": "Een klant met 50 Microsoft 365 Business Premium-gebruikers wil 4 TB fileserverdata naar SharePoint verplaatsen. Wat is de juiste conclusie over de opslag?",
+      "options": [
+        "De tenant heeft ruim 50 TB, omdat elke gebruiker 1 TB SharePoint-opslag meebrengt.",
+        "De tenant heeft ongeveer 1,5 TB, dus extra opslag kopen of de scope verkleinen is nodig.",
+        "De opslag is onbeperkt, omdat Business Premium geen limiet op SharePoint heeft.",
+        "De tenant heeft 5 TB, omdat elk abonnement een vaste 5 TB voor SharePoint meegeeft."
+      ],
+      "answer": 1,
+      "uitleg": "SharePoint-opslag voor de tenant is 1 TB plus 10 GB per gelicentieerde gebruiker, hier dus ongeveer 1,5 TB. De 1 TB per gebruiker geldt voor OneDrive en niet voor SharePoint-sites, Business Premium heeft geen onbeperkte SharePoint-opslag, en een vaste 5 TB per abonnement bestaat niet."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x09",
+      "prompt": "Een week na de overstap naar SharePoint blijken medewerkers nog bestanden op de oude netwerkschijf op te slaan. Wat had dit moeten voorkomen en wat doe je nu?",
+      "options": [
+        "De bron op alleen-lezen zetten, de schijfkoppeling weghalen en nieuwe locaties communiceren.",
+        "De oude netwerkschijf direct verwijderen, inclusief de bestanden die er sinds de overstap staan.",
+        "Beide locaties naast elkaar laten bestaan zodat gebruikers zelf kunnen kiezen.",
+        "De oude schijf elke nacht automatisch laten synchroniseren naar SharePoint."
+      ],
+      "answer": 0,
+      "uitleg": "Na de overstap hoort de bron op alleen-lezen, de schijfkoppeling weg via GPO of Intune, en moeten gebruikers weten waar ze nu werken; dan kan het niet meer gebeuren. De nieuwe bestanden die er nu staan, migreer je eerst mee. Direct verwijderen vernietigt die bestanden, twee locaties naast elkaar geeft versieverwarring, en nachtelijke synchronisatie houdt de oude werkwijze in stand."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x10",
+      "prompt": "Een klant wil 2 TB naar SharePoint migreren over een internetlijn met 100 Mbit/s upload, die overdag ook voor gewoon werk wordt gebruikt. Wat is een realistische verwachting voor de pure overdrachtstijd?",
+      "options": [
+        "Ongeveer vier uur, omdat 100 Mbit/s ruim voldoende is voor een paar terabyte aan data.",
+        "Ongeveer een halve dag, omdat de migratietool de data onderweg sterk comprimeert.",
+        "Een paar minuten, omdat SharePoint de bestanden rechtstreeks van de server ophaalt.",
+        "Theoretisch bijna twee etmalen, in de praktijk langer en verspreid over nachten."
+      ],
+      "answer": 3,
+      "uitleg": "2 TB is ongeveer 16 miljoen megabit; bij 100 Mbit/s is dat zo'n 160.000 seconden, bijna twee etmalen, en door overhead, throttling en gedeeld gebruik wordt het langer. Vier uur of een halve dag onderschat het volume sterk, compressie haalt bij documenten en media weinig winst, en SharePoint haalt niets zelf van de server op."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x11",
+      "prompt": "Na een geslaagde lift-and-shift van servers naar Azure wil de klant de on-premises hardware zo snel mogelijk afvoeren. Wat regel je eerst?",
+      "options": [
+        "De hardware direct afvoeren, omdat Azure automatisch een back-up maakt van elke VM.",
+        "Azure Backup op de VM's inrichten en de bron bewaren tot een afgesproken stabiele periode.",
+        "De oude servers aan laten staan als actieve kopie die dagelijks met Azure synchroniseert.",
+        "De on-premises back-ups wissen, omdat die na de migratie geen waarde meer hebben."
+      ],
+      "answer": 1,
+      "uitleg": "Azure maakt niet vanzelf back-ups van een VM; die moet je zelf inrichten, en tot de nieuwe omgeving een afgesproken periode stabiel draait, houd je de bron als terugvaloptie. Direct afvoeren laat je zonder vangnet, een actieve kopie die synchroniseert geeft verwarring over welke bron leidend is, en oude back-ups wissen gooit je laatste herstelpunt weg.",
+      "illustratie": "rto"
+    },
+    {
+      "id": "sharepoint-azure-migrations-x12",
+      "prompt": "Je migreert de homedirectories van 80 medewerkers naar hun OneDrive. Bij een deel van de gebruikers faalt de migratie omdat de doellocatie niet bestaat. Wat is de oorzaak?",
+      "options": [
+        "Hun licentie bevat geen OneDrive, dus moeten ze eerst een aparte licentie krijgen.",
+        "Hun homedirectory is te groot, dus moet die eerst worden opgesplitst in delen.",
+        "Hun OneDrive is nog niet aangemaakt; die vooraf laten provisionen via PowerShell.",
+        "Hun account is te nieuw, dus moet je een week wachten voordat OneDrive beschikbaar is."
+      ],
+      "answer": 2,
+      "uitleg": "Een OneDrive wordt pas aangemaakt bij de eerste aanmelding of als een beheerder hem vooraf laat aanmaken, bijvoorbeeld met Request-SPOPersonalSite. Een gangbare Microsoft 365-licentie bevat OneDrive, de grootte verklaart geen ontbrekende doellocatie, en er geldt geen vaste wachttijd van een week."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x13",
+      "prompt": "Een Nederlandse klant eist dat zijn Azure-resources in een datacenter in Nederland draaien. Welke Azure-regio kies je?",
+      "options": [
+        "North Europe, omdat dat de Azure-regio in Nederland is.",
+        "UK South, omdat die het dichtst bij Nederland ligt.",
+        "Germany West Central, omdat die voor de Benelux is.",
+        "West Europe, de Azure-regio die in Nederland staat."
+      ],
+      "answer": 3,
+      "uitleg": "De Azure-regio West Europe staat in Nederland. North Europe staat in Ierland, UK South in het Verenigd Koninkrijk, en Germany West Central in Duitsland; die regio is niet speciaal voor de Benelux bedoeld.",
+      "illustratie": "cloud"
+    },
+    {
+      "id": "sharepoint-azure-migrations-x14",
+      "prompt": "De migratie van een afdeling naar SharePoint is volgens de tool klaar. Hoe valideer je dat het resultaat klopt voordat je de bron afsluit?",
+      "options": [
+        "Aantallen en omvang vergelijken, rechten steekproefsgewijs testen, key-users laten kijken.",
+        "Uitgaan van de groene status van de tool, omdat die zelf al elk bestand heeft gecontroleerd.",
+        "De bron afsluiten en afwachten of gebruikers in de eerste weken iets missen of melden.",
+        "Een paar willekeurige bestanden openen en bij succes de hele migratie goedkeuren."
+      ],
+      "answer": 0,
+      "uitleg": "Een goede validatie vergelijkt aantallen en omvang tussen bron en doel, controleert rechten met steekproeven en laat key-users met hun dagelijkse bestanden werken. De groene status zegt niets over rechten of overgeslagen items, afwachten maakt gebruikers tot testers zonder terugvaloptie, en een paar bestanden openen is te weinig."
+    },
+    {
+      "id": "sharepoint-azure-migrations-x15",
+      "prompt": "Een klant wil een applicatieserver naar Azure migreren, maar de applicatie praat met een databaseserver die voorlopig on-premises blijft. Wat moet vóór de migratie geregeld zijn?",
+      "options": [
+        "Niets, omdat Azure automatisch een verbinding legt met elke server in het kantoornetwerk.",
+        "De database openzetten op internet zodat de applicatie in Azure hem direct bereikt.",
+        "Een netwerkverbinding met kantoor, zoals een site-to-site VPN, met geteste latentie.",
+        "Een kopie van de database in Azure, die de applicatie naast de on-premises versie gebruikt."
+      ],
+      "answer": 2,
+      "uitleg": "Een applicatie in Azure kan alleen bij een on-premises database via een netwerkverbinding zoals een site-to-site VPN of ExpressRoute, en de extra latentie moet je vooraf testen. Azure legt die verbinding niet vanzelf, een database op internet openzetten is onveilig, en een tweede kopie geeft twee versies van de data."
+    }
+  ]
+}

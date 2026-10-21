@@ -112,6 +112,30 @@ export const oefenUitleg = (setId: string, input: { vraagId: string; vraag: stri
 export const bewaarOefenResultaat = (input: { domain: string; score: number; total: number; set: string }) =>
   post<PracticeProgress>("/api/learning/practice", input);
 
+// Examens (lib/examens.mjs): de browser krijgt geen antwoorden; de server rekent de uitslag uit.
+export type ExamenMeta = { id: string; titel: string; rol: string; omschrijving: string; aantal: number; maxFout: number };
+export type ExamenVraag = { id: string; onderwerp: string; prompt: string; options: string[]; illustratie?: string };
+export type Examen = ExamenMeta & { intro?: string[]; onderwerpen: Record<string, string>; illustratiePerOnderwerp?: Record<string, string>; vragen: ExamenVraag[] };
+export type ExamenUitslag = {
+  goed: number; fout: number; totaal: number; pct: number; geslaagd: boolean;
+  perOnderwerp: Record<string, { goed: number; totaal: number }>;
+  details: { id: string; gekozen: number; juist: number; goed: boolean; uitleg: string }[];
+};
+export type ExamenPoging = {
+  id: string; examenId: string; titel: string; naam: string | null; email: string | null; gestart: string; ingeleverd: string;
+  goed: number; fout: number; totaal: number; pct: number; geslaagd: boolean; uitleg: number; uitlegGeblokkeerd: number;
+  perOnderwerp: Record<string, { goed: number; totaal: number }>; toezicht?: ToezichtSamenvatting;
+};
+export const listExamens = () => get<{ examens: ExamenMeta[]; mijnPogingen: ExamenPoging[] }>("/api/examens");
+export const startExamen = (id: string) => post<{ poging: string; examen: Examen }>(`/api/examens/${encodeURIComponent(id)}/start`, {});
+export const examenEvents = (poging: string, events: ToezichtEvent[]) =>
+  fetch(`/api/examens/pogingen/${poging}/event`, { method: "POST", keepalive: true, headers: { "content-type": "application/json" }, body: JSON.stringify({ events }) });
+export const examenUitleg = (poging: string, input: { vraagId: string; vraag: string; history: UitlegTurn[] }) =>
+  post<{ antwoord?: string; geblokkeerd?: boolean }>(`/api/examens/pogingen/${poging}/uitleg`, input);
+export const leverExamenIn = (poging: string, antwoorden: Record<string, number>, events: ToezichtEvent[]) =>
+  post<ExamenUitslag>(`/api/examens/pogingen/${poging}/inleveren`, { antwoorden, events });
+export const getExamenResultaten = () => get<ExamenPoging[]>("/api/examens/resultaten");
+
 // Bewijs AI-geletterdheid (ISO 42001)
 export type AiBewijsRij = {
   entraOid: string; naam: string | null; email: string | null; watIsAi: string | null; goudenRegels: string | null;

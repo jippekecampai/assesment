@@ -1,0 +1,187 @@
+{
+  "domain": "Werkhouding & Communicatie",
+  "vragen": [
+    {
+      "id": "werkhouding-communicatie-x01",
+      "prompt": "Een klant belt boos: zijn mail werkt sinds vanochtend niet en hij heeft over een uur een belangrijke offerte te versturen. Hij verwijt de servicedesk dat 'er nooit iets werkt'. Wat is de beste reactie?",
+      "options": [
+        "Je legt eerst rustig uit dat de servicedesk de afgelopen maanden juist erg goed heeft gepresteerd.",
+        "Je zegt dat je pas verder helpt als hij op een normale toon met je praat, en wacht zijn reactie af.",
+        "Je zet hem direct door naar je teamleider, omdat een boze klant niet bij de eerste lijn hoort.",
+        "Je erkent de urgentie, vraagt gericht naar het probleem en spreekt een concrete volgende stap af."
+      ],
+      "answer": 3,
+      "uitleg": "Onder de boosheid zit een concreet en urgent probleem; door dat te erkennen en meteen gericht te helpen haal je de spanning eruit. Je gelijk halen over eerdere prestaties of eerst een betere toon eisen escaleert het gesprek. Direct doorzetten naar een leidinggevende is pas nodig als je er zelf niet uitkomt."
+    },
+    {
+      "id": "werkhouding-communicatie-x02",
+      "prompt": "Tijdens een klus vraagt de klant of je 'even' ook de nieuwe vergaderschermen in de directiekamer wilt inrichten. Dat valt niet onder het contract en kost naar schatting een halve dag. Wat doe je?",
+      "options": [
+        "Je doet het meteen, omdat een tevreden klant uiteindelijk belangrijker is dan het contract.",
+        "Je legt uit dat het buiten de afspraken valt en zet het verzoek door naar de accountmanager.",
+        "Je weigert het verzoek kortaf, omdat het niet in het contract staat en dus niet jouw taak is.",
+        "Je zegt toe het later gratis te doen, zodat de klant niet het gevoel krijgt afgewezen te worden."
+      ],
+      "answer": 1,
+      "uitleg": "Vriendelijk uitleggen waar de grens ligt en het verzoek bij de accountmanager neerleggen houdt de klant tevreden en de afspraken helder. Ongevraagd een halve dag gratis werk doen of toezeggen schept een verwachting die je collega's later moeten waarmaken. Kortaf weigeren laat een kans liggen om de klant goed te helpen."
+    },
+    {
+      "id": "werkhouding-communicatie-x03",
+      "prompt": "Een klant stelt je tijdens een gesprek een technische vraag waarop je het antwoord niet zeker weet. Wat is de beste reactie?",
+      "options": [
+        "Je geeft het antwoord dat je het meest waarschijnlijk lijkt, zodat de klant niet hoeft te wachten.",
+        "Je zegt dat de vraag buiten jouw vakgebied valt en dat de klant een nieuw ticket moet aanmaken.",
+        "Je zegt eerlijk dat je het wilt nagaan en spreekt af wanneer je met een zeker antwoord terugkomt.",
+        "Je verwijst de klant naar de documentatie van Microsoft, waar het antwoord vast ergens in staat."
+      ],
+      "answer": 2,
+      "uitleg": "Eerlijk zijn over wat je niet zeker weet en een concrete terugbelafspraak maken bouwt vertrouwen op. Een gok die later onjuist blijkt kost meer vertrouwen dan even wachten. De klant een nieuw ticket laten aanmaken of naar de documentatie sturen schuift het werk naar hem terug."
+    },
+    {
+      "id": "werkhouding-communicatie-x04",
+      "prompt": "Je ziet in korte tijd bij vijf verschillende klanten dezelfde aanmeldproblemen met Microsoft 365 binnenkomen. Je collega's werken ieder aan hun eigen tickets. Wat doe je?",
+      "options": [
+        "Je meldt het patroon direct bij de teamleider of incidentcoördinator, zodat er wordt opgeschaald.",
+        "Je pakt de vijf tickets zelf één voor één op en lost ze naast elkaar op zonder de anderen te storen.",
+        "Je wacht af of er nog meer meldingen binnenkomen, zodat je zeker weet dat het om een storing gaat.",
+        "Je stuurt alle klanten van Campai alvast een mail dat er een grote storing bij Microsoft is."
+      ],
+      "answer": 0,
+      "uitleg": "Een patroon over meerdere klanten wijst op een gemeenschappelijke oorzaak; vroeg opschalen zorgt voor één aanpak, één klantcommunicatie en geen dubbel werk. Alleen doorwerken mist het grotere beeld. Afwachten verliest kostbare tijd, en zonder bevestiging zelf alle klanten mailen kan onjuiste informatie verspreiden."
+    },
+    {
+      "id": "werkhouding-communicatie-x05",
+      "prompt": "Een collega laat in zijn ticketnotities regelmatig belangrijke stappen weg, waardoor jij bij overdracht steeds opnieuw moet uitzoeken wat er al gedaan is. Wat is de beste aanpak?",
+      "options": [
+        "Je klaagt erover in het teamoverleg, zodat iedereen weet hoe lastig de overdracht met hem is.",
+        "Je zegt er niets van en zoekt het voortaan zelf uit, omdat je de verhoudingen goed wilt houden.",
+        "Je spreekt hem er persoonlijk op aan met een concreet voorbeeld en wat je ervoor nodig hebt.",
+        "Je meldt het meteen bij de leidinggevende, zodat die hem op zijn manier van werken aanspreekt."
+      ],
+      "answer": 2,
+      "uitleg": "Eerst rechtstreeks en concreet feedback geven is de meest respectvolle en effectieve stap; vaak is iemand zich niet bewust van het effect. Er in een groep over klagen maakt het persoonlijk en beschadigt de samenwerking. Zwijgen laat het probleem bestaan, en direct naar de leidinggevende gaan slaat het gesprek met je collega over."
+    },
+    {
+      "id": "werkhouding-communicatie-x06",
+      "prompt": "Iemand belt namens de directeur van een klant en vraagt met spoed om MFA voor de directeur uit te zetten, 'want hij staat op het vliegveld en kan niet inloggen'. Het nummer is niet bekend. Wat doe je?",
+      "options": [
+        "Je zet MFA tijdelijk uit, omdat de directeur een belangrijke klant is en het echt urgent klinkt.",
+        "Je verifieert de aanvraag eerst via een bekend contact van de klant en volgt het afgesproken proces.",
+        "Je vraagt de beller om de geboortedatum van de directeur, zodat je zeker weet wie hij is.",
+        "Je weigert het verzoek en hangt op, omdat telefonische verzoeken nooit in behandeling worden genomen."
+      ],
+      "answer": 1,
+      "uitleg": "Spoed, autoriteit en een onbekend nummer zijn klassieke kenmerken van social engineering; je verifieert daarom via een bekend contact en volgt het proces. MFA uitzetten op basis van zo'n telefoontje kan een overname van het account betekenen. Een geboortedatum is makkelijk te achterhalen, en botweg ophangen laat een mogelijk echte klant zonder hulp."
+    },
+    {
+      "id": "werkhouding-communicatie-x07",
+      "prompt": "Een niet-technische klant vraagt waarom zijn laptop 'zomaar' een update van een uur moest installeren tijdens een belangrijke presentatie. Hoe leg je het uit?",
+      "options": [
+        "Je legt uitgebreid uit hoe cumulatieve updates en servicing stacks in Windows werken.",
+        "Je zegt dat dit nu eenmaal zo werkt bij Windows en dat je er zelf ook niets aan kunt doen.",
+        "Je zegt dat het waarschijnlijk komt doordat hij de laptop te lang niet heeft afgesloten.",
+        "Je legt in gewone taal het belang en de oorzaak uit en bespreekt hoe je dit kunt voorkomen."
+      ],
+      "answer": 3,
+      "uitleg": "Een niet-technische klant wil begrijpen waarom het gebeurde en wat eraan te doen is, bijvoorbeeld via betere installatietijden of meldingen vooraf. Technisch jargon gaat langs hem heen. 'Zo werkt het nu eenmaal' en de schuld bij de klant leggen beschadigen het vertrouwen."
+    },
+    {
+      "id": "werkhouding-communicatie-x08",
+      "prompt": "Bij het opschonen van een gedeelde mailbox heb je per ongeluk een map met recente klantcorrespondentie verwijderd. De klant heeft het nog niet gemerkt. Wat doe je?",
+      "options": [
+        "Je meldt het direct aan je leidinggevende en de klant, en zet meteen het herstel in gang.",
+        "Je herstelt het eerst stilletjes en meldt het alleen als de klant er later zelf naar vraagt.",
+        "Je wacht af of de klant de map mist, omdat het misschien om oude, ongebruikte mail ging.",
+        "Je laat de map door een collega terugzetten, zodat het niet op jouw naam terechtkomt."
+      ],
+      "answer": 0,
+      "uitleg": "Een fout met klantdata meld je meteen, ook als niemand het merkt: de klant moet weten wat er gebeurde en dat het wordt hersteld. Stil herstellen of afwachten maakt van een fout een kwestie van vertrouwen als het later uitkomt. Het werk via een collega laten lopen om je naam erbuiten te houden is niet eerlijk."
+    },
+    {
+      "id": "werkhouding-communicatie-x09",
+      "prompt": "Je hebt een probleem telefonisch met de klant opgelost, maar in het ticket staat alleen 'opgelost'. Waarom is dat onvoldoende en wat doe je?",
+      "options": [
+        "Het is voldoende; de klant is tevreden en uitgebreide notities kosten tijd die je niet factureert.",
+        "Je noteert oorzaak, stappen en uitkomst, zodat een collega het bij herhaling snel kan oplossen.",
+        "Je noteert het alleen in je eigen aantekeningen, omdat jij het probleem het beste kent.",
+        "Je vraagt de klant om zelf in het ticket te beschrijven wat er tijdens het gesprek is gedaan."
+      ],
+      "answer": 1,
+      "uitleg": "Een ticket is het geheugen van het team: oorzaak, stappen en uitkomst helpen een collega bij een herhaling en onderbouwen het werk richting klant. 'Opgelost' alleen is bij een volgende melding waardeloos. Eigen aantekeningen zijn voor anderen onvindbaar, en de klant laten documenteren is niet zijn taak."
+    },
+    {
+      "id": "werkhouding-communicatie-x10",
+      "prompt": "Een senior collega heeft een aanpak gekozen voor een migratie van vanavond waarvan jij denkt dat die een risico op dataverlies heeft. Wat doe je?",
+      "options": [
+        "Je zegt niets, omdat hij meer ervaring heeft en het waarschijnlijk beter weet dan jij.",
+        "Je voert de migratie stiekem op jouw manier uit, zodat het risico niet kan ontstaan.",
+        "Je vertelt andere collega's dat de aanpak niet deugt, zodat zij hem erop aanspreken.",
+        "Je bespreekt je zorg vooraf met hem, met je argumenten, en schaalt op als het nodig is."
+      ],
+      "answer": 3,
+      "uitleg": "Een onderbouwde zorg hoort vóór de migratie op tafel, rechtstreeks bij degene die de keuze maakte; blijft het risico reëel, dan schaal je op. Zwijgen uit respect voor senioriteit kan tot dataverlies leiden. Op eigen houtje afwijken of via anderen kritiek spelen ondermijnt de samenwerking.",
+      "illustratie": "migratie"
+    },
+    {
+      "id": "werkhouding-communicatie-x11",
+      "prompt": "De directeur van een klant belt je rechtstreeks op je mobiel en wil dat je 'nu meteen' zijn printerprobleem oplost, voor de andere tickets. Wat doe je?",
+      "options": [
+        "Je helpt hem vriendelijk op weg, legt het vast in een ticket en bepaalt de prioriteit op impact.",
+        "Je laat alles vallen en lost het meteen op, omdat de directeur de belangrijkste persoon is.",
+        "Je neemt voortaan niet meer op als hij belt, zodat hij leert de servicedesk te gebruiken.",
+        "Je zegt dat hij moet ophangen en een mail naar de servicedesk moet sturen, anders gebeurt er niets."
+      ],
+      "answer": 0,
+      "uitleg": "Je helpt hem vriendelijk en zorgt dat het via een ticket loopt, met een prioriteit op basis van impact en niet van functie. Alles laten vallen benadeelt andere klanten met mogelijk zwaardere problemen. Niet meer opnemen of hem kortaf wegsturen beschadigt de relatie, terwijl je ook kunt uitleggen hoe het proces hem sneller helpt."
+    },
+    {
+      "id": "werkhouding-communicatie-x12",
+      "prompt": "Je wacht al drie dagen op een antwoord van een leverancier over een storing bij een klant. De klant vraagt hoe het ervoor staat. Wat doe je?",
+      "options": [
+        "Je zegt dat je nog niets weet en dat je je meldt zodra de leverancier eindelijk heeft gereageerd.",
+        "Je wacht met reageren tot je echt nieuws hebt, omdat een update zonder nieuws weinig toevoegt.",
+        "Je geeft een eerlijke stand van zaken, rappelleert de leverancier en spreekt een volgend moment af.",
+        "Je zegt dat de oplossing er bijna is, zodat de klant gerustgesteld is tot er wel nieuws komt."
+      ],
+      "answer": 2,
+      "uitleg": "Ook zonder nieuws wil de klant weten dat je ermee bezig bent: een eerlijke stand van zaken, actie richting de leverancier en een volgend contactmoment geven houvast. Alleen zeggen dat je nog niets weet laat het initiatief bij de leverancier. Niet reageren voelt voor de klant als stilstand, en een rooskleurig verhaal ophangen is misleidend.",
+      "illustratie": "klantupdate"
+    },
+    {
+      "id": "werkhouding-communicatie-x13",
+      "prompt": "Je voert een geplande wijziging uit binnen een onderhoudsvenster tot 22:00. Om 21:40 blijkt de laatste stap niet te werken zoals verwacht. Wat doe je?",
+      "options": [
+        "Je gaat door tot het werkt, ook na 22:00, omdat de wijziging anders een volgende keer opnieuw moet.",
+        "Je laat de omgeving zoals hij is en pakt het morgenochtend verder op wanneer je er weer bent.",
+        "Je probeert snel een alternatieve aanpak die niet in het plan staat, om het toch af te krijgen.",
+        "Je voert het terugdraaiplan uit, controleert de omgeving en meldt de uitkomst aan de betrokkenen."
+      ],
+      "answer": 3,
+      "uitleg": "Het onderhoudsvenster en het terugdraaiplan zijn afgesproken om juist dit geval op te vangen: terugdraaien, controleren en melden. Doorwerken na het venster raakt gebruikers die op een werkende omgeving rekenen. Een half doorgevoerde wijziging laten staan of improviseren buiten het plan vergroot het risico."
+    },
+    {
+      "id": "werkhouding-communicatie-x14",
+      "prompt": "Een nieuwe collega stelt je de hele dag vragen terwijl jij aan een urgent klantprobleem werkt. Wat is de beste aanpak?",
+      "options": [
+        "Je spreekt een vast moment af voor zijn vragen en wijst hem op de documentatie.",
+        "Je beantwoordt elke vraag meteen, omdat een nieuwe collega altijd voorrang moet krijgen.",
+        "Je zegt dat hij het voortaan zelf moet uitzoeken, omdat hij van fouten het meeste leert.",
+        "Je stuurt hem door naar een andere collega, zonder te vragen of die daar tijd voor heeft."
+      ],
+      "answer": 0,
+      "uitleg": "Een vast moment en verwijzing naar documentatie helpen de nieuwe collega en beschermen je focus op het urgente werk. Elke vraag meteen beantwoorden gaat ten koste van de klant. Hem aan zijn lot overlaten of zonder afstemming doorschuiven laat hem in de kou staan."
+    },
+    {
+      "id": "werkhouding-communicatie-x15",
+      "prompt": "Een klant vertelt je dat een collega van je gisteren aan de telefoon kortaf en onvriendelijk was. Wat doe je?",
+      "options": [
+        "Je verdedigt je collega meteen, omdat je zeker weet dat hij het niet zo bedoeld zal hebben.",
+        "Je luistert, erkent zijn ervaring zonder je collega af te vallen en geeft het door.",
+        "Je zegt dat je het met de klant eens bent, omdat die collega wel vaker kortaf schijnt te zijn.",
+        "Je zegt dat je er niet over gaat en dat de klant zelf een klacht moet indienen bij de directie."
+      ],
+      "answer": 1,
+      "uitleg": "Luisteren en de ervaring van de klant serieus nemen, zonder partij te kiezen, en het via de juiste weg doorgeven is professioneel. Je collega meteen verdedigen voelt voor de klant als niet gehoord worden. Je collega afvallen is onprofessioneel, en de klant wegsturen maakt de klacht groter."
+    }
+  ]
+}

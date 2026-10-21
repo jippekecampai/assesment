@@ -1,0 +1,187 @@
+{
+  "domain": "Engels",
+  "vragen": [
+    {
+      "id": "engels-x01",
+      "prompt": "Message center post: 'We will begin rolling out an updated layout for the meeting toolbar in late next month. The rollout is expected to complete within four weeks. No action is required from admins, but you may want to notify your users and update any training materials that show the old layout.' What does this post expect from you as an admin?",
+      "options": [
+        "Nothing is mandatory, but informing users and updating training materials is recommended.",
+        "You must enable the new toolbar layout for each user before the end of the rollout period.",
+        "You must delay the change by opting out, because it will otherwise break existing meetings.",
+        "You must update all training materials before the rollout starts, or users will lose access."
+      ],
+      "answer": 0,
+      "uitleg": "De tekst zegt letterlijk 'No action is required', met als aanbeveling ('you may want to') gebruikers in te lichten en trainingsmateriaal bij te werken. Er staat niets over zelf activeren of een opt-out. Trainingsmateriaal is een advies, geen voorwaarde voor toegang."
+    },
+    {
+      "id": "engels-x02",
+      "prompt": "Customer email: 'Since yesterday afternoon, none of us in the warehouse can scan documents to email. The office staff upstairs can still scan without problems. As far as we know, nothing has been changed on our side.' Which conclusion is best supported by this email?",
+      "options": [
+        "Scanning to email has failed for the whole company since a change the customer made yesterday.",
+        "The office staff upstairs reported the problem first, and the warehouse noticed it only later.",
+        "The problem is limited to the warehouse and started yesterday afternoon, with no known change.",
+        "The warehouse can no longer send any email at all, so the whole mail service there is down."
+      ],
+      "answer": 2,
+      "uitleg": "De klant beperkt het probleem tot het magazijn, noemt het startmoment (gisteren middag) en meldt geen bekende wijziging. De kantoormedewerkers kunnen juist nog scannen, dus het is niet bedrijfsbreed. Over gewone e-mail of wie het eerst meldde staat niets in de tekst."
+    },
+    {
+      "id": "engels-x03",
+      "prompt": "A user sees this message at sign-in: 'The trust relationship between this workstation and the primary domain failed.' What does this message most likely indicate?",
+      "options": [
+        "The user's password has expired and must be reset before signing in to the domain again.",
+        "The secure channel between the computer and the domain is broken, often a computer account issue.",
+        "The domain controller is offline, so no user anywhere in the network is able to sign in now.",
+        "The user's account has been disabled, so the domain rejects every sign-in attempt from it."
+      ],
+      "answer": 1,
+      "uitleg": "'Trust relationship between this workstation and the primary domain' gaat over de relatie tussen de computer en het domein, niet over de gebruiker; meestal is het wachtwoord van het computeraccount niet meer synchroon. Een verlopen wachtwoord of een uitgeschakeld account geeft een andere melding. Een offline domeincontroller staat niet in de tekst en zou alle gebruikers raken."
+    },
+    {
+      "id": "engels-x04",
+      "prompt": "Vendor notice: 'Version 8 of the management console will reach end of support on 30 June. After this date, no further security updates or bug fixes will be released for version 8. Existing installations will continue to function, but customers are strongly advised to upgrade to version 9.' What is the correct reading of this notice?",
+      "options": [
+        "Version 8 will stop working on 30 June, so an upgrade before that date is technically required.",
+        "Version 8 will still receive security updates after 30 June, but no longer any new features.",
+        "Customers on version 8 must buy a new licence on 30 June to keep receiving bug fixes for it.",
+        "Version 8 keeps working after 30 June, but without security updates, so upgrading is advised."
+      ],
+      "answer": 3,
+      "uitleg": "De tekst zegt dat bestaande installaties blijven werken ('continue to function'), maar dat er geen beveiligingsupdates of bugfixes meer komen; daarom wordt upgraden sterk aangeraden. Dat versie 8 stopt met werken staat er niet. Beveiligingsupdates stoppen juist, en over een nieuwe licentie wordt niets gezegd."
+    },
+    {
+      "id": "engels-x05",
+      "prompt": "SLA excerpt: 'Priority 1 incidents: response within 30 minutes, 24/7. Priority 2 incidents: response within 4 business hours. Business hours are Monday to Friday, 08:00 to 17:00.' A Priority 2 incident is reported on Friday at 17:30. By when must the first response be given?",
+      "options": [
+        "By Friday at 21:30, because the four hours start counting as soon as the incident is reported.",
+        "By Saturday at 12:00, because the weekend counts as normal hours for Priority 2 incidents.",
+        "By Friday at 18:00, because every incident must receive a response within 30 minutes.",
+        "By Monday at 12:00, because the four business hours only start counting on Monday at 08:00."
+      ],
+      "answer": 3,
+      "uitleg": "Priority 2 telt in 'business hours', en die lopen volgens de tekst van maandag tot vrijdag van 08:00 tot 17:00. Een melding op vrijdag 17:30 valt buiten kantooruren, dus de vier uur lopen van maandag 08:00 tot 12:00. De responstijd van 30 minuten en 24/7 geldt alleen voor Priority 1."
+    },
+    {
+      "id": "engels-x06",
+      "prompt": "Monitoring alert: 'The TLS certificate for the remote access portal will expire in 14 days. Once it expires, clients will refuse to connect. Renew the certificate and bind the new certificate to the portal service; renewing alone does not replace the certificate in use.' What does the alert ask you to do?",
+      "options": [
+        "Renew the certificate and also bind the new one to the portal, since renewing alone is not enough.",
+        "Renew the certificate only; the portal service will start using the new one by itself afterwards.",
+        "Wait until the certificate expires and then renew it, because clients only fail after 14 days.",
+        "Ask the users to accept the certificate warning in their browser once the certificate expires."
+      ],
+      "answer": 0,
+      "uitleg": "De melding vraagt om te vernieuwen én het nieuwe certificaat aan de portal te koppelen, en zegt expliciet dat alleen vernieuwen niet genoeg is. Afwachten tot het verloopt leidt tot uitval, want clients weigeren dan te verbinden. Gebruikers een waarschuwing laten accepteren staat niet in de tekst en is onveilig."
+    },
+    {
+      "id": "engels-x07",
+      "prompt": "Release note: 'This update resolves an issue where calendar items failed to sync on some devices. Known issue: after installing this update, a small number of users may be prompted for credentials repeatedly. Workaround: sign out of the app and sign in again. A permanent fix is planned for a future release.' What is true about the known issue?",
+      "options": [
+        "The update fixes the repeated credential prompts that users reported in an earlier version.",
+        "It affects every user who installs the update, and the only fix is to uninstall the update.",
+        "Some users may get repeated prompts; signing out and in again helps until a fix is released.",
+        "The credential prompts were permanently fixed in this release, so no workaround is needed now."
+      ],
+      "answer": 2,
+      "uitleg": "De known issue treft 'a small number of users', heeft als workaround opnieuw aanmelden en wordt in een toekomstige release opgelost. De update lost het agendaprobleem op, niet de inlogvragen. Er staat niet dat iedereen geraakt wordt of dat verwijderen de enige oplossing is."
+    },
+    {
+      "id": "engels-x08",
+      "prompt": "A user forwards this email: 'Your mailbox has exceeded its storage limit. To avoid permanent deletion of your messages, verify your account within 24 hours using the link below. IT Helpdesk.' The link points to an unfamiliar domain. Which part of the email is the strongest warning sign?",
+      "options": [
+        "The message mentions a storage limit, which mailboxes in Microsoft 365 do not have at all.",
+        "The urgent deadline and the link to an unfamiliar domain asking you to verify your account.",
+        "The email is signed by the IT Helpdesk instead of by a named member of the IT department.",
+        "The message is written in English, while the company normally communicates in Dutch only."
+      ],
+      "answer": 1,
+      "uitleg": "Tijdsdruk ('within 24 hours') gecombineerd met een link naar een onbekend domein om je account te 'verifiëren' is het klassieke patroon van credential-phishing. Mailboxen hebben wel degelijk een opslaglimiet, dus dat is op zich geen alarmsignaal. Een algemene ondertekening of de taal kan verdacht zijn, maar is veel minder doorslaggevend."
+    },
+    {
+      "id": "engels-x09",
+      "prompt": "API documentation: 'List requests return at most 500 items per page. If more items are available, the response includes a nextLink property. To retrieve all items, keep requesting the nextLink URL until a response no longer contains a nextLink.' Your script receives exactly 500 items and a nextLink. What should you conclude?",
+      "options": [
+        "There are more items; you must follow the nextLink until a response contains no nextLink.",
+        "You have received the complete list, because 500 is the maximum number of items there are.",
+        "The request has failed, because a complete response never includes a nextLink property.",
+        "You should repeat the same request, because the API will then return the remaining items."
+      ],
+      "answer": 0,
+      "uitleg": "Volgens de tekst betekent een nextLink dat er meer items zijn, en je moet doorgaan tot er geen nextLink meer terugkomt. 500 is het maximum per pagina, niet het totaal, dus de lijst als compleet behandelen kapt stil gegevens af. De request is niet mislukt, en dezelfde request herhalen levert dezelfde eerste pagina op."
+    },
+    {
+      "id": "engels-x10",
+      "prompt": "Backup report: 'Job completed with warnings. 3 files were skipped because they were locked by another process. All other items were backed up successfully. Skipped files will be retried during the next scheduled run.' What is the correct interpretation?",
+      "options": [
+        "The backup failed completely, so none of the data from tonight's job can be restored.",
+        "The three locked files were backed up as well, but they may be in an inconsistent state.",
+        "The warning means the backup storage is almost full and three files no longer fit on it.",
+        "Most data was backed up, but three locked files are missing until a later run succeeds."
+      ],
+      "answer": 3,
+      "uitleg": "Het rapport zegt dat alles behalve drie vergrendelde bestanden is geback-upt en dat die bij de volgende run opnieuw worden geprobeerd. De job is dus niet volledig mislukt. De drie bestanden zijn overgeslagen ('skipped'), niet half meegenomen, en over volle opslag staat niets in de tekst.",
+      "illustratie": "rto"
+    },
+    {
+      "id": "engels-x11",
+      "prompt": "Customer email: 'Could you set up an account for our new sales assistant, who starts on Monday? Please give them the same access as our current sales assistant, except for the finance folder. They will also need a laptop, but that can wait until the following week.' What exactly is being requested?",
+      "options": [
+        "An account with the same access as the current sales assistant, including the finance folder, and a laptop on Monday.",
+        "An account by Monday with the current sales assistant's access minus the finance folder, and a laptop a week later.",
+        "A copy of the current sales assistant's account and mailbox, so the new assistant can take over their work entirely.",
+        "Only a laptop for Monday, because the account and access will be arranged by the customer's own office manager."
+      ],
+      "answer": 1,
+      "uitleg": "De klant vraagt een account per maandag met dezelfde rechten als de huidige verkoopassistent, behalve de financiële map, en een laptop die een week later mag komen. De financiële map wordt juist uitgesloten en de laptop is niet voor maandag nodig. Over het kopiëren van de mailbox of een office manager staat niets in de mail."
+    },
+    {
+      "id": "engels-x12",
+      "prompt": "Change approval comment: 'Approved, on the condition that the change is carried out outside business hours and that a tested rollback plan is attached to the ticket before work begins.' What must be true before you start the change?",
+      "options": [
+        "The change has been carried out once during business hours to make sure it works as planned.",
+        "The approval is unconditional, so you can start right away at any moment that suits the team.",
+        "A tested rollback plan is attached to the ticket and the work is scheduled outside business hours.",
+        "A rollback plan is written up after the change, so it reflects what was actually done that night."
+      ],
+      "answer": 2,
+      "uitleg": "De goedkeuring is voorwaardelijk: een getest terugdraaiplan moet vóór de start aan het ticket hangen, en het werk gebeurt buiten kantooruren. Het is dus geen onvoorwaardelijke goedkeuring. Een plan achteraf schrijven of de wijziging eerst onder kantooruren uitproberen gaat rechtstreeks tegen beide voorwaarden in."
+    },
+    {
+      "id": "engels-x13",
+      "prompt": "Platform notice: 'The legacy connector will be retired on 1 March. Flows that still use it will stop running on that date. A replacement connector is available now. Existing connections are not migrated automatically; each flow must be updated to use the new connector.' What does this mean for flows built on the legacy connector?",
+      "options": [
+        "Each flow must be updated by hand to the new connector before 1 March, or it will stop running.",
+        "The flows will be moved to the replacement connector automatically on 1 March by the platform.",
+        "The flows keep running after 1 March, but they will no longer receive any new connector features.",
+        "Only newly created flows are affected; existing flows can keep using the legacy connector."
+      ],
+      "answer": 0,
+      "uitleg": "De tekst zegt dat flows op de oude connector op 1 maart stoppen en dat verbindingen niet automatisch worden gemigreerd; elke flow moet dus handmatig worden omgezet. Automatische migratie wordt juist uitgesloten. Doorlopen na 1 maart of alleen nieuwe flows raken spreekt 'will stop running' tegen."
+    },
+    {
+      "id": "engels-x14",
+      "prompt": "Service status page: 'Investigating - We are investigating reports of delayed email delivery for a subset of users in Europe. Messages are queued and will be delivered once the issue is resolved; no mail has been lost. Next update in 60 minutes.' What can you accurately tell an affected customer?",
+      "options": [
+        "Their incoming mail from the past hours has been lost and will need to be sent again.",
+        "Mail is delayed for some users, but it is queued, not lost, and more news follows soon.",
+        "All email in Europe is down and the provider expects it to be fixed within sixty minutes.",
+        "The problem has been solved, and all delayed messages have already reached their inbox."
+      ],
+      "answer": 1,
+      "uitleg": "De statuspagina meldt vertraging bij een deel van de gebruikers, met mail die in de wachtrij staat en niet verloren is, en een update over 60 minuten. Dat mail verloren is, wordt expliciet tegengesproken. Het gaat om 'a subset of users', niet om alle mail, en 60 minuten is het volgende updatemoment en geen hersteltijd; het probleem is ook nog niet opgelost.",
+      "illustratie": "klantupdate"
+    },
+    {
+      "id": "engels-x15",
+      "prompt": "Licensing terms of a backup service: 'Each licence covers one active user. Shared mailboxes and resource mailboxes are protected at no extra cost. Mailboxes of former employees that are kept for retention purposes each require a licence.' A customer has 20 active users, 3 shared mailboxes and 2 retained mailboxes of former employees. How many licences are needed?",
+      "options": [
+        "20 licences, because only active users count and every other mailbox is protected for free.",
+        "25 licences, because every mailbox in the tenant, of whatever type, needs its own licence.",
+        "23 licences, because the shared mailboxes need a licence while former employees do not.",
+        "22 licences, for the active users plus the two retained mailboxes of former employees."
+      ],
+      "answer": 3,
+      "uitleg": "Twintig actieve gebruikers hebben elk een licentie nodig, gedeelde mailboxen zijn gratis en de twee bewaarde mailboxen van oud-medewerkers vragen volgens de tekst elk een licentie: samen 22. Alleen actieve gebruikers tellen vergeet de oud-medewerkers. Alle mailboxen tellen, of de gedeelde mailboxen in plaats van de oud-medewerkers rekenen, draait de regels om."
+    }
+  ]
+}

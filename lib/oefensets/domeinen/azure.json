@@ -1,0 +1,186 @@
+{
+  "domain": "Azure",
+  "vragen": [
+    {
+      "id": "azure-x01",
+      "prompt": "Een beheerder kan niet meer via RDP verbinden met een Azure-VM, terwijl de VM draait. Je vermoedt een netwerkregel. Hoe stel je dat het snelst vast?",
+      "options": [
+        "Door de VM opnieuw te deployen naar een andere host, zodat de netwerkconfiguratie opnieuw wordt opgebouwd.",
+        "Met IP flow verify van Network Watcher en de effectieve beveiligingsregels op de netwerkkaart van de VM.",
+        "Door tijdelijk een regel 'allow any' met de hoogste prioriteit toe te voegen aan de NSG van het subnet.",
+        "Door de Windows-firewall op de VM uit te zetten via de seriële console en het opnieuw te proberen."
+      ],
+      "answer": 1,
+      "uitleg": "IP flow verify vertelt welke NSG-regel verkeer naar een poort toestaat of blokkeert, en de effectieve regels tonen de optelsom van subnet- en NIC-NSG's. Zo vind je de oorzaak zonder iets te veranderen. Een 'allow any'-regel of de firewall uitzetten opent de VM onnodig, en opnieuw deployen raakt de NSG-regels niet."
+    },
+    {
+      "id": "azure-x02",
+      "prompt": "Een klant wil dat zijn beheerders vanaf thuis kunnen inloggen op Windows-VM's in Azure. Nu hebben de VM's een publiek IP met poort 3389 open. Wat adviseer je?",
+      "options": [
+        "RDP verplaatsen naar een niet-standaardpoort, zodat geautomatiseerde scans de VM's niet meer vinden.",
+        "De publieke IP's houden, maar in de NSG alleen de thuis-IP-adressen van de beheerders toestaan.",
+        "Network Level Authentication en een sterk wachtwoordbeleid afdwingen op alle VM's van de klant.",
+        "Azure Bastion inzetten en de publieke IP-adressen en de open RDP-poort van de VM's verwijderen."
+      ],
+      "answer": 3,
+      "uitleg": "Met Azure Bastion verbind je via de Azure-portal of een native client zonder dat de VM een publiek IP of open RDP-poort nodig heeft. Een andere poort wordt binnen korte tijd ook gescand. IP-filtering op thuisadressen is breekbaar omdat die adressen wisselen, en NLA met sterke wachtwoorden laat de poort nog steeds open staan voor aanvallen."
+    },
+    {
+      "id": "azure-x03",
+      "prompt": "Een collega heeft bij een VM per ongeluk de back-up gestopt met de optie 'back-upgegevens verwijderen'. Soft delete staat aan op de Recovery Services-kluis. Wat kun je nu nog doen?",
+      "options": [
+        "Binnen de soft-delete-periode de verwijdering ongedaan maken en daarna de back-up weer hervatten.",
+        "Niets meer: de herstelpunten zijn direct gewist en je moet een nieuwe volledige back-up starten.",
+        "Microsoft Support vragen de herstelpunten terug te zetten vanuit hun eigen interne replica.",
+        "De herstelpunten terughalen uit de gekoppelde snapshot in de resourcegroep van de VM."
+      ],
+      "answer": 0,
+      "uitleg": "Met soft delete blijven verwijderde back-upgegevens standaard nog veertien dagen bewaard en kun je de verwijdering ongedaan maken. Ze zijn dus niet direct weg. Microsoft Support heeft geen eigen kopie om terug te zetten, en eventuele instant-restore-snapshots zijn kortlevend en vallen onder dezelfde verwijderactie."
+    },
+    {
+      "id": "azure-x04",
+      "prompt": "Een applicatie op een Azure-VM moet geheimen uit een Key Vault lezen. De ontwikkelaar wil een client secret in een configuratiebestand op de VM zetten. Wat is de betere aanpak?",
+      "options": [
+        "Het client secret versleuteld in het configuratiebestand opslaan en het elk jaar handmatig vernieuwen.",
+        "Het client secret als omgevingsvariabele op de VM zetten, zodat het niet in de broncode terechtkomt.",
+        "Een managed identity aan de VM geven en die identiteit via RBAC leesrechten op de Key Vault toekennen.",
+        "De Key Vault openzetten voor het publieke IP van de VM, zodat er geen authenticatie nodig is."
+      ],
+      "answer": 2,
+      "uitleg": "Met een managed identity krijgt de VM een identiteit waarvan Azure de inloggegevens beheert en roteert; er staat dus nergens een geheim op de VM. Een versleuteld of in een omgevingsvariabele opgeslagen secret blijft een geheim dat kan uitlekken en verloopt. Netwerktoegang tot een Key Vault vervangt nooit de authenticatie."
+    },
+    {
+      "id": "azure-x05",
+      "prompt": "Een externe partij moet één bestand uit een blob-container van de klant kunnen downloaden, alleen deze week. Hoe regel je dat veilig?",
+      "options": [
+        "Een SAS-token voor alleen dat bestand, met leesrecht en een verloopdatum aan het eind van de week.",
+        "De container tijdelijk op anonieme leestoegang zetten en die instelling na een week weer terugdraaien.",
+        "De toegangssleutel van het opslagaccount delen en die na een week roteren in de Azure-portal.",
+        "De externe partij als gast uitnodigen en de rol Storage Blob Data Owner op het account geven."
+      ],
+      "answer": 0,
+      "uitleg": "Een SAS-token beperkt toegang tot één object, één recht en een vaste periode, wat precies past bij de vraag; een user delegation SAS is nog beter omdat die aan een Entra-identiteit hangt. Anonieme toegang stelt de hele container open. De accountsleutel geeft volledige controle over het hele opslagaccount, en Owner is een veel te ruime rol."
+    },
+    {
+      "id": "azure-x06",
+      "prompt": "Een klant wil afdwingen dat in al zijn subscriptions alleen resources in Europese regio's worden aangemaakt. Hoe richt je dat in?",
+      "options": [
+        "In elke subscription een budget per regio instellen dat waarschuwt zodra er buiten Europa kosten ontstaan.",
+        "Een Azure Policy 'toegestane locaties' met het effect Deny, toegewezen op de management group erboven.",
+        "Een resourcelock op elke subscription zetten, zodat niemand nieuwe resources buiten Europa kan maken.",
+        "Een tag 'regio' verplicht maken en met een maandelijkse rapportage controleren of die klopt."
+      ],
+      "answer": 1,
+      "uitleg": "Azure Policy met Deny houdt het aanmaken van resources in andere regio's tegen, en toewijzing op management group-niveau geldt voor alle onderliggende subscriptions. Een budget waarschuwt pas achteraf, een lock blokkeert wijzigingen of verwijdering maar kent geen regio's, en een tag met rapportage dwingt niets af."
+    },
+    {
+      "id": "azure-x07",
+      "prompt": "In de productieresourcegroep van een klant is al twee keer per ongeluk een resource verwijderd. Wijzigingen moeten wel mogelijk blijven. Welke maatregel past?",
+      "options": [
+        "Een resourcelock van het type ReadOnly op de resourcegroep, zodat niemand nog per ongeluk iets kapot maakt.",
+        "Alle beheerders de rol Reader geven en alleen nog wijzigen via een apart account met Contributor.",
+        "Een Azure Policy met het effect Audit, die elke verwijdering in de resourcegroep zichtbaar maakt.",
+        "Een resourcelock van het type CanNotDelete op de resourcegroep: aanpassen kan nog, verwijderen niet."
+      ],
+      "answer": 3,
+      "uitleg": "Een CanNotDelete-lock blokkeert verwijderen maar laat wijzigingen toe, wat precies de vraag is. ReadOnly blokkeert ook wijzigingen en kan zelfs normale beheeracties breken. Rechten verlagen helpt niet als de fout met het beheeraccount zelf wordt gemaakt, en Audit legt een verwijdering alleen vast zonder die te voorkomen."
+    },
+    {
+      "id": "azure-x08",
+      "prompt": "Een klant heeft een budget van 2.000 euro per maand ingesteld in Cost Management en denkt dat Azure daardoor nooit meer kan uitgeven. Wat leg je uit?",
+      "options": [
+        "Klopt, bij 100 procent van het budget worden alle resources in de subscription automatisch gestopt.",
+        "Klopt, maar alleen voor VM's; opslag en netwerkverkeer lopen na het bereiken van het budget door.",
+        "Een budget waarschuwt alleen; automatisch ingrijpen vraagt een actiegroep met automatisering.",
+        "Een budget werkt pas als je ook een spending limit bij Microsoft aanvraagt voor de subscription."
+      ],
+      "answer": 2,
+      "uitleg": "Budgetten in Cost Management signaleren bij ingestelde drempels, maar grijpen niet zelf in. Wil je automatisch ingrijpen, dan koppel je een actiegroep aan bijvoorbeeld een runbook of Logic App. De bewering dat resources vanzelf stoppen klopt voor geen enkel resourcetype, en een spending limit bestaat alleen bij bepaalde proef- en creditabonnementen."
+    },
+    {
+      "id": "azure-x09",
+      "prompt": "Een SQL Server-VM in Azure is traag. CPU en geheugen zijn rustig, maar de queries wachten op schijf. De VM heeft Premium SSD-schijven. Wat onderzoek je?",
+      "options": [
+        "Of de schijven gedefragmenteerd moeten worden, omdat SQL-databasebestanden op Premium SSD snel versnipperen.",
+        "Of de IOPS- of doorvoerlimiet van de schijven of van de VM-grootte zelf wordt bereikt, via de schijfmetrics.",
+        "Of de VM naar een andere regio moet, omdat de opslag in de huidige regio overbelast is door andere klanten.",
+        "Of de schijfcache uit moet op alle schijven, omdat caching op Premium SSD altijd vertraging oplevert."
+      ],
+      "answer": 1,
+      "uitleg": "In Azure heeft zowel elke schijf als elke VM-grootte een maximum aan IOPS en doorvoer; de metrics voor verbruikt percentage laten zien welke limiet wordt geraakt. Vaak zit de beperking in de VM-grootte, niet in de schijf. Defragmenteren is bij SSD niet zinvol, een andere regio lost een limiet niet op, en de juiste cache-instelling verschilt per schijf."
+    },
+    {
+      "id": "azure-x10",
+      "prompt": "Een klant wil dat een bedrijfskritische applicatie op twee VM's blijft draaien als een volledig datacenter binnen de Azure-regio uitvalt. Wat kies je?",
+      "options": [
+        "De VM's verdelen over availability zones in de regio, met een zone-redundante load balancer ervoor.",
+        "De VM's in een availability set plaatsen, zodat ze in verschillende fault domains in de regio staan.",
+        "Eén grotere VM met Premium SSD inzetten, omdat die een hogere SLA heeft dan twee kleinere VM's.",
+        "Dagelijks een back-up naar een andere regio maken en bij uitval de VM daar handmatig terugzetten."
+      ],
+      "answer": 0,
+      "uitleg": "Availability zones zijn fysiek gescheiden datacenters binnen een regio, dus twee VM's in verschillende zones overleven het uitvallen van één datacenter. Een availability set verdeelt alleen over racks binnen één datacenter. Eén VM blijft een single point of failure, en terugzetten vanuit een back-up is herstel na uitval, geen doorlopende beschikbaarheid."
+    },
+    {
+      "id": "azure-x11",
+      "prompt": "Bij een incidentonderzoek wil je weten wie vijf maanden geleden een NSG-regel heeft gewijzigd. In het activiteitenlogboek is die periode niet meer te vinden. Wat had ingericht moeten zijn?",
+      "options": [
+        "Een langere bewaartermijn in de NSG-flowlogs, omdat die ook vastleggen wie een regel heeft aangepast.",
+        "Microsoft Defender for Cloud, omdat dat alle beheeracties standaard een jaar lang bewaart.",
+        "Een resourcelock op de NSG, zodat alle wijzigingen daarop automatisch worden gelogd.",
+        "Een diagnostische instelling die het activiteitenlogboek naar Log Analytics of opslag stuurt."
+      ],
+      "answer": 3,
+      "uitleg": "Het activiteitenlogboek bewaart beheeracties standaard negentig dagen; voor langere bewaring stuur je het via een diagnostische instelling naar Log Analytics, opslag of een event hub. NSG-flowlogs leggen netwerkverkeer vast, niet wie een regel wijzigde. Defender for Cloud is geen archief voor het activiteitenlogboek, en een lock voegt geen logging toe."
+    },
+    {
+      "id": "azure-x12",
+      "prompt": "Een klant heeft een hub-VNet met twee spoke-VNets, elk gepeerd met de hub. VM's in spoke A kunnen VM's in spoke B niet bereiken. Wat is de oorzaak?",
+      "options": [
+        "De adresruimtes van de twee spokes overlappen, waardoor Azure het verkeer niet kan routeren.",
+        "Bij de peering is 'gateway transit' niet aangezet, waardoor de hub geen verkeer doorgeeft.",
+        "Peering is niet transitief; spoke-naar-spoke moet via een firewall of NVA in de hub lopen.",
+        "De NSG's in de hub blokkeren standaard al het verkeer tussen gepeerde virtuele netwerken."
+      ],
+      "answer": 2,
+      "uitleg": "Peering verbindt alleen de twee VNets die direct gepeerd zijn; verkeer van de ene spoke naar de andere via de hub vraagt om user-defined routes naar een firewall of NVA in de hub, of om een directe peering. Bij overlappende adressen was de peering niet eens gelukt. Gateway transit gaat over het delen van een VPN-gateway, en standaard-NSG-regels staan verkeer binnen gepeerde VNets juist toe.",
+      "illustratie": "subnet"
+    },
+    {
+      "id": "azure-x13",
+      "prompt": "Je hebt een private endpoint gemaakt voor een opslagaccount. Een VM in hetzelfde VNet verbindt nog steeds via het publieke IP van het account. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "Een private endpoint werkt pas nadat het opslagaccount opnieuw is aangemaakt in hetzelfde VNet.",
+        "De VM moet opnieuw worden opgestart, omdat de netwerkkaart het private endpoint anders niet ziet.",
+        "Private endpoints werken alleen voor VM's in een ander VNet, niet voor VM's in hetzelfde VNet.",
+        "De private DNS-zone privatelink.blob.core.windows.net is niet aan het VNet gekoppeld."
+      ],
+      "answer": 3,
+      "uitleg": "Een private endpoint werkt via DNS: de naam van het opslagaccount moet naar het private IP verwijzen, wat via de private DNS-zone gebeurt die aan het VNet gekoppeld moet zijn. Zonder die koppeling krijgt de VM nog het publieke adres terug. Het account opnieuw maken of de VM herstarten lost DNS niet op, en een private endpoint werkt juist ook binnen hetzelfde VNet."
+    },
+    {
+      "id": "azure-x14",
+      "prompt": "Een engineer heeft de rol Contributor op een subscription en moet een collega leesrechten geven op een resourcegroep. Dat lukt niet. Welke rol geef je hem volgens least privilege?",
+      "options": [
+        "Role Based Access Control Administrator op die resourcegroep, eventueel met voorwaarden.",
+        "Owner op de subscription, omdat alleen een eigenaar rollen mag toewijzen binnen Azure-resources.",
+        "Global Administrator in Entra ID, omdat roltoewijzingen onder het beheer van de directory vallen.",
+        "Contributor op de resourcegroep, omdat die rol daar wél roltoewijzingen mag maken."
+      ],
+      "answer": 0,
+      "uitleg": "Contributor mag resources beheren maar geen toegang toekennen. De rol Role Based Access Control Administrator (of User Access Administrator) geeft precies dat recht, en met een voorwaarde beperk je welke rollen hij mag uitdelen. Owner is veel ruimer dan nodig, Global Administrator is een directoryrol en geen Azure RBAC-rol, en Contributor op een lagere scope kan dit ook niet."
+    },
+    {
+      "id": "azure-x15",
+      "prompt": "Een klant patcht zijn Azure-VM's nog via Update Management in een Automation-account met de oude Log Analytics-agent. Wat adviseer je?",
+      "options": [
+        "Laten zoals het is, omdat Update Management in Automation de aanbevolen oplossing voor Azure-VM's blijft.",
+        "Overstappen naar Azure Update Manager, omdat de oude oplossing en de oude agent allebei zijn uitgefaseerd.",
+        "Patchen verplaatsen naar Windows Update in elke VM afzonderlijk, met automatische installatie elke nacht.",
+        "De oude agent vervangen door de Azure Monitor Agent en verder Update Management in Automation houden."
+      ],
+      "answer": 1,
+      "uitleg": "Update Management in Automation en de Log Analytics-agent zijn uitgefaseerd; Azure Update Manager is de opvolger en werkt zonder die agent, met onderhoudsconfiguraties voor planning. Alleen de agent vervangen werkt niet, omdat de oude oplossing zelf niet meer wordt ondersteund. Losse automatische updates per VM geven geen centrale planning, rapportage of onderhoudsvensters."
+    }
+  ]
+}

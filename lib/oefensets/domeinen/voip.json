@@ -1,0 +1,187 @@
+{
+  "domain": "VoIP",
+  "vragen": [
+    {
+      "id": "voip-x01",
+      "prompt": "Bij een klant vallen gesprekken via de SIP-trunk steeds na ongeveer 30 seconden weg, zowel inkomend als uitgaand. Opzetten en spraak werken in het begin prima. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "De gebruikte codec is te zwaar voor de lijn, waardoor de centrale het gesprek afbreekt.",
+        "De belgroep heeft een te korte beltijd, waardoor het gesprek na een halve minuut stopt.",
+        "SIP-ALG of NAT op de router verminkt de signalering, waardoor de bevestiging niet aankomt.",
+        "De toestellen hebben een verouderde firmware die lange gesprekken niet kan vasthouden."
+      ],
+      "answer": 2,
+      "uitleg": "Een vaste afbreektijd rond 30 seconden is het klassieke teken dat de bevestiging (ACK) op het opgezette gesprek niet aankomt; de centrale geeft het dan op. Een SIP-ALG of verkeerde NAT op de router is daarvan de bekendste oorzaak, dus die zet je uit of corrigeer je. Een te zware codec geeft hakkelende spraak, geen vaste afbreektijd. Een beltijd geldt alleen tot opnemen, en firmware is pas een verdachte als de netwerkkant is uitgesloten.",
+      "illustratie": "voip"
+    },
+    {
+      "id": "voip-x02",
+      "prompt": "Toestellen van een klant zijn na een periode zonder gesprekken soms onbereikbaar voor inkomende oproepen; na een uitgaand gesprek werkt inkomend weer. Wat pas je aan?",
+      "options": [
+        "Het registratie-interval of de keep-alive korter maken dan de NAT-timeout van de router.",
+        "De beltijd van de belgroep verlengen zodat oproepen langer naar de toestellen gaan.",
+        "De voicemail eerder laten inspringen zodat bellers bij onbereikbaarheid iets inspreken.",
+        "Een andere audiocodec instellen zodat het toestel minder bandbreedte nodig heeft."
+      ],
+      "answer": 0,
+      "uitleg": "De router vergeet de NAT-koppeling na een tijd zonder verkeer, zodat inkomende signalering het toestel niet meer bereikt; een uitgaand gesprek opent die koppeling weer. Vaker registreren of keep-alives sturen houdt de koppeling open. Een langere beltijd of eerdere voicemail verandert niets aan de bereikbaarheid, en de codec speelt pas mee als er een gesprek loopt."
+    },
+    {
+      "id": "voip-x03",
+      "prompt": "Bij een gesprek met een medewerker die op de speaker van zijn bureautoestel belt, hoort de andere partij steeds haar eigen stem terug. De medewerker zelf hoort niets vreemds. Waar zoek je de oorzaak?",
+      "options": [
+        "Bij de beller: haar eigen toestel versterkt het geluid te veel en veroorzaakt zo de echo.",
+        "Bij de provider: de SIP-trunk heeft te weinig kanalen en kaatst daardoor de audio terug.",
+        "Bij de router: QoS staat uit, waardoor de spraakpakketten dubbel worden afgeleverd.",
+        "Bij de medewerker: geluid uit zijn speaker komt via zijn microfoon terug naar de beller."
+      ],
+      "answer": 3,
+      "uitleg": "Wie de echo hoort, veroorzaakt hem meestal niet: het is de akoestische terugkoppeling aan de andere kant, hier de speaker van de medewerker. Een headset of lager speakervolume lost het op. Het toestel van de beller kan haar eigen stem niet terugsturen, een tekort aan kanalen geeft bezettoon in plaats van echo, en zonder QoS krijg je hapering of verlies, geen verdubbelde audio."
+    },
+    {
+      "id": "voip-x04",
+      "prompt": "De VoIP-monitoring bij een klant toont een latency van 35 ms, een packet loss van 0% en een jitter die regelmatig boven de 60 ms piekt. Gebruikers horen hakkelende, robotachtige spraak. Wat is hier de kern van het probleem?",
+      "options": [
+        "De vertraging van 35 ms, die voor spraak al ruim boven de bruikbare grens ligt.",
+        "De sterk wisselende aankomsttijd van pakketten, die de jitterbuffer niet meer opvangt.",
+        "Het pakketverlies, dat bij 0% wordt onderschat en in werkelijkheid hoger ligt.",
+        "De keuze voor een codec met te weinig bandbreedte voor heldere spraakkwaliteit."
+      ],
+      "answer": 1,
+      "uitleg": "Bij 35 ms vertraging en geen verlies blijft alleen de hoge jitter over: pakketten komen onregelmatig binnen en de jitterbuffer kan dat niet meer gladstrijken, wat hakkelende spraak geeft. Een vertraging van 35 ms is voor spraak ruim acceptabel. Een gemeten verlies van 0% wegredeneren is speculeren, en een codec geeft geen pieken die met netwerkbelasting meebewegen."
+    },
+    {
+      "id": "voip-x05",
+      "prompt": "Een klant wil dat uitgaande gesprekken van alle medewerkers het algemene nummer tonen. Na de aanpassing zien gebelde partijen 'anoniem' of een ander nummer. Wat controleer je eerst?",
+      "options": [
+        "Of de toestellen van de medewerkers opnieuw zijn opgestart na het wijzigen van de instelling.",
+        "Of het ingestelde nummer op de trunk staat en de provider het als nummerweergave toestaat.",
+        "Of het algemene nummer ook als keuze in het keuzemenu van de centrale is opgenomen.",
+        "Of de gebelde partijen nummerweergave in hun eigen abonnement hebben aangezet."
+      ],
+      "answer": 1,
+      "uitleg": "Providers tonen alleen een nummer dat bij de trunk of klant hoort en vervangen een niet-toegestaan nummer door anoniem of een standaardnummer. Daarom controleer je eerst of het nummer op de trunk is toegestaan. Een herstart van de toestellen raakt de weergave bij de provider niet, het keuzemenu gaat alleen over inkomend verkeer, en de ontvangende kant ziet bij andere bellers wel gewoon een nummer."
+    },
+    {
+      "id": "voip-x06",
+      "prompt": "Een klant stapt over naar VoIP en vraagt of het inbraakalarm, dat nu via de analoge lijn naar de meldkamer belt, gewoon via een analoge adapter op de nieuwe centrale kan. Wat adviseer je?",
+      "options": [
+        "De adapter gebruiken, omdat VoIP het analoge signaal van het alarm altijd exact doorgeeft.",
+        "Het alarm via de wifi van het kantoor laten lopen zodat het zonder telefoonlijn werkt.",
+        "De adapter gebruiken en de codec op een lage bitrate zetten om bandbreedte te sparen.",
+        "Met de alarmleverancier een geschikte verbinding afstemmen, zoals een IP- of 4G-kiezer."
+      ],
+      "answer": 3,
+      "uitleg": "Alarmkiezers sturen tonen of modemsignalen die door compressie, jitter of pakketverlies op VoIP onbetrouwbaar worden, en een alarm moet ook werken als internet of stroom wegvalt. Daarom stem je met de alarmleverancier een gecertificeerde IP- of 4G-verbinding af. Ervan uitgaan dat de adapter het signaal altijd goed doorgeeft is precies de fout, zomaar de kantoorwifi gebruiken negeert de eisen van de meldkamer, en een lage bitrate maakt de vervorming juist erger.",
+      "illustratie": "voip"
+    },
+    {
+      "id": "voip-x07",
+      "prompt": "Een klant wil dat bellers in een rij wachten met wachtmuziek en een aankondiging van hun positie, en dat medewerkers zich kunnen aan- en afmelden. Welke functie richt je in?",
+      "options": [
+        "Een wachtrij (call queue) met aan- en afmeldende agents en positie-aankondiging.",
+        "Een belgroep waarin alle toestellen tegelijk overgaan totdat iemand het gesprek opneemt.",
+        "Een keuzemenu waarin de beller zelf kiest welke medewerker hij direct wil spreken.",
+        "Een doorschakeling van het hoofdnummer naar het mobiele nummer van de receptie."
+      ],
+      "answer": 0,
+      "uitleg": "Wachtmuziek, positie-aankondiging en agents die zich aan- en afmelden zijn kenmerken van een wachtrij. Een belgroep laat toestellen overgaan maar zet bellers niet netjes in een rij, een keuzemenu verdeelt alleen het verkeer, en een doorschakeling naar één mobiel nummer biedt geen van de gevraagde functies."
+    },
+    {
+      "id": "voip-x08",
+      "prompt": "Een klant wil met Teams bellen en zijn huidige telecomprovider houden, maar geen eigen Session Border Controller beheren. De provider wordt in het Teams-beheercentrum als partner vermeld. Welke route past?",
+      "options": [
+        "Direct Routing, waarbij Campai een eigen SBC voor de klant inricht en onderhoudt.",
+        "Microsoft Calling Plans, waarbij de nummers rechtstreeks bij Microsoft worden afgenomen.",
+        "Operator Connect, waarbij de provider de koppeling met Teams levert en beheert.",
+        "Een SIP-adapter per werkplek die Teams aan de bestaande centrale van de klant koppelt."
+      ],
+      "answer": 2,
+      "uitleg": "Bij Operator Connect levert en beheert een aangesloten provider de koppeling, zodat de klant zijn provider houdt zonder eigen SBC. Direct Routing vraagt juist om een eigen of beheerde SBC, met Calling Plans neem je nummers af bij Microsoft in plaats van bij de huidige provider, en een adapter per werkplek is geen ondersteunde Teams-koppeling."
+    },
+    {
+      "id": "voip-x09",
+      "prompt": "Een defect bureautoestel is vervangen door hetzelfde model. Het nieuwe toestel krijgt netjes een IP-adres, maar haalt geen configuratie op en registreert niet. Het oude toestel werkte via automatische provisioning. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "Het nieuwe toestel moet eerst een volledige nacht aan staan voordat het zich registreert.",
+        "De DHCP-server geeft het nieuwe toestel een adres uit een verkeerde, externe range.",
+        "Het extensienummer is al in gebruik, omdat elke gebruiker maar één nummer mag hebben.",
+        "De provisioning is gekoppeld aan het MAC-adres van het oude toestel en niet bijgewerkt."
+      ],
+      "answer": 3,
+      "uitleg": "Automatische provisioning herkent een toestel meestal aan zijn MAC-adres, dus een vervangend toestel krijgt pas een configuratie als dat adres in het provisioningplatform is bijgewerkt. Een toestel hoeft niet een nacht te wachten. Een verkeerde adresrange zou al bij de IP-toewijzing opvallen, en het extensienummer is juist vrijgekomen nu het oude toestel weg is."
+    },
+    {
+      "id": "voip-x10",
+      "prompt": "Na het vervangen van de switches bij een klant krijgen de VoIP-toestellen een adres uit het datanetwerk in plaats van uit het spraak-VLAN. Wat controleer je?",
+      "options": [
+        "Of het spraak-VLAN op de poorten staat en via LLDP-MED of DHCP wordt doorgegeven.",
+        "Of de toestellen een nieuwe firmware nodig hebben om op de nieuwe switches te mogen werken.",
+        "Of de SIP-trunk bij de provider opnieuw moet worden aangemeld na de wissel van switches.",
+        "Of de DHCP-scope van het datanetwerk groot genoeg is voor alle toestellen erbij."
+      ],
+      "answer": 0,
+      "uitleg": "Toestellen leren hun spraak-VLAN meestal via LLDP-MED, CDP of een DHCP-optie; ontbreekt die configuratie op de nieuwe switches, dan blijven ze in het data-VLAN hangen. Firmware is pas aan de orde als de netwerkconfiguratie klopt, de trunk bij de provider staat los van de interne VLAN-toewijzing, en een grotere datascope bestendigt juist de verkeerde situatie."
+    },
+    {
+      "id": "voip-x11",
+      "prompt": "Op de factuur van een klant staan honderden internationale gesprekken naar dure bestemmingen, allemaal 's nachts gevoerd. Niemand bij de klant werkt 's nachts. Wat doe je als eerste?",
+      "options": [
+        "De provider vragen de kosten te crediteren en verder afwachten of het nog eens gebeurt.",
+        "Een nieuwe SIP-trunk aanvragen en het misbruikte account voorlopig laten staan voor onderzoek.",
+        "Internationale gesprekken blokkeren, SIP-wachtwoorden wijzigen en open poorten nakijken.",
+        "De medewerkers vragen of iemand de toestellen na werktijd mee naar huis heeft genomen."
+      ],
+      "answer": 2,
+      "uitleg": "Dit is het patroon van belfraude via een gecompromitteerd account of een open centrale; eerst stop je de schade door internationaal bellen te blokkeren, wachtwoorden te wijzigen en de bereikbaarheid van buitenaf te controleren. Alleen om creditering vragen laat het lek open, een nieuwe trunk naast het misbruikte account laat dat account actief, en medewerkers ondervragen gaat voorbij aan het nachtelijke, geautomatiseerde patroon."
+    },
+    {
+      "id": "voip-x12",
+      "prompt": "Sinds de klant van mailplatform is gewisseld, komen voicemailberichten niet meer als e-mail binnen. Inspreken en afluisteren op het toestel werken nog. Wat onderzoek je als eerste?",
+      "options": [
+        "De grootte van de voicemailbox, omdat een volle box geen berichten meer kan versturen.",
+        "De SMTP-instellingen van de centrale (server, poort, authenticatie) en de quarantaine.",
+        "Het belplan van de centrale, omdat de voicemail daar mogelijk uit de route is gehaald.",
+        "De e-mailclient van de medewerkers, omdat die de bijlagen misschien niet kan openen."
+      ],
+      "answer": 1,
+      "uitleg": "Inspreken werkt, dus alleen de mailverzending is kapot, en die hangt aan de SMTP-instellingen die bij een nieuw mailplatform vaak niet meer kloppen; een quarantaine kan berichten ook tegenhouden. Een volle box zou het inspreken zelf blokkeren, een aangepast belplan maakt de voicemail onbereikbaar, en de mailclient speelt geen rol als het bericht niet eens aankomt."
+    },
+    {
+      "id": "voip-x13",
+      "prompt": "Een klant met 20 gelijktijdige gesprekken wil weten hoeveel uploadcapaciteit spraak vraagt als de centrale G.711 gebruikt. Welke schatting per gesprek per richting is realistisch, inclusief overhead?",
+      "options": [
+        "Ongeveer 80 tot 90 kbit/s, dus voor 20 gesprekken bijna 2 Mbit/s per richting.",
+        "Ongeveer 8 tot 10 kbit/s, dus voor 20 gesprekken rond de 0,2 Mbit/s per richting.",
+        "Ongeveer 64 kbit/s, omdat de codecsnelheid gelijk is aan het verbruik op de lijn.",
+        "Ongeveer 1 Mbit/s, dus voor 20 gesprekken een volle lijn van 20 Mbit/s per richting."
+      ],
+      "answer": 0,
+      "uitleg": "G.711 heeft een codecsnelheid van 64 kbit/s, maar met IP-, UDP- en RTP-overhead kom je op ruwweg 80 tot 90 kbit/s per gesprek per richting. De lage schatting hoort bij een compressiecodec zonder overhead, de schatting van 64 kbit/s vergeet de pakketoverhead, en 1 Mbit/s per gesprek is een veelvoud van wat spraak werkelijk vraagt."
+    },
+    {
+      "id": "voip-x14",
+      "prompt": "Een klant wil zijn vaste nummers meenemen naar een nieuwe VoIP-provider zonder dat het bedrijf onbereikbaar is. Wat is de beste aanpak?",
+      "options": [
+        "Het oude contract eerst opzeggen en daarna bij de nieuwe provider de portering aanvragen.",
+        "Nieuwe nummers nemen en de oude nummers een jaar lang laten doorschakelen naar de nieuwe.",
+        "De portering starten en de routing pas inrichten zodra de nummers bij de nieuwe provider staan.",
+        "Porteren op een vaste datum, met routing en toestellen vooraf klaar en direct een belproef."
+      ],
+      "answer": 3,
+      "uitleg": "Met een vaste porteerdatum en vooraf ingerichte routing en toestellen werkt een nummer meteen na de portering, en een directe belproef laat zien of alles goed staat. Eerst opzeggen kan de nummers kwijtraken, omdat de portering via de nieuwe provider moet lopen terwijl het oude contract nog actief is. Nieuwe nummers met doorschakeling laten de klant zijn eigen nummers verliezen, en routing pas achteraf inrichten geeft een periode waarin oproepen nergens aankomen."
+    },
+    {
+      "id": "voip-x15",
+      "prompt": "Een klant meldt dat de belkwaliteit bij thuiswerkers slecht is, maar op kantoor goed. Iedereen gebruikt dezelfde softphone. Wat is de beste eerste stap?",
+      "options": [
+        "De QoS-instellingen op de kantoorrouter aanscherpen zodat spraak meer voorrang krijgt.",
+        "De SIP-trunk opschalen met extra kanalen zodat er meer gelijktijdige gesprekken passen.",
+        "Per thuiswerker de verbinding meten: wifi, upload, jitter en eventuele VPN-tunnel.",
+        "Alle thuiswerkers standaard een nieuw bureautoestel sturen in plaats van de softphone."
+      ],
+      "answer": 2,
+      "uitleg": "Het probleem zit alleen thuis, dus het pad van de thuiswerker is de verdachte: wifi, beperkte upload, jitter of spraak die door een VPN-tunnel moet. Meten per persoon laat zien waar het misgaat. QoS op kantoor heeft geen invloed op het thuisnetwerk, extra trunkkanalen lossen geen kwaliteitsprobleem op, en een bureautoestel gebruikt dezelfde thuisverbinding."
+    }
+  ]
+}

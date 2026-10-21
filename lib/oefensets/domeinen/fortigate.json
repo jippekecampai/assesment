@@ -1,0 +1,185 @@
+{
+  "domain": "Fortigate",
+  "vragen": [
+    {
+      "id": "fortigate-x01",
+      "prompt": "Bij een nieuwe klant zie je dat de beheerinterface (HTTPS en SSH) van de Fortigate bereikbaar is op de WAN-interface. Wat doe je?",
+      "options": [
+        "Beheer van de WAN-interface halen of beperken met trusted hosts, en beheren via het interne netwerk of VPN.",
+        "De beheerpoort van 443 naar een hoge, willekeurige poort verplaatsen zodat scanners hem niet meer vinden.",
+        "Het beheerderswachtwoord vervangen door een lang en complex wachtwoord en het beheer verder zo laten.",
+        "Een IPS-profiel op de WAN-interface zetten, zodat aanvallen op de beheerinterface worden herkend."
+      ],
+      "answer": 0,
+      "uitleg": "Een vanaf internet bereikbare beheerinterface is een groot risico; meerdere ernstige kwetsbaarheden werden juist via die interface misbruikt, zonder dat een wachtwoord nodig was. Daarom haal je beheer van de WAN af of beperk je het tot vaste beheeradressen. Een andere poort wordt snel gevonden, een sterk wachtwoord helpt niet tegen een kwetsbaarheid, en IPS beschermt de beheerinterface van het toestel zelf niet."
+    },
+    {
+      "id": "fortigate-x02",
+      "prompt": "Fortinet publiceert een PSIRT-advisory over een kritieke kwetsbaarheid in de SSL-VPN die actief wordt misbruikt. Een klant gebruikt SSL-VPN op een kwetsbare versie. Wat is de juiste volgorde?",
+      "options": [
+        "Wachten op de volgende geplande onderhoudsronde van de klant en dan de firmware van de Fortigate bijwerken.",
+        "De firmware bijwerken en de zaak als opgelost beschouwen, omdat de kwetsbaarheid daarna is gedicht.",
+        "Direct patchen of de workaround toepassen, en daarna controleren op indicatoren van misbruik.",
+        "Alleen de logs van de afgelopen week nalopen en pas patchen als daarin verdachte activiteit te zien is."
+      ],
+      "answer": 2,
+      "uitleg": "Bij een actief misbruikte kritieke kwetsbaarheid patch je zo snel mogelijk, en omdat misbruik al eerder kan zijn gebeurd, controleer je daarna op de indicatoren uit de advisory. Wachten op een onderhoudsronde laat het lek open. Patchen alleen sluit het lek maar verwijdert geen achtergelaten toegang, en eerst logs nalopen stelt de bescherming onnodig uit."
+    },
+    {
+      "id": "fortigate-x03",
+      "prompt": "Je voegt onderaan de policylijst een nieuwe allow-policy toe voor een toepassing, maar het verkeer wordt nog steeds geblokkeerd. Hoger in de lijst staat een bredere deny-policy voor dezelfde bron. Wat is de oorzaak?",
+      "options": [
+        "De Fortigate past altijd de meest specifieke policy toe, dus de nieuwe policy mist nog een service-object.",
+        "Policies worden van boven naar beneden gelezen en de eerste match telt; de deny komt eerst.",
+        "Een nieuwe policy wordt pas actief na een herstart of na het wissen van de sessietabel.",
+        "Deny-policies hebben op een Fortigate altijd voorrang op allow-policies, ongeacht de volgorde in de lijst."
+      ],
+      "answer": 1,
+      "uitleg": "Een Fortigate verwerkt policies van boven naar beneden en stopt bij de eerste die overeenkomt; je moet de nieuwe policy dus boven de deny-policy plaatsen. Er is geen automatische voorkeur voor de meest specifieke policy en ook geen vaste voorrang voor deny. Een nieuwe policy is direct actief; alleen bestaande sessies kunnen nog de oude regel volgen."
+    },
+    {
+      "id": "fortigate-x04",
+      "prompt": "Een gebruiker kan een interne applicatie niet bereiken. In het forward traffic-log zie je helemaal niets van dat verkeer. Wat is een waarschijnlijke verklaring?",
+      "options": [
+        "Het verkeer komt niet bij de Fortigate aan, want alles wat de Fortigate passeert wordt altijd gelogd.",
+        "De logging staat op 'alleen UTM-events', waardoor toegestaan verkeer naar interne servers niet zichtbaar is.",
+        "Het log wordt pas na een uur bijgewerkt, dus het verkeer verschijnt later vanzelf in het overzicht.",
+        "Het verkeer valt op de impliciete deny-policy, die standaard niet logt; zet daar logging aan om het te zien."
+      ],
+      "answer": 3,
+      "uitleg": "Verkeer dat door geen enkele policy wordt toegestaan, valt op de impliciete deny, en die logt standaard geen overtredingen; daardoor lijkt het alsof er niets gebeurt. Met logging op de impliciete deny of met een debug flow zie je het wel. Niet alles wordt automatisch gelogd, een UTM-instelling verklaart geen blokkade, en logs verschijnen niet met een uur vertraging."
+    },
+    {
+      "id": "fortigate-x05",
+      "prompt": "Welk hulpmiddel op de Fortigate laat per pakket zien welke route, policy en NAT-beslissing wordt genomen, en waarom een pakket eventueel wordt weggegooid?",
+      "options": [
+        "De packet capture via 'diagnose sniffer packet', die alle beslissingen per pakket toont.",
+        "De FortiView-dashboards, die per sessie de gebruikte policy en het dropreden tonen.",
+        "De debug flow via 'diagnose debug flow' op de CLI, gefilterd op het betreffende adres.",
+        "De routing monitor in de GUI, die per verbinding de policy en NAT-regel weergeeft."
+      ],
+      "answer": 2,
+      "uitleg": "De debug flow volgt een pakket door de verwerking en toont de gekozen route, de policy-ID, NAT en een eventuele reden om het te weigeren. Een sniffer laat zien dat pakketten aankomen of vertrekken, maar niet waarom de Fortigate ze weigert. FortiView en de routing monitor geven overzichten, maar geen beslissingen per pakket."
+    },
+    {
+      "id": "fortigate-x06",
+      "prompt": "Na het aanzetten van SSL deep inspection krijgen alle gebruikers certificaatfouten op websites. Wat is de oorzaak en de oplossing?",
+      "options": [
+        "De clients vertrouwen de CA van de Fortigate niet; rol dat certificaat uit via Intune of GPO.",
+        "De websites hebben verlopen certificaten; je voegt de getroffen sites toe aan de uitzonderingen.",
+        "De Fortigate heeft een publiek certificaat nodig; je koopt er een voor het domein van de klant.",
+        "Deep inspection werkt niet met TLS 1.3; je schakelt TLS 1.3 uit in het SSL-inspectieprofiel."
+      ],
+      "answer": 0,
+      "uitleg": "Bij deep inspection ondertekent de Fortigate de certificaten van websites opnieuw met zijn eigen CA; clients die die CA niet vertrouwen, tonen een fout. De oplossing is het CA-certificaat centraal uit te rollen, of een eigen interne CA te gebruiken. Een publiek certificaat kan hiervoor niet worden gebruikt, alle sites uitzonderen maakt inspectie zinloos, en TLS 1.3 wordt gewoon ondersteund."
+    },
+    {
+      "id": "fortigate-x07",
+      "prompt": "Een klant heeft twee internetlijnen in SD-WAN. Als de hoofdlijn traag wordt maar wel up blijft, schakelt het verkeer niet over en klagen gebruikers over Teams-gesprekken. Wat richt je in?",
+      "options": [
+        "Een statische route met een hogere distance via de tweede lijn, zodat die als back-up beschikbaar is.",
+        "Een performance SLA op latency, jitter en pakketverlies, met een SD-WAN-regel die daarop stuurt.",
+        "Een traffic shaper op de hoofdlijn die Teams-verkeer voorrang geeft boven al het andere verkeer.",
+        "Een tweede WAN-policy voor Teams via de back-uplijn, zodat dat verkeer altijd via die lijn loopt."
+      ],
+      "answer": 1,
+      "uitleg": "Met een performance SLA meet de Fortigate de kwaliteit van elke lijn, en een SD-WAN-regel kiest dan de lijn die aan de eisen voldoet. Zo schakelt Teams-verkeer ook om bij een trage lijn die nog up is. Een statische back-uproute werkt alleen als de lijn helemaal wegvalt, shaping maakt een slechte lijn niet beter, en Teams vast op de back-uplijn zetten negeert de kwaliteit van die lijn."
+    },
+    {
+      "id": "fortigate-x08",
+      "prompt": "Een Fortigate van een klant draait op een oude 7.0-versie en moet naar een recente 7.4-versie. Hoe pak je de upgrade aan?",
+      "options": [
+        "Direct naar de gewenste 7.4-versie upgraden, omdat de Fortigate de configuratie in één keer omzet.",
+        "Eerst naar de nieuwste beschikbare versie upgraden en daarna eventueel terug naar de gewenste versie.",
+        "De Fortigate terugzetten naar fabrieksinstellingen, upgraden en de configuratie daarna handmatig opbouwen.",
+        "Het aanbevolen upgradepad van Fortinet volgen via tussenversies, met vooraf een configback-up."
+      ],
+      "answer": 3,
+      "uitleg": "Fortinet geeft per model een upgradepad met tussenversies, omdat de configuratie per stap wordt omgezet; een te grote sprong kan instellingen verliezen of breken. Met een back-up vooraf kun je terug. Direct springen of eerst naar de nieuwste versie en terug vergroot dat risico, en alles handmatig opbouwen is foutgevoelig en onnodig."
+    },
+    {
+      "id": "fortigate-x09",
+      "prompt": "Een HA-cluster van twee Fortigates in active-passive heeft plotseling twee units die zich allebei als primary gedragen, met netwerkstoringen als gevolg. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "De heartbeatverbinding tussen de units is weggevallen, waardoor ze elkaar niet meer zien (split brain).",
+        "De firmware op beide units is verschillend, waardoor het cluster automatisch in active-active is gegaan.",
+        "De sessiesynchronisatie is uitgezet, waardoor beide units hun eigen sessietabel als leidend beschouwen.",
+        "De override-instelling staat op beide units aan, waardoor ze om de beurt de primary-rol overnemen."
+      ],
+      "answer": 0,
+      "uitleg": "Units in een cluster bepalen via de heartbeat wie primary is; valt die verbinding weg, dan denkt elke unit dat de ander uitgevallen is en worden ze allebei primary. Daarom leg je de heartbeat redundant en direct aan. Verschillende firmware voorkomt juist dat het cluster vormt, sessiesynchronisatie gaat niet over de rolverdeling, en override geeft geen twee gelijktijdige primaries."
+    },
+    {
+      "id": "fortigate-x10",
+      "prompt": "Je hebt op de Fortigate een nieuw VLAN voor gasten aangemaakt met een policy naar de WAN. Gasten krijgen een IP-adres, maar hebben geen internet. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "De gasten hebben nog geen DNS-server ontvangen, omdat DHCP op een VLAN-interface geen DNS meegeeft.",
+        "Het VLAN heeft een eigen default route nodig, omdat de bestaande route alleen voor het LAN-netwerk geldt.",
+        "NAT staat niet aan op de nieuwe policy, waardoor het verkeer met een privé-adres het internet op gaat.",
+        "Gastverkeer wordt standaard geblokkeerd door het webfilterprofiel totdat een categorie is vrijgegeven."
+      ],
+      "answer": 2,
+      "uitleg": "Zonder NAT op de policy verlaat het verkeer de Fortigate met een privé-adres, waarop het internet niet antwoordt. NAT aanzetten op de policy lost dit op. DHCP op een VLAN-interface kan prima DNS meegeven, de default route geldt voor alle interfaces, en een webfilter blokkeert niet standaard al het verkeer."
+    },
+    {
+      "id": "fortigate-x11",
+      "prompt": "Het webfilter blokkeert de site van een vaste leverancier van een klant omdat die in een verkeerde categorie valt. Wat is de juiste oplossing?",
+      "options": [
+        "Het webfilterprofiel op de policy uitzetten, zodat de gebruikers de site direct weer kunnen bereiken.",
+        "De hele categorie waarin de site valt toestaan, zodat vergelijkbare leveranciers ook niet worden geblokkeerd.",
+        "Gebruikers laten werken via een mobiele hotspot totdat FortiGuard de categorie zelf heeft aangepast.",
+        "Een override of lokale categorie voor dat ene domein maken en bij FortiGuard een herclassificatie aanvragen."
+      ],
+      "answer": 3,
+      "uitleg": "Met een override of lokale categorie sta je alleen dat ene domein toe, terwijl de rest van het filter blijft werken, en een herclassificatieverzoek lost het structureel op. Het profiel uitzetten of een hele categorie openzetten verzwakt de beveiliging voor iedereen. Via een hotspot werken omzeilt alle beveiliging van het netwerk."
+    },
+    {
+      "id": "fortigate-x12",
+      "prompt": "Thuiswerkers van een klant verbinden met de VPN op de Fortigate met alleen gebruikersnaam en wachtwoord. De klant gebruikt Microsoft 365. Wat is de beste manier om MFA toe te voegen?",
+      "options": [
+        "Een tweede, langer VPN-wachtwoord instellen dat de gebruikers alleen voor de VPN-verbinding gebruiken.",
+        "De VPN-aanmelding via SAML koppelen aan Entra ID, zodat de MFA en Conditional Access van de klant gelden.",
+        "De VPN alleen toestaan vanaf Nederlandse IP-adressen, zodat aanvallers uit het buitenland niet binnenkomen.",
+        "Een certificaat op elke laptop zetten en het wachtwoord daarna voor de VPN-aanmelding laten vervallen."
+      ],
+      "answer": 1,
+      "uitleg": "Met SAML naar Entra ID meldt de gebruiker zich aan met zijn bekende account, inclusief MFA en Conditional Access, en verdwijnen losse VPN-wachtwoorden. Een tweede wachtwoord is nog steeds één factor. Geo-filtering helpt tegen een deel van de aanvallen, maar is geen MFA, en een certificaat zonder wachtwoord vervangt de ene factor door een andere."
+    },
+    {
+      "id": "fortigate-x13",
+      "prompt": "Een klant gebruikt SSL-VPN in tunnelmodus en wil weten wat hij moet doen met het oog op nieuwere FortiOS-versies. Wat adviseer je?",
+      "options": [
+        "Niets veranderen, omdat SSL-VPN in tunnelmodus de aanbevolen VPN-vorm voor thuiswerkers blijft.",
+        "Overstappen naar SSL-VPN in webmodus, omdat Fortinet die variant als vervanger aanbiedt.",
+        "Overstappen naar IPsec met IKEv1 en aggressive mode, omdat dat het meest compatibel is met clients.",
+        "Een migratie naar IPsec VPN (IKEv2) plannen, omdat Fortinet SSL-VPN-tunnelmodus uitfaseert."
+      ],
+      "answer": 3,
+      "uitleg": "Fortinet heeft SSL-VPN-tunnelmodus in nieuwere FortiOS-versies verwijderd en adviseert dial-up IPsec met IKEv2 als vervanger. Wie nu migreert, voorkomt dat een upgrade de VPN plotseling breekt. Webmodus is geen volwaardige vervanger voor netwerktoegang, en IKEv1 met aggressive mode is verouderd en minder veilig."
+    },
+    {
+      "id": "fortigate-x14",
+      "prompt": "Een nieuw VLAN voor printers is aangemaakt op de Fortigate, met een DHCP-server op de VLAN-interface. Printers op de switch krijgen geen IP-adres, apparaten op andere VLAN's wel. Wat controleer je eerst?",
+      "options": [
+        "Of de printers een vast IP-adres hebben, omdat netwerkprinters normaal geen DHCP-adres aanvragen.",
+        "Of het VLAN op de uplink naar de switch als getagd is toegestaan en de printerpoorten in dat VLAN zitten.",
+        "Of de DHCP-server op de Fortigate genoeg adressen heeft, omdat de pool standaard maar tien adressen telt.",
+        "Of er een firewall-policy van het printer-VLAN naar de Fortigate zelf is, zodat DHCP-verkeer door mag."
+      ],
+      "answer": 1,
+      "uitleg": "Als andere VLAN's wel werken, zit het probleem meestal op de switch: het nieuwe VLAN is niet getagd op de trunk of de poorten staan in het verkeerde VLAN, waardoor DHCP-verzoeken de Fortigate niet bereiken. Netwerkprinters vragen meestal wel een adres via DHCP. De grootte van de pool is instelbaar en verklaart niet dat alle printers falen, en DHCP naar de interface zelf heeft geen firewall-policy nodig."
+    },
+    {
+      "id": "fortigate-x15",
+      "prompt": "Bij een incident wil de klant weten welk verkeer er drie maanden geleden van een bepaalde werkplek kwam. De Fortigate logt alleen lokaal en die logs reiken maar enkele dagen terug. Wat had ingericht moeten zijn?",
+      "options": [
+        "Centrale logging naar FortiAnalyzer of FortiGate Cloud met een passende bewaartermijn.",
+        "Een grotere lokale schijf in de Fortigate, zodat de logs daar maandenlang bewaard kunnen worden.",
+        "Een dagelijkse back-up van de configuratie, omdat de logs daar ook in worden meegenomen.",
+        "Een packet capture die continu draait en alle pakketten op de WAN-interface opslaat."
+      ],
+      "answer": 0,
+      "uitleg": "Centrale logging bewaart logs buiten het toestel, met een instelbare bewaartermijn en zoekmogelijkheden, en de logs blijven bewaard als de Fortigate wordt gewist of vervangen. Een grotere lokale schijf is bij veel modellen niet mogelijk en blijft kwetsbaar. Een configuratieback-up bevat geen logs, en een continue packet capture is onwerkbaar en niet bedoeld als logboek."
+    }
+  ]
+}

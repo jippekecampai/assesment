@@ -23,6 +23,7 @@ import { createVoiceStore, oefenKaarten, importeer, besluit, maakTerugblik, voic
 import { WebSocketServer, WebSocket } from 'ws';
 import { listSets, getSet, oefenUitleg } from './lib/oefenen.mjs';
 import { aiBewijs } from './lib/audit-ai.mjs';
+import { listExamens, createExamenStore, startPoging, logEvents as examenEvents, examenUitleg, inleveren, resultaten as examenResultaten, mijnPogingen } from './lib/examens.mjs';
 import { recordEvents, canSeeLogboek } from './lib/toezicht.mjs';
 import { explain, UITLEG_MAX, UITLEG_UIT_DOMEINEN } from './lib/uitleg.mjs';
 
@@ -39,6 +40,7 @@ const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') }
 const artifactAiLimit = createRateLimiter({ max: 60 }); // AI-vragen per medewerker per uur vanuit artifacts
 const voiceStore = createVoiceStore({ filePath: join(root, 'data', 'voice-kaarten.json') });
 const terugblikLimit = createRateLimiter({ max: 30 }); // terugblikken per medewerker per uur
+const examenStore = createExamenStore({ filePath: join(root, 'data', 'examens.json') });
 function requireStaff(request, response) {
   if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
     sendJson(response, 401, { error: 'auth_required' }); return false;
@@ -479,6 +481,47 @@ async function handleApi(request, response, url) {
     if (!requireStaff(request, response)) return true;
     if (!canSeeLogboek(request.headers['x-ms-client-principal'])) { sendJson(response, 403, { error: 'geen_logboekrol' }); return true; }
     sendJson(response, 200, aiBewijs(await policyStore.listAll(), await practiceStore.listAll())); return true;
+  }
+
+  // Examens (lib/examens.mjs): alleen na SSO-login; de antwoorden blijven op de server.
+  const wieBenIk = async (request) => {
+    const me = await currentProfile(request).catch(() => null);
+    const id = readIdentity(request);
+    return { entraOid: me?.entraOid || null, naam: me?.name || id.name || null, email: me?.email || id.email || null };
+  };
+  if (url.pathname === '/api/examens' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, { examens: await listExamens(), mijnPogingen: await mijnPogingen(examenStore, await wieBenIk(request)) }); return true;
+  }
+  if (url.pathname === '/api/examens/resultaten' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    if (!canSeeLogboek(request.headers['x-ms-client-principal'])) { sendJson(response, 403, { error: 'geen_logboekrol' }); return true; }
+    sendJson(response, 200, await examenResultaten(examenStore)); return true;
+  }
+  const exStart = url.pathname.match(/^\/api\/examens\/([a-z0-9-]+)\/start$/);
+  if (exStart && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const r = await startPoging(examenStore, exStart[1], await wieBenIk(request));
+    if (!r) { sendJson(response, 404, { error: 'not_found' }); return true; }
+    sendJson(response, 200, r); return true;
+  }
+  const exPoging = url.pathname.match(/^\/api\/examens\/pogingen\/([0-9a-f-]+)\/(event|uitleg|inleveren)$/);
+  if (exPoging && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const [, pid, actie] = exPoging;
+    const wie = await wieBenIk(request);
+    const body = await readRequestBody(request);
+    if (actie === 'event') { sendJson(response, (await examenEvents(examenStore, pid, wie, body.events)) ? 200 : 409, {}); return true; }
+    if (actie === 'inleveren') {
+      const r = await inleveren(examenStore, pid, wie, body.antwoorden, body.events);
+      sendJson(response, r.fout ? 409 : 200, r.fout ? { error: r.fout } : r); return true;
+    }
+    if (!aiConfigured()) { sendJson(response, 503, { error: 'ai_not_configured' }); return true; }
+    try {
+      const r = await examenUitleg(examenStore, pid, wie, body);
+      sendJson(response, r.fout ? (r.fout === 'uitleg_max' ? 429 : 409) : 200, r.fout ? { error: r.fout } : r);
+    } catch (e) { if (!(e instanceof AiError)) console.error('examen/uitleg fout:', e); sendJson(response, 502, { error: 'ai_error' }); }
+    return true;
   }
 
   // Oefentoetsen (lib/oefenen.mjs): alleen na SSO-login.

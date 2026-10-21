@@ -1,0 +1,186 @@
+{
+  "domain": "Microsoft 365",
+  "vragen": [
+    {
+      "id": "microsoft-365-x01",
+      "prompt": "Een medewerker heeft Full Access op de gedeelde mailbox van de afdeling Inkoop. Hij kan de mailbox openen, maar krijgt een NDR zodra hij een mail verstuurt met Inkoop als afzender. Wat is de oorzaak?",
+      "options": [
+        "De gedeelde mailbox heeft een eigen licentie nodig voordat er vanuit die mailbox verstuurd mag worden.",
+        "De automapping van de mailbox in Outlook is mislukt, waardoor verzenden namens de mailbox niet werkt.",
+        "Full Access geeft alleen toegang tot de inhoud; verzenden vraagt apart Send As of Send on Behalf.",
+        "Gedeelde mailboxen kunnen in Exchange Online alleen ontvangen en dus nooit zelf mail versturen."
+      ],
+      "answer": 2,
+      "uitleg": "Full Access en Send As zijn in Exchange Online aparte rechten: het eerste geeft toegang tot de inhoud, het tweede het recht om als die mailbox te verzenden. Een gedeelde mailbox kan prima versturen en heeft daarvoor geen licentie nodig. Automapping bepaalt alleen of de mailbox vanzelf in Outlook verschijnt, niet of je mag verzenden."
+    },
+    {
+      "id": "microsoft-365-x02",
+      "prompt": "Een klant wil met een vaste leverancier kunnen chatten en bellen in Teams. De leverancier hoeft niet bij bestanden of kanalen van de klant te kunnen. Wat richt je in?",
+      "options": [
+        "External access (federatie) met het domein van de leverancier, zonder gasttoegang tot teams.",
+        "Guest access, waarbij je elke medewerker van de leverancier als gast uitnodigt in een apart team.",
+        "Een B2B direct connect-relatie, zodat de leverancier lid kan worden van een gedeeld kanaal.",
+        "Anonieme deelname aan vergaderingen, zodat de leverancier zonder account kan aansluiten."
+      ],
+      "answer": 0,
+      "uitleg": "External access laat gebruikers uit twee organisaties chatten, bellen en vergaderen met hun eigen account, zonder toegang tot teams of bestanden. Guest access en gedeelde kanalen via B2B direct connect geven juist toegang tot teaminhoud, wat hier niet gevraagd is. Anonieme deelname dekt alleen vergaderingen, geen chat."
+    },
+    {
+      "id": "microsoft-365-x03",
+      "prompt": "Een medewerker meldt dat hij op een nagemaakte inlogpagina zijn wachtwoord heeft ingevuld en daarna de MFA-melding heeft goedgekeurd. Welke combinatie van acties is minimaal nodig?",
+      "options": [
+        "Alleen het wachtwoord resetten, omdat de aanvaller zonder geldig wachtwoord niet meer kan inloggen.",
+        "MFA tijdelijk uitzetten en opnieuw laten registreren, zodat de gestolen MFA-goedkeuring vervalt.",
+        "Het apparaat van de medewerker laten herinstalleren, omdat de aanvaller daar waarschijnlijk op zit.",
+        "Wachtwoord resetten, alle sessies intrekken en controleren op nieuwe MFA-methoden en inboxregels."
+      ],
+      "answer": 3,
+      "uitleg": "Bij een adversary-in-the-middle-aanval steelt de aanvaller een sessietoken; een wachtwoordreset alleen beëindigt die sessie niet, dus je moet sessies intrekken. Aanvallers registreren vaak een eigen MFA-methode of maken inboxregels om terug te komen. Het apparaat is bij deze aanval meestal niet besmet, en MFA uitzetten vergroot het risico alleen maar."
+    },
+    {
+      "id": "microsoft-365-x04",
+      "prompt": "Je richt bij een klant Conditional Access in en wilt voorkomen dat de klant zichzelf kan buitensluiten. Hoe richt je de noodtoegang (break-glass) in?",
+      "options": [
+        "Eén gesynchroniseerd domeinbeheerdersaccount uit de lokale AD dat buiten alle policies valt.",
+        "Twee cloud-only accounts met phishing-bestendige MFA, uitgesloten van CA en bewaakt met alerts.",
+        "Een gedeeld Global Admin-account zonder MFA, waarvan het wachtwoord in de kluis van de MSP staat.",
+        "Geen aparte accounts, maar een CA-policy in report-only zodat niemand buitengesloten kan raken."
+      ],
+      "answer": 1,
+      "uitleg": "Noodaccounts horen cloud-only te zijn, zodat ze werken als synchronisatie of federatie uitvalt, en ze moeten sterk beveiligd en bewaakt worden. Een gesynchroniseerd account hangt af van de lokale AD. Een account zonder MFA is een open deur en past niet meer bij de verplichte MFA voor beheerportals. Report-only voor alle policies betekent dat je in feite niets afdwingt.",
+      "illustratie": "ca"
+    },
+    {
+      "id": "microsoft-365-x05",
+      "prompt": "Een nieuwe laptop staat in Intune als 'niet compliant', waardoor Conditional Access de gebruiker blokkeert. Er zijn drie compliancebeleiden aan het apparaat toegewezen. Wat doe je eerst?",
+      "options": [
+        "Het apparaat tijdelijk uitsluiten van alle drie de compliancebeleiden totdat de gebruiker weer kan werken.",
+        "In Intune per toegewezen beleid en per instelling de compliancestatus bekijken om de falende eis te vinden.",
+        "Het apparaat uit Intune verwijderen en opnieuw laten inschrijven, zodat de status opnieuw wordt bepaald.",
+        "De Conditional Access-policy aanpassen naar 'compliant of hybrid joined' zodat de laptop wel door mag."
+      ],
+      "answer": 1,
+      "uitleg": "Intune laat per beleid en per instelling zien waarom een apparaat niet compliant is, bijvoorbeeld BitLocker of een te oude OS-versie. Daarmee los je de oorzaak gericht op. Uitsluiten of de policy verzwakken haalt de beveiliging weg zonder dat je weet wat er mis is, en opnieuw inschrijven lost een falende instelling niet op."
+    },
+    {
+      "id": "microsoft-365-x06",
+      "prompt": "Een medewerker vertrekt. De klant moet zijn mailbox zeven jaar bewaren, maar wil niet blijven betalen voor de licentie. Wat is de juiste werkwijze?",
+      "options": [
+        "De mailbox omzetten naar een gedeelde mailbox, omdat inhoud daarin automatisch zeven jaar bewaard blijft.",
+        "Het account verwijderen en de mailbox binnen dertig dagen alsnog onder een retentiebeleid laten vallen.",
+        "De mailbox exporteren naar een PST-bestand en dat op de fileserver van de klant zeven jaar bewaren.",
+        "Vóór het verwijderen een hold of retentiebeleid op de mailbox zetten, zodat die een inactive mailbox wordt."
+      ],
+      "answer": 3,
+      "uitleg": "Een mailbox wordt alleen een inactive mailbox als er vóór het verwijderen een hold of retentiebeleid op staat; daarna blijft de inhoud doorzoekbaar en onveranderd zonder licentie. Een gedeelde mailbox bewaart niets afdwingbaar, want gebruikers kunnen er nog uit verwijderen. Achteraf een beleid toepassen werkt niet meer, en een PST is niet aantoonbaar volledig of onveranderd."
+    },
+    {
+      "id": "microsoft-365-x07",
+      "prompt": "Een klant laat inkomende mail eerst langs een externe filterdienst lopen; het MX-record wijst daarnaar. Sindsdien faalt SPF in Exchange Online bij vrijwel alle inkomende mail. Wat is de beste oplossing?",
+      "options": [
+        "Enhanced Filtering for Connectors op de inbound connector, zodat EOP het echte bron-IP ziet.",
+        "De IP-adressen van de filterdienst opnemen in het SPF-record van het eigen domein van de klant.",
+        "Een transportregel maken die de spamscore op -1 zet voor alle mail die van de filterdienst komt.",
+        "SPF-controle in het anti-spambeleid uitschakelen, omdat de filterdienst die controle al heeft gedaan."
+      ],
+      "answer": 0,
+      "uitleg": "Door de filterdienst ziet EOP het IP van die dienst als afzender, waardoor SPF, DKIM-uitlijning en DMARC van externe afzenders falen. Enhanced Filtering (skip listing) laat EOP terugkijken naar het echte bron-IP. Het eigen SPF-record aanpassen helpt niet voor mail van andere domeinen, en een bypass of het uitzetten van controles verzwakt de beveiliging."
+    },
+    {
+      "id": "microsoft-365-x08",
+      "prompt": "Een klant meldt dat een belangrijke offerte van een leverancier gisteren nooit is aangekomen. De leverancier zegt dat de mail verzonden is. Wat doe je als eerste?",
+      "options": [
+        "De ongewenste-mailmap en de map met verwijderde items van de ontvanger samen met hem nalopen.",
+        "De afzender op de lijst met toegestane afzenders zetten en hem vragen de offerte opnieuw te sturen.",
+        "Een message trace uitvoeren in het Exchange-beheercentrum op afzender, ontvanger en tijdvak.",
+        "De DNS-records van het domein van de klant controleren op fouten in MX, SPF en DMARC."
+      ],
+      "answer": 2,
+      "uitleg": "Een message trace laat precies zien of de mail binnenkwam en wat ermee gebeurde: afgeleverd, in quarantaine, geweigerd of doorgestuurd. Daarmee weet je in één stap waar je moet zoeken. Mappen nalopen of DNS controleren kan nuttig zijn, maar is gokken; de afzender toestaan maakt een uitzondering zonder dat je de oorzaak kent."
+    },
+    {
+      "id": "microsoft-365-x09",
+      "prompt": "Bij een klant met een hybride omgeving resetten medewerkers hun wachtwoord via self-service in Microsoft 365. Op kantoor werkt bij het aanmelden op Windows daarna nog steeds het oude wachtwoord. Wat ontbreekt er?",
+      "options": [
+        "Password hash sync, zodat het wachtwoord van Entra ID periodiek met de lokale AD wordt vergeleken.",
+        "Een Conditional Access-policy die bij elke wachtwoordwijziging een nieuwe aanmelding afdwingt.",
+        "Seamless SSO, zodat Windows het wachtwoord bij de volgende aanmelding uit Entra ID ophaalt.",
+        "Password writeback in Entra Connect of Cloud Sync, zodat het wachtwoord terug naar AD gaat."
+      ],
+      "answer": 3,
+      "uitleg": "Bij gesynchroniseerde accounts is de lokale AD de bron; een wachtwoord dat in de cloud wordt gewijzigd, moet via password writeback terug naar AD. Password hash sync werkt alleen van AD naar Entra ID. Seamless SSO en Conditional Access regelen de aanmelding, niet waar het wachtwoord wordt opgeslagen."
+    },
+    {
+      "id": "microsoft-365-x10",
+      "prompt": "Je past in het Microsoft 365-beheercentrum de functietitel van een medewerker aan. Een dag later staat de oude titel er weer. Wat is de oorzaak?",
+      "options": [
+        "De wijziging is nog niet gerepliceerd naar alle Microsoft-datacenters en verschijnt binnen enkele dagen.",
+        "Het account komt uit de lokale AD; de wijziging moet daar gebeuren, anders overschrijft de sync haar.",
+        "Een HR-koppeling in Entra ID zet de titel elke nacht terug naar de waarde uit het salarissysteem.",
+        "De medewerker heeft in Delve zijn eigen profiel aangepast, waardoor de oude titel is teruggezet."
+      ],
+      "answer": 1,
+      "uitleg": "Voor gesynchroniseerde objecten is de lokale AD de 'source of authority': attributen die in de cloud worden gewijzigd, worden bij de volgende synchronisatie overschreven. Je past de titel daarom in AD aan. Replicatie duurt geen dagen, een HR-koppeling is maar zelden ingericht, en eindgebruikers kunnen hun functietitel normaal niet zelf aanpassen."
+    },
+    {
+      "id": "microsoft-365-x11",
+      "prompt": "Een medewerker kan opeens geen mail meer versturen en krijgt een NDR met '550 5.1.8 Access denied, bad outbound sender'. Wat is er aan de hand en wat doe je?",
+      "options": [
+        "Het outbound spambeleid blokkeert het account; je onderzoekt een hack en deblokkeert daarna.",
+        "De mailbox heeft de verzendlimiet voor die dag bereikt; de blokkade vervalt na 24 uur vanzelf.",
+        "Het domein staat op een externe blacklist; je vraagt delisting aan bij de betreffende lijst.",
+        "De licentie van de medewerker is verlopen; je wijst opnieuw een licentie toe en de NDR verdwijnt."
+      ],
+      "answer": 0,
+      "uitleg": "Deze NDR betekent dat het account in de lijst met beperkte entiteiten in Defender staat, meestal omdat het spam of phishing verstuurde. Dat wijst vaak op een gekaapt account, dus je beveiligt het eerst en deblokkeert het daarna in de Defender-portal. Wachten lost het niet op, en een blacklist of verlopen licentie geeft een andere foutmelding."
+    },
+    {
+      "id": "microsoft-365-x12",
+      "prompt": "Een klant gebruikt groepsgebaseerde licenties. Een nieuwe medewerker is aan de licentiegroep toegevoegd, maar heeft na een dag nog geen mailbox. Waar kijk je als eerste?",
+      "options": [
+        "In het Exchange-beheercentrum, om handmatig een mailbox aan te maken met de juiste naam.",
+        "In de synchronisatielogs van Entra Connect, omdat het lidmaatschap niet is gesynchroniseerd.",
+        "Bij de licentiegroep in Entra ID, waar per gebruiker staat of de toewijzing een fout gaf.",
+        "In de Service Health, omdat het aanmaken van mailboxen waarschijnlijk vertraagd is bij Microsoft."
+      ],
+      "answer": 2,
+      "uitleg": "Bij groepsgebaseerde licenties toont Entra ID per gebruiker of de toewijzing is mislukt, bijvoorbeeld door te weinig licenties of conflicterende serviceplannen. Dat is de meest voorkomende oorzaak. Handmatig een mailbox maken kan in Exchange Online niet zonder licentie, en sync- of Microsoft-storingen zijn pas relevant als de licentiestatus in orde is."
+    },
+    {
+      "id": "microsoft-365-x13",
+      "prompt": "Een klant wil van sms-codes af en vraagt welke aanmeldmethode bestand is tegen phishing. Welke methode noem je?",
+      "options": [
+        "Passkeys of FIDO2-sleutels, omdat de aanmelding cryptografisch aan het echte domein gebonden is.",
+        "De Authenticator-app met pushmelding en nummerkoppeling, omdat de gebruiker het nummer moet overtypen.",
+        "Eenmalige codes uit een authenticator-app, omdat die elke dertig seconden opnieuw worden gegenereerd.",
+        "Spraakoproepen naar een vast nummer, omdat een aanvaller die niet kan onderscheppen op afstand."
+      ],
+      "answer": 0,
+      "uitleg": "Passkeys en FIDO2-sleutels (en Windows Hello for Business) controleren het domein waarop je inlogt, zodat een nagemaakte pagina de aanmelding niet kan doorgeven. Nummerkoppeling helpt tegen MFA-moeheid, maar een gebruiker kan nog steeds op een phishingpagina goedkeuren. Codes en spraakoproepen kunnen via een tussenpagina worden doorgestuurd."
+    },
+    {
+      "id": "microsoft-365-x14",
+      "prompt": "Bij een klant met drie vestigingen moet de lokale IT-contactpersoon van één vestiging wachtwoorden kunnen resetten, maar alleen voor medewerkers van die vestiging. Hoe richt je dat in?",
+      "options": [
+        "De rol Helpdesk Administrator tenant-breed toewijzen en afspreken dat hij alleen zijn eigen vestiging doet.",
+        "De rol User Administrator toewijzen, omdat die automatisch beperkt is tot gebruikers op dezelfde locatie.",
+        "Een beveiligingsgroep per vestiging maken en de contactpersoon eigenaar van die groep maken.",
+        "Een administrative unit voor die vestiging maken en de rol Helpdesk Administrator op die eenheid toewijzen."
+      ],
+      "answer": 3,
+      "uitleg": "Met een administrative unit beperk je een Entra-rol tot een deel van de gebruikers, zodat de contactpersoon technisch niets buiten zijn vestiging kan. Een afspraak bij een tenant-brede rol is niet afdwingbaar, en geen enkele rol beperkt zich vanzelf tot een locatie. Groepseigenaar zijn geeft geen recht om wachtwoorden te resetten."
+    },
+    {
+      "id": "microsoft-365-x15",
+      "prompt": "De mailbox van een directeur loopt vol en zij wil geen oude mail verwijderen. Wat is de meest duurzame oplossing binnen Exchange Online?",
+      "options": [
+        "Oude mail laten exporteren naar een PST-bestand dat lokaal in Outlook wordt gekoppeld.",
+        "Het online archief inschakelen met een archiefbeleid dat oude mail automatisch verplaatst.",
+        "De mailbox omzetten naar een gedeelde mailbox, omdat die een grotere opslaglimiet heeft.",
+        "Een tweede licentie toewijzen, zodat de opslaglimiet van de mailbox verdubbeld wordt."
+      ],
+      "answer": 1,
+      "uitleg": "Het online archief geeft extra opslag binnen Exchange Online en een archiefbeleid verplaatst oude items automatisch, zodat alles doorzoekbaar en beveiligd blijft. Een PST staat buiten back-up en beleid en raakt makkelijk kwijt of corrupt. Een gedeelde mailbox heeft geen grotere limiet, en licenties stapelen geen opslag op."
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "domain": "Servers",
+  "vragen": [
+    {
+      "id": "servers-x01",
+      "prompt": "Een maandelijkse cumulatieve update faalt op een Windows-server telkens met dezelfde foutcode, terwijl andere servers dezelfde update wel installeren. Wat is een logische eerste stap?",
+      "options": [
+        "De server opnieuw installeren, omdat een falende update op een kapotte installatie wijst.",
+        "Het component store controleren en herstellen met DISM /RestoreHealth en daarna SFC.",
+        "Windows Update op deze server uitzetten totdat Microsoft een nieuwere update uitbrengt.",
+        "De update op alle servers terugdraaien, omdat dezelfde fout dan ook daar kan optreden."
+      ],
+      "answer": 1,
+      "uitleg": "Een update die op één server steeds op dezelfde manier faalt, wijst vaak op een beschadigd component store; DISM /RestoreHealth en daarna SFC herstellen dat. Opnieuw installeren is buitenproportioneel zonder diagnose, updates uitzetten laat de server onveilig, en terugdraaien op servers waar het goed ging lost niets op."
+    },
+    {
+      "id": "servers-x02",
+      "prompt": "Op een Hyper-V-host loopt het volume met VM-bestanden vol. Je ziet dat een VM al maanden een checkpoint heeft, met een groot .avhdx-bestand. Wat is de juiste aanpak?",
+      "options": [
+        "Het .avhdx-bestand verwijderen in de verkenner, omdat dat alleen oude wijzigingen bevat.",
+        "Het checkpoint laten staan en het volume vergroten, omdat samenvoegen data kan beschadigen.",
+        "De VM terugzetten naar het checkpoint, zodat het grote .avhdx-bestand verdwijnt.",
+        "Het checkpoint verwijderen in Hyper-V Manager zodat Hyper-V het netjes samenvoegt."
+      ],
+      "answer": 3,
+      "uitleg": "Een checkpoint verwijderen via Hyper-V Manager voegt de wijzigingen gecontroleerd samen met de bovenliggende schijf. Het .avhdx-bestand handmatig weggooien beschadigt de VM, omdat daarin de actuele data staat. Alleen het volume vergroten verplaatst het probleem, en terugzetten naar het checkpoint gooit maanden aan wijzigingen weg.",
+      "illustratie": "baseline"
+    },
+    {
+      "id": "servers-x03",
+      "prompt": "Een klant wil een oude domeincontroller uitfaseren. Er staan twee DC's in het domein en de oude houdt alle FSMO-rollen. Wat is de juiste volgorde?",
+      "options": [
+        "Replicatie controleren, FSMO-rollen overdragen, demoten en DNS en DHCP nalopen.",
+        "De oude DC uitzetten, een week afwachten en daarna de FSMO-rollen met geweld overnemen.",
+        "De oude DC demoten; de FSMO-rollen gaan daarbij vanzelf mee naar de andere DC.",
+        "De oude DC uit AD verwijderen en de FSMO-rollen daarna opnieuw op de nieuwe aanmaken."
+      ],
+      "answer": 0,
+      "uitleg": "Eerst gezonde replicatie, dan de rollen netjes overdragen, dan demoten en tot slot clients en DNS- en DHCP-verwijzingen nalopen: zo voorkom je gaten. Rollen met geweld overnemen (seize) is alleen bedoeld voor een DC die niet terugkomt. Op het vanzelf meegaan van rollen bij het demoten moet je niet bouwen, en rollen kun je niet opnieuw aanmaken."
+    },
+    {
+      "id": "servers-x04",
+      "prompt": "Een wachtwoordreset op de ene domeincontroller is na een uur nog niet zichtbaar op de andere DC op een tweede locatie. Wat geeft het snelst inzicht?",
+      "options": [
+        "Beide DC's herstarten, zodat de replicatie bij het opstarten opnieuw begint.",
+        "Het gebruikersaccount op de tweede DC handmatig opnieuw aanmaken met hetzelfde wachtwoord.",
+        "Met repadmin /replsummary en /showrepl de replicatiestatus en fouten bekijken.",
+        "De tweede DC demoten en opnieuw promoveren, zodat hij een verse kopie van AD krijgt."
+      ],
+      "answer": 2,
+      "uitleg": "Repadmin laat per partner zien wanneer de laatste geslaagde replicatie was en welke fout optreedt, en dat is de basis voor gericht herstel. Herstarten is een gok zonder diagnose, een account dubbel aanmaken geeft conflicten, en demoten en opnieuw promoveren is buitenproportioneel voordat je de oorzaak kent."
+    },
+    {
+      "id": "servers-x05",
+      "prompt": "Alle servers en werkplekken in een domein lopen enkele minuten achter, maar wel allemaal gelijk. Wat is de structurele oplossing?",
+      "options": [
+        "De DC met de PDC-emulatorrol laten synchroniseren met een betrouwbare externe NTP-bron.",
+        "Op elke server en werkplek apart een externe NTP-server instellen via een script.",
+        "De tijd op de domeincontrollers handmatig goed zetten en dat maandelijks herhalen.",
+        "De tijdzone van het domein aanpassen zodat de afwijking van enkele minuten verdwijnt."
+      ],
+      "answer": 0,
+      "uitleg": "In een domein volgt elke machine de domeinhiërarchie en staat de PDC-emulator bovenaan; als die geen goede externe bron heeft, loopt alles gelijk achter. Elke machine apart naar buiten laten wijzen doorbreekt de hiërarchie, handmatig bijstellen is niet structureel, en de tijdzone verandert de weergave en niet de afwijking van de klok."
+    },
+    {
+      "id": "servers-x06",
+      "prompt": "Na een beveiligingsupdate krijgen gebruikers een prompt om een beheerder als ze verbinding maken met een gedeelde printer van de printserver. Wat is de beste aanpak?",
+      "options": [
+        "De beveiliging terugzetten zodat gebruikers zelf weer drivers mogen installeren.",
+        "De printerdrivers centraal uitrollen via GPO of Intune en de beveiliging laten staan.",
+        "Alle gebruikers tijdelijk lokale beheerder maken zodat ze de driver zelf installeren.",
+        "De update van de printserver verwijderen totdat de printerleverancier een fix uitbrengt."
+      ],
+      "answer": 1,
+      "uitleg": "Sinds de PrintNightmare-maatregelen mogen gewone gebruikers standaard geen printerdrivers meer installeren; het nette antwoord is drivers vooraf centraal uitrollen. De beveiliging terugzetten of gebruikers beheerder maken heropent precies het gat dat is gedicht, en de update verwijderen laat de server kwetsbaar."
+    },
+    {
+      "id": "servers-x07",
+      "prompt": "Na een geplande herstart start een applicatieservice op een server niet meer. In het System-log staat een aanmeldfout voor het serviceaccount. Wat is de meest waarschijnlijke oorzaak en vervolgstap?",
+      "options": [
+        "De service is beschadigd geraakt door de herstart; de applicatie opnieuw installeren.",
+        "De server heeft te weinig geheugen na de herstart; extra werkgeheugen toevoegen.",
+        "De Windows-licentie is verlopen; de server opnieuw activeren bij Microsoft.",
+        "Het serviceaccount heeft een gewijzigd of verlopen wachtwoord; dat bijwerken."
+      ],
+      "answer": 3,
+      "uitleg": "Een aanmeldfout voor het serviceaccount na een herstart wijst op een gewijzigd of verlopen wachtwoord; de service had het oude wachtwoord nog in gebruik. Een group Managed Service Account (gMSA) voorkomt dit structureel. Opnieuw installeren, extra geheugen of heractiveren verklaart geen aanmeldfout."
+    },
+    {
+      "id": "servers-x08",
+      "prompt": "Een klant zegt dat de back-ups al maanden 'groen' zijn en vraagt of dat voldoende zekerheid geeft. Wat adviseer je?",
+      "options": [
+        "De groene status volstaat, omdat de software de back-up na afloop al controleert.",
+        "Een tweede back-upproduct aanschaffen zodat er altijd twee groene meldingen zijn.",
+        "Periodiek een herstel testen, van losse bestanden tot een volledige server.",
+        "De back-ups vaker laten draaien zodat er meer groene meldingen per dag binnenkomen."
+      ],
+      "answer": 2,
+      "uitleg": "Een geslaagde back-upjob zegt niet dat herstel binnen de afgesproken tijd lukt; alleen een periodieke hersteltest bewijst dat. De automatische controle van de software toont dat de job is gelukt, niet dat de server opstart. Een tweede product of vaker draaien geeft meer meldingen, maar nog steeds geen bewijs dat herstel werkt.",
+      "illustratie": "rto"
+    },
+    {
+      "id": "servers-x09",
+      "prompt": "De RAID-controller van een fysieke server meldt dat één schijf in een RAID 5-set is uitgevallen. De server draait nog normaal. Wat doe je?",
+      "options": [
+        "Niets, omdat RAID 5 is ontworpen om met een ontbrekende schijf gewoon door te draaien.",
+        "Eerst een actuele back-up zeker stellen en daarna zo snel mogelijk de schijf vervangen.",
+        "De server herstarten zodat de controller de uitgevallen schijf opnieuw probeert te lezen.",
+        "De RAID-set opnieuw initialiseren zodat alle schijven weer als gezond worden gemeld."
+      ],
+      "answer": 1,
+      "uitleg": "Met één uitgevallen schijf heeft RAID 5 geen redundantie meer, en de rebuild belast de resterende schijven zwaar; daarom stel je eerst een back-up zeker en vervang je dan snel. Afwachten laat een tweede uitval fataal worden, herstarten lost een defecte schijf niet op, en opnieuw initialiseren wist de data."
+    },
+    {
+      "id": "servers-x10",
+      "prompt": "Na het uitschakelen van SMB1 op de fileserver kan een oudere multifunctional niet meer naar een gedeelde map scannen. Wat is de beste oplossing?",
+      "options": [
+        "De printer bijwerken naar SMB2/3, of scannen naar e-mail of de cloud als dat niet kan.",
+        "SMB1 op de fileserver weer aanzetten, omdat de klant het scannen dagelijks nodig heeft.",
+        "Een aparte oude server met SMB1 neerzetten die alleen voor de scanner wordt gebruikt.",
+        "De gedeelde map openzetten voor iedereen zodat de printer zonder aanmelding schrijft."
+      ],
+      "answer": 0,
+      "uitleg": "SMB1 is onveilig en hoort uit te blijven; de oplossing zit bij de printer: firmware met SMB2/3, of een alternatief zoals scannen naar e-mail of de cloud. SMB1 weer aanzetten of een aparte SMB1-server plaatsen haalt het risico terug in het netwerk, en een map openzetten voor iedereen ruilt het ene gat in voor het andere."
+    },
+    {
+      "id": "servers-x11",
+      "prompt": "Bij een audit blijkt dat alle lid-servers van een klant hetzelfde lokale beheerderswachtwoord hebben. Wat is de beste maatregel?",
+      "options": [
+        "Het gedeelde wachtwoord eenmalig vervangen door een langer en complexer wachtwoord.",
+        "Het lokale beheerdersaccount op alle servers hernoemen zodat aanvallers het niet vinden.",
+        "Het wachtwoord in een Excel-lijst op de beheerdersshare bijhouden en per kwartaal wijzigen.",
+        "Windows LAPS inzetten, zodat elke server een uniek, automatisch geroteerd wachtwoord krijgt."
+      ],
+      "answer": 3,
+      "uitleg": "Eén gedeeld wachtwoord maakt zijdelingse beweging na één inbraak makkelijk; Windows LAPS geeft elke server een uniek, automatisch geroteerd wachtwoord dat veilig in AD of Entra ID staat. Een langer gedeeld wachtwoord blijft gedeeld, hernoemen is alleen verhulling, en een Excel-lijst op een share is zelf een risico."
+    },
+    {
+      "id": "servers-x12",
+      "prompt": "Werkplekken van een klant kunnen af en toe geen gedeelde mappen of het domein vinden, terwijl internet blijft werken. Ze hebben als DNS de DC en daarnaast een publieke DNS-server. Wat is de oorzaak en oplossing?",
+      "options": [
+        "De DC is te zwaar belast; een extra publieke DNS-server toevoegen voor meer capaciteit.",
+        "Het domein heeft een te korte TTL; de TTL op alle records flink verhogen naar een dag.",
+        "De publieke DNS kent het domein niet; alleen interne DNS instellen met forwarders op de DC.",
+        "De werkplekken hebben een verouderde netwerkdriver die DNS-verkeer soms laat vallen."
+      ],
+      "answer": 2,
+      "uitleg": "Clients gebruiken soms de tweede DNS-server, en een publieke server kent het interne domein niet; daarom horen domeinleden alleen interne DNS te gebruiken, met forwarders op de DC voor internet. Meer publieke DNS maakt het erger, een andere TTL verandert niets aan welke server antwoordt, en een driverprobleem zou niet alleen interne namen raken."
+    },
+    {
+      "id": "servers-x13",
+      "prompt": "Een applicatie op een VM is traag. CPU en geheugen in de VM zijn laag, maar de schijflatentie loopt op tot boven de 50 ms. Wat onderzoek je als volgende stap?",
+      "options": [
+        "Extra vCPU's toevoegen aan de VM zodat de applicatie de schijftaken sneller afhandelt.",
+        "De opslag op de host: welke andere VM's of taken dezelfde datastore of schijven belasten.",
+        "Meer werkgeheugen toewijzen, omdat de VM dan minder naar de schijf hoeft te schrijven.",
+        "De applicatie opnieuw installeren, omdat een trage schijf vaak op een kapotte installatie wijst."
+      ],
+      "answer": 1,
+      "uitleg": "Bij lage CPU en lage geheugendruk is de hoge schijflatentie het knelpunt, en die komt bij VM's vaak door andere belasting op dezelfde opslag, zoals een back-up of een drukke buur-VM. Extra vCPU's helpen niet als de schijf wacht, meer geheugen helpt alleen bij geheugendruk die er niet is, en opnieuw installeren verklaart geen latentie in de opslag."
+    },
+    {
+      "id": "servers-x14",
+      "prompt": "Een nieuwe GPO voor servers wordt niet toegepast. In de uitvoer van gpresult staat de GPO met de reden 'Denied (Security)'. Wat is de meest waarschijnlijke oorzaak?",
+      "options": [
+        "De security filtering of delegatie geeft de computeraccounts geen leesrecht op de GPO.",
+        "De GPO staat in de verkeerde OU en moet naar de map Computers in AD worden verplaatst.",
+        "De servers moeten opnieuw aan het domein worden gekoppeld voordat ze GPO's ophalen.",
+        "De GPO is te groot en wordt daarom door de servers automatisch overgeslagen."
+      ],
+      "answer": 0,
+      "uitleg": "'Denied (Security)' betekent dat de machine de GPO niet mag lezen of toepassen, wat bijna altijd aan security filtering of delegatie ligt; computeraccounts hebben leesrecht nodig. Een verkeerde koppeling zou de GPO helemaal niet in de lijst tonen, en de standaardmap Computers is een container waar je geen GPO aan koppelt. Opnieuw koppelen aan het domein of de grootte van de GPO verklaren deze melding niet."
+    },
+    {
+      "id": "servers-x15",
+      "prompt": "Het SSL-certificaat op de RD Gateway van een klant blijkt vanochtend verlopen; gebruikers krijgen waarschuwingen of kunnen niet verbinden. Wat doe je, naast vernieuwen en koppelen?",
+      "options": [
+        "Gebruikers vragen de certificaatwaarschuwing voortaan zelf weg te klikken en door te gaan.",
+        "Een zelfondertekend certificaat met een looptijd van tien jaar op de gateway zetten.",
+        "De controle op certificaten in de RDP-client van alle werkplekken laten uitschakelen.",
+        "De vervaldatum in monitoring opnemen met een waarschuwing ruim voor de verloopdatum."
+      ],
+      "answer": 3,
+      "uitleg": "Herhaling voorkom je door de vervaldatum te monitoren en ruim op tijd te waarschuwen. Gebruikers waarschuwingen laten wegklikken leert ze een gevaarlijke gewoonte, een zelfondertekend certificaat wordt door externe clients niet vertrouwd, en de certificaatcontrole uitzetten maakt een man-in-the-middle-aanval mogelijk."
+    }
+  ]
+}
