@@ -1,0 +1,635 @@
+{
+ "id": "cloud-netwerken",
+ "titel": "Cloud en netwerken",
+ "omschrijving": "Cloudmodellen, netwerken, subnetten, beveiliging, back-up en beschikbaarheid.",
+ "onderwerpen": {
+  "cm": "Cloudmodellen & compute",
+  "ow": "Ontwerp & schalen",
+  "nw": "Netwerken",
+  "sn": "Subnetten",
+  "op": "Opslag & data",
+  "bv": "Beveiliging",
+  "bh": "Back-up & herstel",
+  "bm": "Beschikbaarheid & monitoring",
+  "au": "Automatisering (Ansible)",
+  "ko": "Kosten & duurzaamheid"
+ },
+ "vragen": [
+  {
+   "id": "cn-01",
+   "onderwerp": "cm",
+   "prompt": "Een bedrijf wil zelf het besturingssysteem van een virtuele server beheren. Welk cloudmodel past daarbij?",
+   "options": [
+    "SaaS",
+    "IaaS",
+    "PaaS",
+    "Alleen private cloud"
+   ],
+   "answer": 1,
+   "uitleg": "Bij IaaS levert de provider hardware, netwerk en virtualisatie; de klant beheert zelf het besturingssysteem, de middleware en de applicatie. Bij PaaS en SaaS beheert de provider het OS. Private cloud is een uitrolmodel, geen servicemodel.",
+   "illustratie": "cloud"
+  },
+  {
+   "id": "cn-02",
+   "onderwerp": "cm",
+   "prompt": "Wat is een belangrijk voordeel van PaaS ten opzichte van een zelf beheerde VM?",
+   "options": [
+    "De klant hoeft geen toegangsrechten meer te beheren.",
+    "De applicatie heeft automatisch onbeperkte capaciteit.",
+    "Alle beveiligingsverantwoordelijkheid ligt bij de provider.",
+    "De provider beheert meer van het onderliggende platform."
+   ],
+   "answer": 3,
+   "uitleg": "Bij PaaS beheert de provider ook OS, runtime en patching. Toegangsrechten, data en app-configuratie blijven bij de klant (gedeelde verantwoordelijkheid). Capaciteit is nooit onbeperkt. Let bij meerkeuze op absolute woorden als 'alle', 'automatisch' en 'onbeperkt'.",
+   "illustratie": "cloud"
+  },
+  {
+   "id": "cn-03",
+   "onderwerp": "cm",
+   "prompt": "Welke oplossing is een voorbeeld van SaaS?",
+   "options": [
+    "Microsoft 365 als kant-en-klare dienst gebruiken.",
+    "Zelf Linux op een Azure-VM installeren.",
+    "Zelf een fysieke server aanschaffen.",
+    "Zelf een database-engine op een VM onderhouden."
+   ],
+   "answer": 0,
+   "uitleg": "SaaS is een complete applicatie die je alleen gebruikt en configureert. Linux of een database-engine op een VM is IaaS; een eigen fysieke server is on-premises.",
+   "illustratie": "cloud"
+  },
+  {
+   "id": "cn-04",
+   "onderwerp": "cm",
+   "prompt": "Een bedrijf koppelt zijn eigen datacenter aan diensten in een public cloud. Hoe heet deze inrichting?",
+   "options": [
+    "Alleen private cloud",
+    "Alleen public cloud",
+    "Hybride cloud",
+    "Serverless computing"
+   ],
+   "answer": 2,
+   "uitleg": "Hybride cloud combineert eigen (on-premises of private) infrastructuur met public cloud, met een koppeling ertussen, bijvoorbeeld een site-to-site-VPN. Serverless is een uitvoeringsmodel, geen uitrolmodel.",
+   "illustratie": "cloud"
+  },
+  {
+   "id": "cn-05",
+   "onderwerp": "cm",
+   "prompt": "Wat is een belangrijk verschil tussen een container en een VM?",
+   "options": [
+    "Een container heeft altijd een eigen fysieke processor.",
+    "Containers delen doorgaans de kernel van hun host; VM's hebben een eigen gastbesturingssysteem.",
+    "Een VM kan geen Linux draaien.",
+    "Containers hebben geen beveiligingsmaatregelen nodig."
+   ],
+   "answer": 1,
+   "uitleg": "Een VM virtualiseert hardware via een hypervisor en draait een volledig eigen OS. Een container virtualiseert op OS-niveau en deelt de kernel van de host. Daardoor is hij lichter en start hij sneller.",
+   "illustratie": "cloud"
+  },
+  {
+   "id": "cn-06",
+   "onderwerp": "ow",
+   "prompt": "Welke eis is niet-functioneel?",
+   "options": [
+    "Een klant kan een boek zoeken.",
+    "Een klant kan een bestelling plaatsen.",
+    "Een beheerder kan een boek toevoegen.",
+    "Bij de afgesproken belasting verschijnt de productpagina binnen twee seconden."
+   ],
+   "answer": 3,
+   "uitleg": "Functioneel is wát het systeem doet: zoeken, bestellen, toevoegen. Niet-functioneel is hoe goed het dat doet: snelheid, beschikbaarheid, beveiliging, capaciteit."
+  },
+  {
+   "id": "cn-07",
+   "onderwerp": "ow",
+   "prompt": "Wat is de beste eerste stap bij het ontwerpen van een cloudoplossing?",
+   "options": [
+    "De klantbehoeften en toetsbare eisen vaststellen.",
+    "De grootste VM kiezen.",
+    "Alle beschikbare beveiligingsproducten aanschaffen.",
+    "Eerst bouwen en daarna het budget bepalen."
+   ],
+   "answer": 0,
+   "uitleg": "Eerst inventariseer je: een gesprek met de klant en een programma van eisen met meetbare eisen. Daarna volgen ontwerp, kostenraming en bouw. Zonder toetsbare eisen kun je achteraf niet laten zien dat de oplossing klopt."
+  },
+  {
+   "id": "cn-08",
+   "onderwerp": "ow",
+   "prompt": "Een VM krijgt meer RAM en meer CPU-capaciteit. Wat gebeurt hier?",
+   "options": [
+    "Scale out",
+    "Failover",
+    "Scale up",
+    "Replicatie"
+   ],
+   "answer": 2,
+   "uitleg": "Scale up (verticaal schalen) betekent een zwaardere machine. Scale out (horizontaal schalen) betekent meer instanties. Ezelsbruggetje: omhoog = groter, opzij = meer.",
+   "illustratie": "scale"
+  },
+  {
+   "id": "cn-09",
+   "onderwerp": "ow",
+   "prompt": "Tijdens een drukke periode groeit een app van twee naar vier instanties. Wat is dit?",
+   "options": [
+    "Scale down",
+    "Scale out",
+    "Verticale schaling",
+    "Back-up"
+   ],
+   "answer": 1,
+   "uitleg": "Meer instanties is scale out, oftewel horizontaal schalen.",
+   "illustratie": "scale"
+  },
+  {
+   "id": "cn-10",
+   "onderwerp": "nw",
+   "prompt": "Op welke OSI-laag werkt IP-routering hoofdzakelijk?",
+   "options": [
+    "Laag 1 — fysiek",
+    "Laag 2 — datalink",
+    "Laag 7 — applicatie",
+    "Laag 3 — netwerk"
+   ],
+   "answer": 3,
+   "uitleg": "Laag 3 (netwerk): IP-adressen en routers. Laag 2: MAC-adressen en switches. Laag 1: kabels en signalen. Laag 4: TCP en UDP. Laag 7: HTTP, DNS.",
+   "illustratie": "osi"
+  },
+  {
+   "id": "cn-11",
+   "onderwerp": "nw",
+   "prompt": "Waarop baseert een gewone Ethernet-switch hoofdzakelijk zijn doorstuurkeuze?",
+   "options": [
+    "MAC-adressen",
+    "DNS-namen",
+    "Gebruikersrollen",
+    "HTTPS-certificaten"
+   ],
+   "answer": 0,
+   "uitleg": "Een switch (laag 2) leert welk MAC-adres op welke poort zit (de MAC-tabel) en stuurt frames daarop door.",
+   "illustratie": "osi"
+  },
+  {
+   "id": "cn-12",
+   "onderwerp": "nw",
+   "prompt": "Wat is de functie van een default gateway?",
+   "options": [
+    "Wachtwoorden voor gebruikers opslaan.",
+    "Namen naar IP-adressen vertalen.",
+    "Verkeer naar bestemmingen buiten het eigen subnet doorsturen.",
+    "Automatisch een back-up maken."
+   ],
+   "answer": 2,
+   "uitleg": "Alles wat niet in het eigen subnet zit, gaat naar de default gateway. Namen vertalen doet DNS.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-13",
+   "onderwerp": "sn",
+   "prompt": "Welk subnetmasker hoort bij /24?",
+   "options": [
+    "255.255.0.0",
+    "255.255.255.0",
+    "255.255.255.128",
+    "255.0.0.0"
+   ],
+   "answer": 1,
+   "uitleg": "/24 betekent 24 enen, dus drie volle octetten van 255: 255.255.255.0. Om te onthouden: /8 = 255.0.0.0, /16 = 255.255.0.0, /25 = .128, /26 = .192, /27 = .224, /28 = .240.",
+   "illustratie": "subnet"
+  },
+  {
+   "id": "cn-14",
+   "onderwerp": "sn",
+   "prompt": "Welk adres ligt in hetzelfde /24-subnet als 192.168.1.10?",
+   "options": [
+    "192.168.2.10",
+    "192.168.10.1",
+    "192.169.1.20",
+    "192.168.1.200"
+   ],
+   "answer": 3,
+   "uitleg": "Bij /24 moeten de eerste drie octetten gelijk zijn: 192.168.1.x. Alleen 192.168.1.200 voldoet.",
+   "illustratie": "subnet"
+  },
+  {
+   "id": "cn-15",
+   "onderwerp": "sn",
+   "prompt": "Hoeveel bruikbare hostadressen heeft een gewoon IPv4-/26-subnet, na aftrek van netwerk- en broadcastadres?",
+   "options": [
+    "62",
+    "64",
+    "126",
+    "254"
+   ],
+   "answer": 0,
+   "uitleg": "/26 laat 32 − 26 = 6 hostbits over: 2⁶ = 64 adressen. Min het netwerkadres en de broadcast blijven er 62 bruikbaar. Rijtje: /24 = 254, /25 = 126, /26 = 62, /27 = 30, /28 = 14.",
+   "illustratie": "subnet"
+  },
+  {
+   "id": "cn-16",
+   "onderwerp": "sn",
+   "prompt": "Wat is het netwerkadres van 192.168.1.130/26?",
+   "options": [
+    "192.168.1.0",
+    "192.168.1.64",
+    "192.168.1.128",
+    "192.168.1.192"
+   ],
+   "answer": 2,
+   "uitleg": "Bij /26 is de blokgrootte 256 − 192 = 64. De blokken beginnen bij .0, .64, .128 en .192. Het getal 130 valt in het blok .128–.191, dus het netwerkadres is 192.168.1.128.",
+   "illustratie": "subnet"
+  },
+  {
+   "id": "cn-17",
+   "onderwerp": "sn",
+   "prompt": "Wat is het broadcastadres van 192.168.1.128/26?",
+   "options": [
+    "192.168.1.129",
+    "192.168.1.191",
+    "192.168.1.192",
+    "192.168.1.255"
+   ],
+   "answer": 1,
+   "uitleg": "Het blok loopt van .128 tot .191 (128 + 64 − 1). Het laatste adres is de broadcast: .191. De bruikbare hosts zijn .129 tot en met .190; .192 is al het volgende subnet.",
+   "illustratie": "subnet"
+  },
+  {
+   "id": "cn-18",
+   "onderwerp": "nw",
+   "prompt": "Een website werkt via het IP-adres, maar niet via de domeinnaam. Welke dienst onderzoek je eerst?",
+   "options": [
+    "DHCP",
+    "Nginx-installatie",
+    "Back-updienst",
+    "DNS"
+   ],
+   "answer": 3,
+   "uitleg": "Via het IP werkt het, dus de server en de webserver zijn in orde. Alleen de vertaling van naam naar IP faalt, en dat is DNS. Test bijvoorbeeld met nslookup.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-19",
+   "onderwerp": "nw",
+   "prompt": "Wat doet DHCP?",
+   "options": [
+    "Automatisch IP-configuratie aan apparaten toekennen.",
+    "Webverkeer versleutelen.",
+    "Bestanden over meerdere regio's repliceren.",
+    "Rechten aan gebruikers toekennen."
+   ],
+   "answer": 0,
+   "uitleg": "DHCP deelt automatisch een IP-adres, subnetmasker, gateway en DNS-server uit. Versleutelen doet TLS.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-20",
+   "onderwerp": "nw",
+   "prompt": "Wat is een kenmerk van TCP?",
+   "options": [
+    "Het verstuurt uitsluitend broadcastberichten.",
+    "Het vervangt IP-adressen door MAC-adressen.",
+    "Het biedt een geordende, betrouwbare gegevensstroom met onder andere hertransmissie.",
+    "Het werkt uitsluitend voor DNS."
+   ],
+   "answer": 2,
+   "uitleg": "TCP (laag 4) is verbindingsgericht: three-way handshake, vaste volgorde, bevestigingen en hertransmissie. UDP is verbindingsloos en sneller, maar zonder garanties; het wordt gebruikt voor bijvoorbeeld DNS-queries en streaming.",
+   "illustratie": "osi"
+  },
+  {
+   "id": "cn-21",
+   "onderwerp": "nw",
+   "prompt": "Welke combinatie van protocol en standaardpoort klopt?",
+   "options": [
+    "HTTPS — 22",
+    "SSH — 22",
+    "HTTP — 443",
+    "DNS — 3389"
+   ],
+   "answer": 1,
+   "uitleg": "Dit rijtje moet je kennen: SSH 22, SMTP 25, DNS 53, HTTP 80, HTTPS 443, SQL Server 1433, RDP 3389.",
+   "illustratie": "osi"
+  },
+  {
+   "id": "cn-22",
+   "onderwerp": "nw",
+   "prompt": "Wat doet NAT doorgaans bij een verbinding van een privé-netwerk naar internet?",
+   "options": [
+    "Het versleutelt automatisch alle gegevens.",
+    "Het controleert de gebruikersidentiteit.",
+    "Het maakt een DNS-record aan.",
+    "Het vertaalt IP-adressen en vaak ook poortnummers."
+   ],
+   "answer": 3,
+   "uitleg": "NAT vertaalt privé-adressen (zoals 192.168.x.x) naar een publiek adres. Bij PAT (overload) worden ook poorten vertaald, zodat veel apparaten één publiek IP kunnen delen. NAT versleutelt niets.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-23",
+   "onderwerp": "nw",
+   "prompt": "Wat is het belangrijkste doel van een VPN?",
+   "options": [
+    "Een beschermde verbinding tussen eindpunten over een tussenliggend netwerk opzetten.",
+    "Een database automatisch sneller maken.",
+    "Alle firewalls vervangen.",
+    "Het aantal beschikbare IP-adressen onbeperkt maken."
+   ],
+   "answer": 0,
+   "uitleg": "Een VPN maakt een versleutelde tunnel over een onvertrouwd netwerk zoals internet. Voorbeelden zijn site-to-site tussen kantoor en Azure (hybride cloud) en point-to-site voor een laptop.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-24",
+   "onderwerp": "nw",
+   "prompt": "Een pc kan zijn eigen gateway bereiken, maar geen host in een ander subnet. Wat is een logische vervolgstap?",
+   "options": [
+    "Direct de complete omgeving opnieuw installeren.",
+    "Alle beveiligingsregels verwijderen.",
+    "Routerinterfaces, routes en relevante firewallregels controleren.",
+    "Alleen de achtergrondkleur van de website aanpassen."
+   ],
+   "answer": 2,
+   "uitleg": "Het eigen subnet en de gateway werken, dus het probleem zit verderop. Controleer de tweede routerinterface (staat die op shutdown, heeft hij het goede IP?), de routes, de gateway-instelling van de doelhost en de firewall. Werk systematisch, bijvoorbeeld met tracert.",
+   "illustratie": "pad"
+  },
+  {
+   "id": "cn-25",
+   "onderwerp": "op",
+   "prompt": "Waarvoor is Blob Storage in het ontwerp van een webwinkel vooral geschikt?",
+   "options": [
+    "Het uitvoeren van SQL-transacties.",
+    "Het opslaan van boekomslagen en andere bestanden als objecten.",
+    "Het routeren tussen subnetten.",
+    "Het toekennen van beheerdersrollen."
+   ],
+   "answer": 1,
+   "uitleg": "Blob Storage is objectopslag voor ongestructureerde bestanden, zoals afbeeldingen en PDF-facturen. Gestructureerde data met transacties gaat naar Azure SQL."
+  },
+  {
+   "id": "cn-26",
+   "onderwerp": "op",
+   "prompt": "Waarom past een relationele database bij klanten, bestellingen en bestelregels?",
+   "options": [
+    "Omdat een relationele database geen opslag nodig heeft.",
+    "Omdat afbeeldingen alleen in SQL kunnen worden opgeslagen.",
+    "Omdat een relationele database automatisch alle privacyproblemen oplost.",
+    "Omdat relaties, gegevensconsistentie en transacties belangrijk zijn."
+   ],
+   "answer": 3,
+   "uitleg": "Klant, bestelling en bestelregel zijn met elkaar verbonden via sleutels."
+  },
+  {
+   "id": "cn-27",
+   "onderwerp": "op",
+   "prompt": "Je bewaart 50.000 boeken met elk twee afbeeldingen van 300 kB. Hoeveel opslag is dat ongeveer (decimaal, zonder overhead)?",
+   "options": [
+    "30 GB",
+    "3 GB",
+    "300 GB",
+    "300 MB"
+   ],
+   "answer": 0,
+   "uitleg": "50.000 × 2 × 300 kB = 30.000.000 kB = 30.000 MB = 30 GB. Van kB naar MB naar GB deel je steeds door 1000."
+  },
+  {
+   "id": "cn-28",
+   "onderwerp": "bv",
+   "prompt": "Wat is het verschil tussen authenticatie en autorisatie?",
+   "options": [
+    "Authenticatie bepaalt de netwerkroute; autorisatie maakt een back-up.",
+    "Het zijn twee woorden voor precies hetzelfde.",
+    "Authenticatie controleert je identiteit; autorisatie bepaalt wat je mag.",
+    "Authenticatie versleutelt bestanden; autorisatie controleert de CPU."
+   ],
+   "answer": 2,
+   "uitleg": "Authenticatie: wie ben je (wachtwoord, MFA). Autorisatie: wat mag je (RBAC-rollen, rechten). Eerst authenticatie, dan autorisatie."
+  },
+  {
+   "id": "cn-29",
+   "onderwerp": "bv",
+   "prompt": "Wat betekent least privilege?",
+   "options": [
+    "Iedereen krijgt Contributor om vertraging te voorkomen.",
+    "Je geeft alleen de rechten die voor de taak nodig zijn, op een passende scope.",
+    "Alleen externe medewerkers krijgen beperkte rechten.",
+    "Alle gebruikers krijgen dezelfde rechten."
+   ],
+   "answer": 1,
+   "uitleg": "Minimale rechten op de kleinst passende scope (resource, resourcegroep of abonnement), liefst tijdelijk."
+  },
+  {
+   "id": "cn-30",
+   "onderwerp": "bv",
+   "prompt": "Wat voegt MFA toe aan aanmelden met een wachtwoord?",
+   "options": [
+    "Een garantie dat phishing onmogelijk wordt.",
+    "Automatisch Owner-rechten.",
+    "Een reservekopie van het account.",
+    "Een extra verificatiefactor, bijvoorbeeld een beveiligingssleutel of authenticator."
+   ],
+   "answer": 3,
+   "uitleg": "MFA combineert iets wat je weet met iets wat je hebt of bent. Het is geen garantie: codes en pushmeldingen kunnen nog steeds gephisht worden. Daarom gebruik je voor beheerders een phishingbestendige methode zoals FIDO2 of een passkey."
+  },
+  {
+   "id": "cn-31",
+   "onderwerp": "bv",
+   "prompt": "Wat beschermt TLS bij een HTTPS-verbinding?",
+   "options": [
+    "Vertrouwelijkheid en integriteit tijdens transport, met controle van de serveridentiteit via certificaten.",
+    "Alleen de fysieke toegang tot het datacenter.",
+    "Automatisch alle opgeslagen gegevens en back-ups.",
+    "Alleen de snelheid van de verbinding."
+   ],
+   "answer": 0,
+   "uitleg": "TLS beschermt data in transit (versleuteling en integriteit) en bewijst met een certificaat dat de server echt is. Opgeslagen data (at rest) heeft aparte versleuteling nodig, zoals TDE of storage encryption."
+  },
+  {
+   "id": "cn-32",
+   "onderwerp": "bv",
+   "prompt": "Wat is een passende maatregel voor SSH-beheer van een cloudserver?",
+   "options": [
+    "Poort 22 permanent vanaf ieder internetadres toestaan.",
+    "Alle logging uitschakelen.",
+    "Toegang beperken tot vertrouwde bronnen en waar passend tijdelijk toestaan.",
+    "Het wachtwoord opnemen in het architectuurdiagram."
+   ],
+   "answer": 2,
+   "uitleg": "Beperk SSH met een NSG tot vertrouwde IP-adressen en open de poort liefst tijdelijk met JIT, of gebruik Bastion."
+  },
+  {
+   "id": "cn-33",
+   "onderwerp": "bv",
+   "prompt": "Een cloudprovider is ISO 27001-gecertificeerd. Wat betekent dit voor de klant?",
+   "options": [
+    "De klant voldoet daardoor automatisch aan alle privacyverplichtingen.",
+    "De klant blijft verantwoordelijk voor onder andere eigen instellingen, toegangsrechten en gegevensgebruik.",
+    "De klant hoeft geen risicoanalyse meer uit te voeren.",
+    "De klant hoeft geen herstelprocedure meer te hebben."
+   ],
+   "answer": 1,
+   "uitleg": "Gedeelde verantwoordelijkheid: de certificering dekt alleen het deel van de provider. Configuratie, identiteiten, data, AVG-verplichtingen en de eigen risicoanalyse blijven bij de klant."
+  },
+  {
+   "id": "cn-34",
+   "onderwerp": "bh",
+   "prompt": "Waarom vervangt replicatie geen back-up?",
+   "options": [
+    "Replicatie werkt alleen voor afbeeldingen.",
+    "Een back-up houdt uitsluitend de actuele versie bij.",
+    "Replicatie kan nooit gegevensverlies beperken.",
+    "Ook verwijderingen of beschadigingen kunnen worden gerepliceerd; een back-up biedt eerdere herstelpunten."
+   ],
+   "answer": 3,
+   "uitleg": "Een replica neemt alles direct over, dus ook een DELETE of ransomware. Met een back-up of point-in-time restore ga je terug naar een moment vóór de fout.",
+   "illustratie": "rto"
+  },
+  {
+   "id": "cn-35",
+   "onderwerp": "bh",
+   "prompt": "Wat betekent een RTO van twee uur?",
+   "options": [
+    "De afgesproken maximale tijd om de dienstverlening na een verstoring te herstellen is twee uur.",
+    "Elke twee uur moet een gebruiker zijn wachtwoord wijzigen.",
+    "De database bewaart maar twee uur gegevens.",
+    "Er mag precies twee uur aan gegevens verloren gaan."
+   ],
+   "answer": 0,
+   "uitleg": "RTO (Recovery Time Objective) is hoelang het herstel mag duren. Optie D beschrijft de RPO. Ezelsbruggetje: T = Time (hersteltijd), P = Point (herstelpunt).",
+   "illustratie": "rto"
+  },
+  {
+   "id": "cn-36",
+   "onderwerp": "bh",
+   "prompt": "Wat betekent een RPO van vijftien minuten?",
+   "options": [
+    "Elke storing moet binnen vijftien minuten zijn opgelost.",
+    "Een server moet iedere vijftien minuten herstarten.",
+    "Het maximaal acceptabele gegevensverlies is uitgedrukt als vijftien minuten terug in de tijd.",
+    "Een back-up mag hoogstens vijftien minuten duren."
+   ],
+   "answer": 2,
+   "uitleg": "RPO (Recovery Point Objective) is hoe ver terug in de tijd je herstelpunt mag liggen. Dat bepaalt hoe vaak je back-ups of herstelpunten maakt. Optie A beschrijft een RTO.",
+   "illustratie": "rto"
+  },
+  {
+   "id": "cn-37",
+   "onderwerp": "bm",
+   "prompt": "Waarvoor gebruikt een load balancer een health probe?",
+   "options": [
+    "Om gebruikerswachtwoorden te controleren.",
+    "Om te bepalen welke backends gezond genoeg zijn om verkeer te ontvangen.",
+    "Om back-ups te versleutelen.",
+    "Om de opslagrekening te betalen."
+   ],
+   "answer": 1,
+   "uitleg": "De probe controleert regelmatig of een backend reageert, bijvoorbeeld met HTTP 200 op /health. Een server die niet reageert, krijgt geen verkeer meer.",
+   "illustratie": "lb"
+  },
+  {
+   "id": "cn-38",
+   "onderwerp": "bm",
+   "prompt": "Wat is een single point of failure?",
+   "options": [
+    "Een melding die één keer per dag wordt verstuurd.",
+    "Een server met maar één gebruiker.",
+    "Een database met één tabel.",
+    "Een onderdeel waarvan uitval de hele dienst kan laten uitvallen."
+   ],
+   "answer": 3,
+   "uitleg": "De oplossing is redundantie: meer instanties, zones of replica's.",
+   "illustratie": "lb"
+  },
+  {
+   "id": "cn-39",
+   "onderwerp": "bm",
+   "prompt": "Een oplossing gebruikt meerdere availability zones binnen één regio. Welke uitval vangt dit op zichzelf niet op?",
+   "options": [
+    "Uitval van de volledige regio.",
+    "Uitval van één zone, mits de oplossing daarvoor goed is ingericht.",
+    "Uitval van één server, mits verkeer naar gezonde instanties kan gaan.",
+    "Uitval van een onderdeel waarvoor een werkende redundante tegenhanger bestaat."
+   ],
+   "answer": 0,
+   "uitleg": "Zones zijn aparte datacenters binnen één regio. Valt de hele regio uit (bijvoorbeeld West Europe), dan heb je een tweede regio nodig met geo-replicatie en failover. Let op het woord 'niet' in de vraag.",
+   "illustratie": "lb"
+  },
+  {
+   "id": "cn-40",
+   "onderwerp": "bm",
+   "prompt": "Wat is het verschil tussen een alert en autoscaling?",
+   "options": [
+    "Een alert maakt altijd automatisch een extra VM aan.",
+    "Autoscaling stuurt uitsluitend een e-mail.",
+    "Een alert signaleert een situatie; autoscaling verandert capaciteit volgens regels.",
+    "Er is geen verschil."
+   ],
+   "answer": 2,
+   "uitleg": "Een alert meldt iets, bijvoorbeeld een e-mail of sms bij CPU boven 80%. Autoscaling onderneemt actie: één instance erbij bij CPU boven 75%.",
+   "illustratie": "scale"
+  },
+  {
+   "id": "cn-41",
+   "onderwerp": "bm",
+   "prompt": "Wat doe je nadat een storing tijdelijk is opgelost met een workaround?",
+   "options": [
+    "Direct alle logs verwijderen.",
+    "De dienst controleren, de aanpak vastleggen en de achterliggende oorzaak verder onderzoeken.",
+    "De monitoring permanent uitschakelen.",
+    "Het incident altijd afsluiten zonder verdere controle."
+   ],
+   "answer": 1,
+   "uitleg": "Na een workaround test je of de dienst werkt, leg je het vast in het incident, zoek je de oorzaak uit (problem management) en zorg je voor een structurele oplossing."
+  },
+  {
+   "id": "cn-42",
+   "onderwerp": "au",
+   "prompt": "Waarvoor dient inventory.ini bij Ansible?",
+   "options": [
+    "Om de HTML-opmaak van de website vast te leggen.",
+    "Om databaseback-ups te bewaren.",
+    "Om de maandelijkse Azure-prijzen op te slaan.",
+    "Om doelhosts, groepen en relevante verbindingsinstellingen vast te leggen."
+   ],
+   "answer": 3,
+   "uitleg": "De inventory bepaalt op welke hosts Ansible werkt, bijvoorbeeld [webservers] met localhost ansible_connection=local. Het playbook (YAML) bepaalt wát er gebeurt. Kort: inventory = waar, playbook = wat.",
+   "illustratie": "ansible"
+  },
+  {
+   "id": "cn-43",
+   "onderwerp": "au",
+   "prompt": "Wat betekent changed=0 na een geslaagde tweede Ansible-run zonder configuratiewijzigingen?",
+   "options": [
+    "Er waren geen wijzigingen nodig om de gewenste toestand te bereiken.",
+    "Ansible heeft geen enkele host kunnen bereiken.",
+    "Nginx is automatisch verwijderd.",
+    "Het YAML-bestand is leeg."
+   ],
+   "answer": 0,
+   "uitleg": "Dit heet idempotentie. Ansible beschrijft de gewenste toestand (state: present of started). Is die toestand er al, dan verandert Ansible niets en staat changed op 0. Een onbereikbare host zie je aan unreachable=1.",
+   "illustratie": "ansible"
+  },
+  {
+   "id": "cn-44",
+   "onderwerp": "ko",
+   "prompt": "Wat is de beste basis voor een complete cloudkostenraming?",
+   "options": [
+    "Alleen de prijs van de goedkoopste VM.",
+    "Alleen de aanschafprijs van fysieke hardware.",
+    "Het gekozen ontwerp en geraamd gebruik, inclusief relevante compute-, opslag-, netwerk-, back-up- en monitoringkosten.",
+    "Alleen het maximale budget van de klant."
+   ],
+   "answer": 2,
+   "uitleg": "Raam alles wat in het diagram staat, plus het verwachte gebruik."
+  },
+  {
+   "id": "cn-45",
+   "onderwerp": "ko",
+   "prompt": "Een ontwikkelomgeving draait nu 168 uur per week en straks 60 uur. Hoeveel neemt de draaitijd ongeveer af?",
+   "options": [
+    "36%",
+    "64%",
+    "108%",
+    "28%"
+   ],
+   "answer": 1,
+   "uitleg": "(168 − 60) / 168 = 108 / 168 ≈ 0,64, dus 64% minder. 36% is wat er overblijft (60 / 168). De afname is het verschil gedeeld door de oude waarde."
+  }
+ ]
+}

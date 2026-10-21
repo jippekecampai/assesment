@@ -1,62 +1,47 @@
 // src/views/Oefentoetsen.tsx
-// Artifacts uit claude.ai die hier achter SSO draaien (lib/artifacts.mjs). De pagina opent in een frame;
-// "Openen in nieuw tabblad" geeft hem het hele scherm.
+// Training → Oefenen → Oefentoetsen: kies een set; elke set gebruikt dezelfde toetsvraag als de sollicitantentoets.
 import { useEffect, useState } from "react";
-import { Anchor, Box, Button, Card, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
-import { IconExternalLink } from "@tabler/icons-react";
-import { listApps, type ArtifactApp } from "../lib/api";
+import { Badge, Card, Group, Loader, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { getOefenSet, listOefenSets, type OefenSet, type OefenSetMeta } from "../lib/api";
+import { OefenToets } from "../toets/OefenToets";
 
 export function Oefentoetsen() {
-  const [apps, setApps] = useState<ArtifactApp[] | null>(null);
-  const [open, setOpen] = useState<string | null>(null);
+  const [sets, setSets] = useState<OefenSetMeta[] | null>(null);
+  const [open, setOpen] = useState<OefenSet | null>(null);
+  const [laden, setLaden] = useState<string | null>(null);
 
-  useEffect(() => {
-    listApps().then((a) => { setApps(a); setOpen((o) => o ?? a[0]?.slug ?? null); }).catch(() => setApps([]));
-  }, []);
+  useEffect(() => { listOefenSets().then(setSets).catch(() => setSets([])); }, []);
 
-  const current = apps?.find((a) => a.slug === open) ?? null;
+  async function start(id: string) {
+    setLaden(id);
+    try { setOpen(await getOefenSet(id)); } finally { setLaden(null); }
+  }
 
+  if (open) return <OefenToets set={open} onTerug={() => setOpen(null)} />;
+  if (!sets) return <Loader size="sm" />;
+  if (!sets.length) return <Text c="dimmed" size="sm">Nog geen oefentoetsen beschikbaar.</Text>;
+
+  const kaart = (s: OefenSetMeta) => (
+    <Card key={s.id} withBorder radius="md" padding="md" style={{ cursor: "pointer" }} onClick={() => start(s.id)}
+      role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start(s.id); } }}>
+      <Group justify="space-between" align="flex-start" wrap="nowrap">
+        <Title order={3} fz="md" c="campaiNavy.7">{s.titel}</Title>
+        {laden === s.id ? <Loader size="xs" /> : <Badge variant="light" color="gray" radius="sm">{s.aantal} vragen</Badge>}
+      </Group>
+      <Text size="sm" c="dimmed" mt={4}>{s.omschrijving}</Text>
+      {s.slaaggrens && <Badge mt="sm" variant="light" color="campaiLime" radius="sm">Telt mee voor ISO 42001</Badge>}
+    </Card>
+  );
+
+  const vast = sets.filter((s) => s.soort === "vast");
+  const domein = sets.filter((s) => s.soort === "domein");
   return (
     <Stack gap="lg">
-      {apps && apps.length === 0 && <Text c="dimmed" size="sm">Nog geen oefeningen beschikbaar.</Text>}
-
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-        {(apps ?? []).map((a) => (
-          <Card
-            key={a.slug}
-            withBorder
-            radius="md"
-            padding="md"
-            style={{ cursor: "pointer", borderColor: a.slug === open ? "var(--mantine-color-campaiNavy-6)" : undefined }}
-            onClick={() => setOpen(a.slug)}
-          >
-            <Title order={3} fz="md" c="campaiNavy.7">{a.titel}</Title>
-            <Text size="sm" c="dimmed" mt={4}>{a.omschrijving}</Text>
-          </Card>
-        ))}
-      </SimpleGrid>
-
-      {current && (
-        <Card withBorder radius="md" padding={0}>
-          <Group justify="space-between" p="sm" style={{ borderBottom: "1px solid var(--mantine-color-gray-2)" }}>
-            <Text fw={700} size="sm" c="campaiNavy.7">{current.titel}</Text>
-            <Anchor href={`/apps/${current.slug}`} target="_blank" rel="noopener">
-              <Button size="xs" variant="light" color="campaiNavy" leftSection={<IconExternalLink size={14} />}>
-                Openen in nieuw tabblad
-              </Button>
-            </Anchor>
-          </Group>
-          <Box h="78vh">
-            <iframe
-              key={current.slug}
-              src={`/apps/${current.slug}`}
-              title={current.titel}
-              allow="fullscreen"
-              style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-            />
-          </Box>
-        </Card>
-      )}
+      <SimpleGrid cols={{ base: 1, sm: 2 }}>{vast.map(kaart)}</SimpleGrid>
+      <div>
+        <Text size="xs" tt="uppercase" fw={700} c="dimmed" lts={0.5} mb="xs">Per onderwerp uit de Vragenbank</Text>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>{domein.map(kaart)}</SimpleGrid>
+      </div>
     </Stack>
   );
 }

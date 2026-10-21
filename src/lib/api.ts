@@ -101,6 +101,24 @@ export const importVoiceKaarten = (kaarten: unknown) => post<{ toegevoegd: numbe
 export const besluitVoiceKaart = (id: string, status: "goedgekeurd" | "afgekeurd") =>
   post<{ id: string; status: string }>(`/api/voice/kaarten/${encodeURIComponent(id)}/besluit`, { status });
 
+// Oefentoetsen (lib/oefenen.mjs)
+export type OefenVraag = { id: string; onderwerp: string; prompt: string; options: string[]; answer: number; uitleg: string; illustratie?: string };
+export type OefenSetMeta = { id: string; titel: string; omschrijving: string; aantal: number; soort: "vast" | "domein"; domein?: string; slaaggrens?: number };
+export type OefenSet = Omit<OefenSetMeta, "aantal" | "soort"> & { onderwerpen: Record<string, string>; intro?: string[]; bevestigingen?: string[]; vragen: OefenVraag[] };
+export const listOefenSets = () => get<OefenSetMeta[]>("/api/oefen/sets");
+export const getOefenSet = (id: string) => get<OefenSet>(`/api/oefen/sets/${encodeURIComponent(id)}`);
+export const oefenUitleg = (setId: string, input: { vraagId: string; vraag: string; history: UitlegTurn[]; gekozen?: number }) =>
+  post<{ antwoord?: string; geblokkeerd?: boolean }>(`/api/oefen/sets/${encodeURIComponent(setId)}/uitleg`, input);
+export const bewaarOefenResultaat = (input: { domain: string; score: number; total: number; set: string }) =>
+  post<PracticeProgress>("/api/learning/practice", input);
+
+// Bewijs AI-geletterdheid (ISO 42001)
+export type AiBewijsRij = {
+  entraOid: string; naam: string | null; email: string | null; watIsAi: string | null; goudenRegels: string | null;
+  besteScore: number | null; scoreOp: string | null; pogingen: number; compleet: boolean;
+};
+export const getAiBewijs = () => get<AiBewijsRij[]>("/api/audit/ai-geletterdheid");
+
 export type ArtifactApp = { slug: string; titel: string; omschrijving: string };
 export const listApps = () => get<ArtifactApp[]>("/api/apps");
 

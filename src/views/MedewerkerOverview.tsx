@@ -92,7 +92,7 @@ export function MedewerkerOverview({ onOpenAcademy }: { onOpenAcademy: () => voi
   const aiMissing: string[] = [];
   if (!acks["ai-geletterdheid"]) aiMissing.push("bevestig 'Wat is AI'");
   if (!acks["gouden-regels"]) aiMissing.push("bevestig de 10 gouden regels");
-  if (!aiPracticeOk) aiMissing.push(`oefen AI / Copilot tot ≥${AI_LITERACY_THRESHOLD}%${aiBest !== null ? ` (nu ${aiBest}%)` : ""}`);
+  if (!aiPracticeOk) aiMissing.push(`maak de toets AI-geletterdheid (≥${AI_LITERACY_THRESHOLD}%)${aiBest !== null ? `, nu ${aiBest}%` : ""}`);
 
   // #4 Te doen voor de medewerker (afgeleid uit beleid/AI/oefenen/modules).
   const openPolicies = POLICY_IDS.filter((id) => !acks[id]).length;
@@ -100,7 +100,7 @@ export function MedewerkerOverview({ onOpenAcademy }: { onOpenAcademy: () => voi
   const weakDomain = domains.find((d) => (bestByDomain.get(d) ?? 0) < 70);
   const todos: string[] = [];
   if (openPolicies > 0) todos.push(`Bevestig ${openPolicies} beleidsonderdeel${openPolicies === 1 ? "" : "en"} in Beleid (gelezen & begrepen).`);
-  if (!aiLiterate) todos.push("Rond je AI-geletterdheid af (ISO 42001) — zie de kaart hierboven.");
+  if (!aiLiterate) todos.push("Rond je AI-geletterdheid af (ISO 42001): Training → Oefenen → Oefentoetsen → AI-geletterdheid.");
   if (weakDomain) todos.push(`Oefen "${weakDomain}" in de Skills Academy (nog onder 70%).`);
   if (openModules > 0) todos.push(`Werk aan ${openModules} openstaande leermodule${openModules === 1 ? "" : "s"}.`);
 

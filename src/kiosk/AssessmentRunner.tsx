@@ -1,10 +1,14 @@
 // src/kiosk/AssessmentRunner.tsx
+// De sollicitantentoets in dezelfde opbouw als de oefentoetsen (src/toets/Toetsvraag): één vraag per kaart,
+// opties A–D, uitleg vragen. Verschil met oefenen: geen uitslag per vraag (keuze blijft te wijzigen tot inleveren)
+// en geen illustraties, want die geven bij een kennistoets het antwoord prijs.
 import { useState } from "react";
-import { Badge, Box, Button, Card, Center, Group, Modal, Progress, Radio, Stack, Text, Title } from "@mantine/core";
-import { submitAssessment, type StartResponse, type SubmitResponse, type WegReden } from "../lib/api";
+import { Box, Button, Center, Group, Modal, Stack, Text } from "@mantine/core";
+import { submitAssessment, vraagUitleg, type StartResponse, type SubmitResponse, type WegReden } from "../lib/api";
 import { domainIntros } from "../lib/data";
 import { useToezicht, vraagVolledigScherm } from "./useToezicht";
-import { Uitleg } from "./Uitleg";
+import { Toetsvraag, Voortgang } from "../toets/Toetsvraag";
+import { UitlegChat } from "../toets/UitlegChat";
 
 const REDEN: Record<WegReden, string> = {
   "ander-venster": "naar een ander venster of programma",
@@ -44,14 +48,14 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
       const result = await submitAssessment(code, data.questions.map((x) => ({ questionId: x.id, choice: answers[x.id] ?? -1 })));
       try { sessionStorage.removeItem(key); } catch { /* ignore */ }
       onDone(result);
-    } catch (e) {
+    } catch {
       setError("Inleveren mislukt — probeer opnieuw.");
       setBusy(false);
     }
   }
 
   return (
-    <Center mih="100vh" bg="var(--mantine-color-gray-0)" p="md" style={{ userSelect: "none", WebkitUserSelect: "none" }}>
+    <Center mih="100vh" bg="var(--mantine-color-gray-0)" p="md" style={{ userSelect: "none", WebkitUserSelect: "none", alignItems: "flex-start" }}>
       <Modal
         opened={toezicht.buitenVolledigScherm && !toezicht.melding}
         onClose={() => {}}
@@ -104,49 +108,45 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
           </Group>
         </Stack>
       </Modal>
-      <Card withBorder radius="md" p="xl" w={720} maw="100%">
-        <Stack gap="lg">
-          <Group justify="space-between">
-            <Text size="xs" tt="uppercase" c="dimmed" fw={700}>{data.candidate.naam} · vraag {idx + 1}/{total}</Text>
-            <Badge variant="light" color="campaiCyan">Autosave</Badge>
-          </Group>
-          <Progress value={((idx + 1) / total) * 100} size="sm" radius="xl" color="campaiNavy" />
-          <Box>
-            <Badge variant="light" color="gray" radius="sm" mb="sm">{q.domain} / {q.type}</Badge>
-            {domainIntros[q.domain] && (
-              <Box
-                mb="sm"
-                p="sm"
-                style={{
-                  background: "var(--mantine-color-campaiNavy-0, #e6f0f7)",
-                  borderRadius: "var(--mantine-radius-md)",
-                  borderLeft: "3px solid var(--mantine-color-campaiNavy-4, #6fa8d6)",
-                }}
-              >
-                <Text size="xs" c="campaiNavy.7">{domainIntros[q.domain]}</Text>
-              </Box>
-            )}
-            <Title order={2} fz="xl" c="campaiNavy.8" lh={1.3}>{q.prompt}</Title>
+
+      <Box w={760} maw="100%" pt="lg">
+        <Text size="xs" tt="uppercase" c="dimmed" fw={700} mb="xs">{data.candidate.naam} · Campai-assessment</Text>
+        <Voortgang
+          staten={data.questions.map((x) => (answers[x.id] != null ? "beantwoord" : null))}
+          huidig={idx}
+          rechts={<Text size="sm" ff="monospace" c="dimmed">{total - unanswered} beantwoord</Text>}
+        />
+        {domainIntros[q.domain] && (
+          <Box mb="sm" p="sm" style={{ background: "var(--mantine-color-campaiNavy-0)", borderRadius: "var(--mantine-radius-md)", borderLeft: "3px solid var(--mantine-color-campaiNavy-4)" }}>
+            <Text size="xs" c="campaiNavy.7">{domainIntros[q.domain]}</Text>
           </Box>
-          <Radio.Group value={answers[q.id] != null ? String(answers[q.id]) : null} onChange={(v) => choose(Number(v))}>
-            <Stack gap="sm">
-              {q.options.map((opt, i) => (
-                <Card key={i} withBorder radius="md" p="sm" style={{ cursor: "pointer", borderColor: answers[q.id] === i ? "var(--mantine-color-campaiNavy-6)" : undefined }} onClick={() => choose(i)}>
-                  <Radio value={String(i)} label={<Text size="sm">{opt}</Text>} />
-                </Card>
-              ))}
-            </Stack>
-          </Radio.Group>
-          {uitlegHier && <Uitleg key={q.id} code={code} questionId={q.id} plakMelding={toezicht.plakMelding} />}
-          {error && <Text c="campaiRed.6" size="sm">{error}</Text>}
-          <Group justify="space-between">
-            <Button variant="default" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>Vorige</Button>
-            {idx < total - 1
-              ? <Button color="campaiNavy" onClick={() => setIdx(idx + 1)}>Volgende</Button>
-              : <Button color="campaiNavy" loading={busy} onClick={() => submit()}>Inleveren</Button>}
-          </Group>
-        </Stack>
-      </Card>
+        )}
+        <Toetsvraag
+          onderwerp={q.domain}
+          nummer={`Vraag ${idx + 1}`}
+          prompt={q.prompt}
+          options={q.options}
+          gekozen={answers[q.id] ?? null}
+          onKies={choose}
+          uitlegPaneel={uitlegHier ? (
+            <UitlegChat
+              sleutel={q.id}
+              ondertitel="je krijgt uitleg, nooit het antwoord"
+              plakMelding={toezicht.plakMelding}
+              vraag={(tekst, history) => vraagUitleg(code, q.id, tekst, history)}
+            />
+          ) : null}
+          acties={
+            <>
+              <Button variant="default" disabled={idx === 0} onClick={() => setIdx(idx - 1)}>Vorige</Button>
+              {idx < total - 1
+                ? <Button color="campaiNavy" onClick={() => { setIdx(idx + 1); window.scrollTo({ top: 0 }); }}>Volgende</Button>
+                : <Button color="campaiNavy" loading={busy} onClick={() => submit()}>Inleveren</Button>}
+            </>
+          }
+        />
+        {error && <Text c="campaiRed.6" size="sm" mt="sm">{error}</Text>}
+      </Box>
     </Center>
   );
 }

@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { IconPhone, IconPhoneOff, IconPhoneIncoming, IconTrash } from "@tabler/icons-react";
 import { getVoiceAanbod, maakTerugblik, type Terugblik, type VoiceAanbod, type VoiceScenario } from "../lib/api";
-import { Gesprek, STEMMEN, type Regel } from "./gesprek";
+import { Gesprek, kiesStem, type Regel, type StemSoort } from "./gesprek";
 
 type Toestand = "rust" | "wachten" | "rinkelt" | "gesprek";
 type Sessie = {
@@ -19,12 +19,18 @@ type Sessie = {
 const SLEUTEL = "oefenlijn.gesprekken";
 const BEWAAR_DAGEN = 30;
 const NET = /netwerk|vpn|forti|wifi|internet|firewall|access point|verbinding/i;
+// Stem: soort + optioneel een vaste stem. "auto" kiest een stem die past bij de beller (man/vrouw).
 const STEM_KEUZES = [
-  { value: "auto", label: "Willekeurig (past bij de beller)" },
-  { value: "nl-NL-Harper:MAI-Voice-2.1-Flash", label: "Harper (vrouw)" },
-  { value: "nl-NL-Fleur:MAI-Voice-2-Flash", label: "Fleur (vrouw)" },
-  { value: "nl-NL-Sander:MAI-Voice-2.1-Flash", label: "Sander (man)" },
-  { value: "nl-NL-Grant:MAI-Voice-2.1-Flash", label: "Grant (man)" },
+  { group: "Natuurlijk (spraakmodel, licht accent)", items: [
+    { value: "natuurlijk|", label: "Natuurlijk · past bij de beller" },
+    { value: "natuurlijk|marin", label: "Marin (vrouw)" }, { value: "natuurlijk|coral", label: "Coral (vrouw)" },
+    { value: "natuurlijk|cedar", label: "Cedar (man)" }, { value: "natuurlijk|ash", label: "Ash (man)" },
+  ] },
+  { group: "Nederlands HD", items: [
+    { value: "hd|", label: "Nederlands HD · past bij de beller" },
+    { value: "hd|nl-NL-Harper:MAI-Voice-2.1", label: "Harper (vrouw)" },
+    { value: "hd|nl-NL-Sander:MAI-Voice-2.1", label: "Sander (man)" }, { value: "hd|nl-NL-Grant:MAI-Voice-2.1", label: "Grant (man)" },
+  ] },
 ];
 const willekeurig = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
 const mmss = (sec: number) => `${Math.floor((sec || 0) / 60)}:${String((sec || 0) % 60).padStart(2, "0")}`;
@@ -47,7 +53,7 @@ export function Oefenlijn() {
   const [tijd, setTijd] = useState(0);
   const [onderwerp, setOnderwerp] = useState<string>("");
   const [bellerKeuze, setBellerKeuze] = useState<string | null>(null);
-  const [stemKeuze, setStemKeuze] = useState<string>("auto");
+  const [stemKeuze, setStemKeuze] = useState<string>(() => { try { return localStorage.getItem("oefenlijn.stem") || "natuurlijk|"; } catch { return "natuurlijk|"; } });
   const [verloopKeuze, setVerloopKeuze] = useState<string>("");
   const [toonTranscript, setToonTranscript] = useState(false);
   const [sessie, setSessie] = useState<Sessie | null>(null);
@@ -105,7 +111,8 @@ export function Oefenlijn() {
       onFout: fout,
     });
     gesprek.current = g;
-    const stem = stemKeuze !== "auto" ? stemKeuze : willekeurig(STEMMEN[k.persona.stem] || STEMMEN.vrouw);
+    const [soort, vasteStem] = stemKeuze.split("|") as [StemSoort, string];
+    const stem = kiesStem(soort === "hd" ? "hd" : "natuurlijk", k.persona.stem, k.persona.type, vasteStem || undefined);
     try { await g.verbind(k.instructies[gekozen.current.verloop], stem); }
     catch (e) {
       fout(e instanceof DOMException && e.name === "NotAllowedError"
@@ -176,7 +183,7 @@ export function Oefenlijn() {
                   data={[{ value: "", label: "Alles door elkaar" }, { value: "net", label: "Alleen netwerk, VPN en FortiGate" }]} />
                 <Select label="Beller" placeholder="Willekeurig" value={bellerKeuze} onChange={setBellerKeuze} clearable searchable
                   data={scenarios.map((k) => ({ value: k.id, label: `${k.titel} (${k.persona.type})` }))} />
-                <Select label="Stem" value={stemKeuze} onChange={(v) => setStemKeuze(v ?? "auto")} allowDeselect={false} data={STEM_KEUZES} />
+                <Select label="Stem" value={stemKeuze} onChange={(v) => { const w = v ?? "natuurlijk|"; setStemKeuze(w); try { localStorage.setItem("oefenlijn.stem", w); } catch { /* geen opslag */ } }} allowDeselect={false} data={STEM_KEUZES} />
                 <Select label="Verloop" value={verloopKeuze} onChange={(v) => setVerloopKeuze(v ?? "")} allowDeselect={false}
                   data={[{ value: "", label: "Willekeurig (meestal soepel, soms lastig)" }, { value: "soepel", label: "Soepel" }, { value: "gewoon", label: "Gewoon" }, { value: "lastig", label: "Lastig" }]} />
                 <Checkbox label="Transcript tijdens het gesprek tonen" checked={toonTranscript} onChange={(e) => setToonTranscript(e.currentTarget.checked)} />

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-21 — v2.2: één toetsvorm, AI-geletterdheid en natuurlijkere voice
+
+- **Eén toetsvorm:** sollicitantentoets en alle oefentoetsen gebruiken dezelfde toetsvraag (opbouw van het oefen-artifact: één vraag per kaart, A–D met toetsenbord, voortgangsbalk, uitleg vragen) in Campai-kleuren.
+- **Illustraties:** de acht interactieve illustraties (cloudmodellen, OSI, subnetten, schalen, load balancer, RTO/RPO, webverzoek, Ansible) plus "Hoe een taalmodel antwoordt" als componenten; bij oefenvragen te openen. Niet in de sollicitantentoets (ze geven het antwoord prijs).
+- **Oefentoetsen:** native sets in plaats van een artifact in een frame: AI-geletterdheid, Cloud en netwerken (45) en per domein uit de Vragenbank. Uitleg vragen vóór het antwoord met verklap-controle, erna mag het antwoord besproken worden.
+- **AI-geletterdheid (ISO 42001):** uitleg + illustratie, 'Wat is AI' en de 10 gouden regels bevestigen, toets van 12 vragen (≥70%). Score met naam en datum vastgelegd; bewijsoverzicht met CSV-export in Beheer (alleen logboekrol).
+- **Voice:** directe verbinding met Voice Live via een kortlevend Entra-token (managed identity, rol Cognitive Services User op alleen de Voice Live-resource), met terugval op de doorgifte via de server; afspeelbuffer van ~150 ms tegen haperen; stemkeuze "Natuurlijk" (marin, cedar, …) of "Nederlands HD" (MAI-Voice-2.1, met spreekstijl per beller).
+
 ## 2026-10-21 — v2.1: rustiger indeling en voice training
 
 - **Navigatie:** twee werkplekken. Recruitment (Sollicitanten, Beoordelen, Vragenbank) en Training (Oefenen, Mijn voortgang), plus Management (Performance loop) en Beheer los onderaan. Was 10 items in 4 groepen.

@@ -1,51 +1,51 @@
-// src/kiosk/Uitleg.tsx
-// Uitleg bij de huidige vraag. Typen alleen: plakken houdt useToezicht tegen. De server controleert elk
-// antwoord op verklappen (lib/uitleg.mjs); een geblokkeerd antwoord komt niet in de geschiedenis.
+// src/toets/UitlegChat.tsx
+// "Uitleg vragen" bij een toetsvraag: alleen typen (plakken werkt niet), per vraag een eigen gesprek.
+// De server controleert vóór het antwoord of de uitleg niets verklapt; een tegengehouden antwoord komt niet in de geschiedenis.
 import { useEffect, useState } from "react";
 import { Box, Button, Card, Group, Stack, Text, TextInput } from "@mantine/core";
-import { ApiError, vraagUitleg, type UitlegTurn } from "../lib/api";
+import { ApiError, type UitlegTurn } from "../lib/api";
 
 type Bericht = UitlegTurn | { role: "note"; content: string };
+export type UitlegVraag = (tekst: string, history: UitlegTurn[]) => Promise<{ antwoord?: string; geblokkeerd?: boolean }>;
 
 const FOUT: Record<string, string> = {
-  uitleg_max: "Je hebt het maximale aantal uitlegvragen voor deze test gebruikt.",
+  uitleg_max: "Je hebt het maximale aantal uitlegvragen gebruikt.",
+  rate_limited: "Even te veel vragen achter elkaar. Probeer het over een paar minuten opnieuw.",
   not_running: "De test is al ingeleverd.",
   ai_not_configured: "Uitleg is nu niet beschikbaar.",
 };
 
-export function Uitleg({ code, questionId, plakMelding }: { code: string; questionId: string; plakMelding: number }) {
+export function UitlegChat({ sleutel, vraag, ondertitel, plakMelding = 0 }: { sleutel: string; vraag: UitlegVraag; ondertitel: string; plakMelding?: number }) {
   const [gesprekken, setGesprekken] = useState<Record<string, Bericht[]>>({});
-  const [vraag, setVraag] = useState("");
+  const [tekst, setTekst] = useState("");
   const [busy, setBusy] = useState(false);
-  const [plakZichtbaar, setPlakZichtbaar] = useState(false);
-  const berichten = gesprekken[questionId] || [];
+  const [plak, setPlak] = useState(0);
+  const berichten = gesprekken[sleutel] || [];
 
   useEffect(() => {
-    if (!plakMelding) return;
-    setPlakZichtbaar(true);
-    const t = window.setTimeout(() => setPlakZichtbaar(false), 4000);
-    return () => window.clearTimeout(t);
-  }, [plakMelding]);
+    const t = plakMelding || plak;
+    if (!t) return;
+    const id = window.setTimeout(() => { setPlak(0); }, 4000);
+    return () => window.clearTimeout(id);
+  }, [plakMelding, plak]);
+  const plakZichtbaar = Boolean(plak) || (plakMelding > 0 && Date.now() - plakMelding < 4000);
 
-  const voegToe = (b: Bericht) => setGesprekken((g) => ({ ...g, [questionId]: [...(g[questionId] || []), b] }));
+  const voegToe = (b: Bericht) => setGesprekken((g) => ({ ...g, [sleutel]: [...(g[sleutel] || []), b] }));
 
   async function stuur() {
-    const tekst = vraag.trim();
-    if (!tekst || busy) return;
-    setVraag("");
-    setBusy(true);
+    const t = tekst.trim();
+    if (!t || busy) return;
+    setTekst(""); setBusy(true);
     const history = berichten.filter((b): b is UitlegTurn => b.role !== "note");
-    voegToe({ role: "user", content: tekst });
+    voegToe({ role: "user", content: t });
     try {
-      const r = await vraagUitleg(code, questionId, tekst, history);
+      const r = await vraag(t, history);
       voegToe(r.antwoord
         ? { role: "assistant", content: r.antwoord }
         : { role: "note", content: "Dit antwoord zou het juiste antwoord verklappen, daarom zie je het niet. Vraag naar een begrip, bijvoorbeeld ‘wat doet een switch?’." });
     } catch (e) {
-      voegToe({ role: "note", content: (e instanceof ApiError && e.code && FOUT[e.code]) || "Uitleg ophalen mislukte. Probeer het opnieuw." });
-    } finally {
-      setBusy(false);
-    }
+      voegToe({ role: "note", content: (e instanceof ApiError && e.code && FOUT[e.code]) || "Uitleg ophalen lukte niet. Probeer het opnieuw." });
+    } finally { setBusy(false); }
   }
 
   return (
@@ -53,7 +53,7 @@ export function Uitleg({ code, questionId, plakMelding }: { code: string; questi
       <Stack gap="sm">
         <Group justify="space-between" align="baseline">
           <Text size="sm" fw={700} c="campaiNavy.7">Uitleg vragen</Text>
-          <Text size="xs" c="dimmed">je krijgt uitleg, nooit het antwoord</Text>
+          <Text size="xs" c="dimmed">{ondertitel}</Text>
         </Group>
         {berichten.map((b, i) => (
           <Box
@@ -73,15 +73,17 @@ export function Uitleg({ code, questionId, plakMelding }: { code: string; questi
         <Group gap="xs" wrap="nowrap">
           <TextInput
             flex={1}
-            value={vraag}
-            onChange={(e) => setVraag(e.currentTarget.value)}
+            value={tekst}
+            onChange={(e) => setTekst(e.currentTarget.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); stuur(); } }}
+            onPaste={(e) => { e.preventDefault(); setPlak(Date.now()); }}
+            onDrop={(e) => { e.preventDefault(); setPlak(Date.now()); }}
             placeholder="Bijvoorbeeld: wat is het verschil tussen IaaS en PaaS?"
             maxLength={300}
             autoComplete="off"
             aria-label="Je vraag om uitleg"
           />
-          <Button color="campaiNavy" loading={busy} disabled={!vraag.trim()} onClick={stuur}>Vraag</Button>
+          <Button color="campaiNavy" loading={busy} disabled={!tekst.trim()} onClick={stuur}>Vraag</Button>
         </Group>
         {plakZichtbaar && <Text size="xs" c="campaiRed.7">Plakken werkt hier niet. Typ je vraag zelf.</Text>}
       </Stack>

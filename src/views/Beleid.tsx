@@ -8,9 +8,9 @@ import { ViewHead } from "./_shared";
 
 // Beleidsonderdelen die de medewerker moet lezen & begrijpen (ISO 42001:
 // AI-geletterdheid + beleidsbesef). Acknowledgement wordt per medewerker bewaard.
-type Policy = { id: string; label: string; title: string; intro?: string; items: string[]; ack: boolean };
+export type Policy = { id: string; label: string; title: string; intro?: string; items: string[]; ack: boolean };
 
-const POLICIES: Policy[] = [
+export const POLICIES: Policy[] = [
   {
     id: "ai-geletterdheid",
     label: "AI-geletterdheid · ISO 42001",

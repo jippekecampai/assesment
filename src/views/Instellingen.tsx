@@ -5,8 +5,9 @@ import { SegmentedControl } from "@mantine/core";
 import { Beheer } from "./Beheer";
 import { Beleid } from "./Beleid";
 import { VoiceKaarten } from "./VoiceKaarten";
+import { AiBewijs } from "./AiBewijs";
 
-type Tab = "beheer" | "beleid" | "voice";
+type Tab = "beheer" | "beleid" | "ai" | "voice";
 
 export function Instellingen() {
   const [tab, setTab] = useState<Tab>("beheer");
@@ -17,10 +18,11 @@ export function Instellingen() {
         radius="md"
         value={tab}
         onChange={(v) => setTab(v as Tab)}
-        data={[{ value: "beheer", label: "Rollen & cijfers" }, { value: "beleid", label: "Beleid" }, { value: "voice", label: "Voice-scenario's" }]}
+        data={[{ value: "beheer", label: "Rollen & cijfers" }, { value: "beleid", label: "Beleid" }, { value: "ai", label: "AI-geletterdheid" }, { value: "voice", label: "Voice-scenario's" }]}
       />
       {tab === "beheer" && <Beheer />}
       {tab === "beleid" && <Beleid />}
+      {tab === "ai" && <AiBewijs />}
       {tab === "voice" && <VoiceKaarten />}
     </>
   );

@@ -19,8 +19,10 @@ import { createQuestionBank } from './lib/question-bank.mjs';
 import { createFlagStore } from './lib/flag-store.mjs';
 import { generateQuestions, chat, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
 import { ARTIFACTS, loadArtifactPage, createRateLimiter, toMessages } from './lib/artifacts.mjs';
-import { createVoiceStore, oefenKaarten, importeer, besluit, maakTerugblik, voiceConfigured, terugblikConfigured, voiceLiveUrl, VERLOPEN } from './lib/voice.mjs';
+import { createVoiceStore, oefenKaarten, importeer, besluit, maakTerugblik, voiceConfigured, terugblikConfigured, voiceLiveUrl, voiceTokenUrl, VERLOPEN } from './lib/voice.mjs';
 import { WebSocketServer, WebSocket } from 'ws';
+import { listSets, getSet, oefenUitleg } from './lib/oefenen.mjs';
+import { aiBewijs } from './lib/audit-ai.mjs';
 import { recordEvents, canSeeLogboek } from './lib/toezicht.mjs';
 import { explain, UITLEG_MAX, UITLEG_UIT_DOMEINEN } from './lib/uitleg.mjs';
 
@@ -267,7 +269,7 @@ async function handleApi(request, response, url) {
     if (!domains.includes(b.domain) || !Number.isInteger(b.score) || !Number.isInteger(b.total) || b.total <= 0) {
       sendJson(response, 400, { error: 'ongeldig_resultaat' }); return true;
     }
-    sendJson(response, 200, await practiceStore.addResult(me.entraOid, { domain: b.domain, score: b.score, total: b.total }));
+    sendJson(response, 200, await practiceStore.addResult(me.entraOid, { domain: b.domain, score: b.score, total: b.total, set: typeof b.set === 'string' ? b.set.slice(0, 80) : null, naam: me.name || null, email: me.email || null }));
     return true;
   }
 
@@ -470,6 +472,50 @@ async function handleApi(request, response, url) {
   if (url.pathname === '/api/voice/scenarios' && request.method === 'GET') {
     if (!requireStaff(request, response)) return true;
     sendJson(response, 200, { beschikbaar: voiceConfigured(), terugblik: terugblikConfigured(), verlopen: Object.fromEntries(Object.entries(VERLOPEN).map(([v, [kans]]) => [v, kans])), scenarios: await oefenKaarten(voiceStore) });
+    return true;
+  }
+  // Bewijs AI-geletterdheid (ISO 42001): alleen voor de logboekrol, net als het kandidaatlogboek.
+  if (url.pathname === '/api/audit/ai-geletterdheid' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    if (!canSeeLogboek(request.headers['x-ms-client-principal'])) { sendJson(response, 403, { error: 'geen_logboekrol' }); return true; }
+    sendJson(response, 200, aiBewijs(await policyStore.listAll(), await practiceStore.listAll())); return true;
+  }
+
+  // Oefentoetsen (lib/oefenen.mjs): alleen na SSO-login.
+  if (url.pathname === '/api/oefen/sets' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, await listSets(questionBank)); return true;
+  }
+  const os = url.pathname.match(/^\/api\/oefen\/sets\/([^/]+)$/);
+  if (os && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const set = await getSet(questionBank, decodeURIComponent(os[1]));
+    if (!set) { sendJson(response, 404, { error: 'not_found' }); return true; }
+    sendJson(response, 200, set); return true;
+  }
+  const ou = url.pathname.match(/^\/api\/oefen\/sets\/([^/]+)\/uitleg$/);
+  if (ou && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    if (!aiConfigured()) { sendJson(response, 503, { error: 'ai_not_configured' }); return true; }
+    const identity = readIdentity(request);
+    if (!artifactAiLimit(identity.email || identity.name)) { sendJson(response, 429, { error: 'rate_limited' }); return true; }
+    const set = await getSet(questionBank, decodeURIComponent(ou[1]));
+    if (!set) { sendJson(response, 404, { error: 'not_found' }); return true; }
+    try {
+      const r = await oefenUitleg(set, await readRequestBody(request));
+      sendJson(response, r.fout ? 400 : 200, r.fout ? { error: r.fout } : r);
+    } catch (e) { if (!(e instanceof AiError)) console.error('oefen/uitleg fout:', e); sendJson(response, 502, { error: 'ai_error' }); }
+    return true;
+  }
+
+  if (url.pathname === '/api/voice/verbinding' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    if (!voiceConfigured()) { sendJson(response, 503, { error: 'voice_niet_ingesteld' }); return true; }
+    try {
+      const direct = await voiceTokenUrl();
+      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      response.end(JSON.stringify(direct ? { url: direct.url } : { proxy: true }));
+    } catch (e) { console.error('voice/verbinding fout:', e.message); sendJson(response, 200, { proxy: true }); }
     return true;
   }
   if (url.pathname === '/api/voice/kaarten' && request.method === 'GET') {

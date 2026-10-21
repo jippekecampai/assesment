@@ -1,0 +1,185 @@
+{
+ "id": "ai-geletterdheid",
+ "titel": "AI-geletterdheid (ISO 42001)",
+ "omschrijving": "Wat AI is en wat niet, veilig omgaan met data en jouw verantwoordelijkheid. Haal 70% of meer; dat telt als bewijs van AI-geletterdheid.",
+ "domein": "AI / Copilot",
+ "slaaggrens": 70,
+ "bevestigingen": [
+  "ai-geletterdheid",
+  "gouden-regels"
+ ],
+ "onderwerpen": {
+  "ai": "Hoe AI werkt",
+  "data": "Data en privacy",
+  "verantwoord": "Verantwoord gebruik"
+ },
+ "intro": [
+  "Een taalmodel zoals Copilot of ChatGPT voorspelt steeds het meest waarschijnlijke volgende woord op basis van patronen uit zijn trainingsdata. Het begrijpt niets en heeft geen oordeel.",
+  "Daardoor kan het overtuigend klinken en toch fout zijn (hallucineren). Controleer AI-output altijd.",
+  "AI ziet alleen wat jij deelt. Deel nooit klantdata, persoonsgegevens of wachtwoorden met externe AI-tools; gebruik alleen goedgekeurde tools.",
+  "Jij blijft eindverantwoordelijk voor wat je met AI oplevert, en besluiten over mensen neem je nooit op basis van AI zonder menselijke review."
+ ],
+ "vragen": [
+  {
+   "id": "ai-01",
+   "onderwerp": "ai",
+   "illustratie": "ai",
+   "prompt": "Hoe komt een taalmodel zoals Copilot tot een antwoord?",
+   "options": [
+    "Het zoekt het antwoord op in een vaste database met gecontroleerde feiten.",
+    "Het begrijpt de vraag zoals een mens en redeneert vanuit eigen ervaring.",
+    "Het voorspelt steeds het meest waarschijnlijke volgende woord op basis van patronen uit trainingsdata.",
+    "Het kopieert altijd letterlijk een tekst die het eerder heeft gezien."
+   ],
+   "answer": 2,
+   "uitleg": "Een taalmodel voorspelt woord voor woord wat statistisch het meest waarschijnlijk volgt. Er is geen begrip of geheugen van gecontroleerde feiten; daarom kan het fouten maken die heel overtuigend klinken."
+  },
+  {
+   "id": "ai-02",
+   "onderwerp": "ai",
+   "illustratie": "ai",
+   "prompt": "Copilot geeft je een stappenplan met een PowerShell-commando dat je niet kent. Wat doe je?",
+   "options": [
+    "Je controleert eerst in de documentatie of een testomgeving wat het commando doet.",
+    "Je voert het direct uit bij de klant, want Copilot is een Microsoft-product.",
+    "Je vraagt Copilot of het zeker is, en als het ja zegt voer je het uit.",
+    "Je gebruikt het alleen als het commando kort is."
+   ],
+   "answer": 0,
+   "uitleg": "AI-output kan fout zijn (hallucinatie), ook als het zelfverzekerd klinkt. Een AI die zegt dat hij zeker is, bewijst niets. Controleer onbekende commando's altijd voordat je ze bij een klant uitvoert."
+  },
+  {
+   "id": "ai-03",
+   "onderwerp": "ai",
+   "illustratie": "ai",
+   "prompt": "Wat bedoelen we met 'hallucineren' bij generatieve AI?",
+   "options": [
+    "De AI weigert een vraag te beantwoorden.",
+    "De AI reageert trager dan normaal.",
+    "De AI herhaalt de vraag in plaats van te antwoorden.",
+    "De AI geeft een antwoord dat overtuigend klinkt maar feitelijk onjuist of verzonnen is."
+   ],
+   "answer": 3,
+   "uitleg": "Hallucineren is het verzinnen van feiten, bronnen of details die er niet zijn, in een overtuigende stijl. Daarom is controle van output altijd nodig."
+  },
+  {
+   "id": "ai-04",
+   "onderwerp": "data",
+   "illustratie": "ai",
+   "prompt": "Je wilt een foutmelding uit een klantticket laten uitleggen door een externe AI-tool. In de melding staan een gebruikersnaam en een intern IP-adres. Wat is de juiste aanpak?",
+   "options": [
+    "De melding volledig plakken; de tool slaat niets op.",
+    "Gebruikersnaam, IP-adres en andere klantgegevens eerst weghalen, of een goedgekeurde tool gebruiken die binnen de afspraken valt.",
+    "Alleen plakken als de klant het niet merkt.",
+    "De melding plakken en achteraf het gesprek in de tool verwijderen."
+   ],
+   "answer": 1,
+   "uitleg": "Klantdata en persoonsgegevens horen niet in externe AI-tools. Haal ze weg of gebruik een goedgekeurde tool binnen de afspraken. Een gesprek achteraf wissen haalt de data niet terug."
+  },
+  {
+   "id": "ai-05",
+   "onderwerp": "data",
+   "prompt": "Welke gegevens mag je nooit in een prompt van een externe AI-tool zetten?",
+   "options": [
+    "Een algemene vraag over hoe DNS werkt.",
+    "Een openbaar stuk documentatie van Microsoft.",
+    "Wachtwoorden, API-sleutels en andere inloggegevens.",
+    "Een zelf verzonnen voorbeeldscenario zonder echte namen."
+   ],
+   "answer": 2,
+   "uitleg": "Inloggegevens en geheimen deel je nooit met een AI-tool. Algemene vragen, openbare documentatie en verzonnen voorbeelden zijn wel prima."
+  },
+  {
+   "id": "ai-06",
+   "onderwerp": "data",
+   "illustratie": "ai",
+   "prompt": "Microsoft 365 Copilot bij een klant laat in een antwoord salarisgegevens zien die de gebruiker eigenlijk niet hoort te zien. Wat is de meest waarschijnlijke oorzaak?",
+   "options": [
+    "De rechten in SharePoint of OneDrive staan te ruim; Copilot toont wat de gebruiker technisch al mag openen.",
+    "Copilot heeft de gegevens zelf verzonnen.",
+    "Copilot heeft de gegevens van internet gehaald.",
+    "Copilot negeert altijd alle rechten."
+   ],
+   "answer": 0,
+   "uitleg": "Copilot respecteert de bestaande rechten: het laat zien wat de gebruiker al kan openen. Te ruim gedeelde bestanden (oversharing) worden zo ineens vindbaar. De oplossing is rechten opruimen, niet Copilot de schuld geven."
+  },
+  {
+   "id": "ai-07",
+   "onderwerp": "verantwoord",
+   "prompt": "Wie is verantwoordelijk voor een klantadvies dat je met hulp van AI hebt geschreven?",
+   "options": [
+    "De leverancier van de AI-tool.",
+    "Niemand, want AI heeft het geschreven.",
+    "De klant, want die besluit of hij het advies volgt.",
+    "Jij, als medewerker die het advies oplevert."
+   ],
+   "answer": 3,
+   "uitleg": "Jij blijft eindverantwoordelijk voor wat je oplevert, ook als AI heeft geholpen. Dat is een van de gouden regels."
+  },
+  {
+   "id": "ai-08",
+   "onderwerp": "verantwoord",
+   "prompt": "Een collega wil een AI-tool het cv van sollicitanten laten beoordelen en de laagst scorende automatisch afwijzen. Wat klopt?",
+   "options": [
+    "Prima, dat is sneller en objectiever.",
+    "Niet doen: besluiten over mensen nemen we niet op basis van AI zonder menselijke review; AI bij werving geldt bovendien als hoog risico.",
+    "Alleen doen als de tool gratis is.",
+    "Mag, zolang de sollicitant het niet weet."
+   ],
+   "answer": 1,
+   "uitleg": "Geen besluiten over mensen op basis van AI zonder menselijke review. AI die wordt ingezet bij werving en selectie valt onder de AI Act als hoog risico, met strenge eisen."
+  },
+  {
+   "id": "ai-09",
+   "onderwerp": "verantwoord",
+   "prompt": "Je wilt een nieuwe AI-tool gaan gebruiken voor klantwerk die nog niet op de lijst met toegestane tools staat. Wat doe je?",
+   "options": [
+    "Gewoon gebruiken met een privé-account.",
+    "Gebruiken, maar alleen buiten werktijd.",
+    "Eerst laten beoordelen en goedkeuren volgens het AI-beleid; tot die tijd niet gebruiken voor klantwerk.",
+    "Gebruiken en het later melden als het goed bevalt."
+   ],
+   "answer": 2,
+   "uitleg": "Gebruik alleen goedgekeurde tools en accounts. Nieuwe AI-toepassingen gaan eerst door het goedkeurings- en toezichtsproces (ISO 42001)."
+  },
+  {
+   "id": "ai-10",
+   "onderwerp": "verantwoord",
+   "prompt": "Wanneer is het goed om te vermelden dat een tekst met hulp van AI is gemaakt?",
+   "options": [
+    "Waar het relevant is voor de ontvanger, bijvoorbeeld bij adviezen of rapporten; transparantie hoort bij verantwoord gebruik.",
+    "Nooit, dat maakt een slechte indruk.",
+    "Alleen als de klant erom vraagt.",
+    "Alleen bij teksten in het Engels."
+   ],
+   "answer": 0,
+   "uitleg": "Wees transparant: vermeld waar relevant dat output met AI tot stand kwam. Zo kan de ontvanger het goed inschatten."
+  },
+  {
+   "id": "ai-11",
+   "onderwerp": "verantwoord",
+   "prompt": "Je vermoedt dat een collega per ongeluk klantgegevens in een openbare AI-chatbot heeft geplakt. Wat doe je?",
+   "options": [
+    "Niets, het is al gebeurd.",
+    "Zelf proberen het gesprek uit de chatbot te verwijderen en verder niets zeggen.",
+    "Wachten tot de klant erover klaagt.",
+    "Het direct melden als (mogelijk) incident bij je teamlead of de security officer."
+   ],
+   "answer": 3,
+   "uitleg": "Meld incidenten direct; bij twijfel vraag je het je teamlead of de security officer. Snel melden maakt het mogelijk om de gevolgen te beperken en zo nodig een datalek te melden."
+  },
+  {
+   "id": "ai-12",
+   "onderwerp": "ai",
+   "prompt": "Waarvoor is AI het meest geschikt in je dagelijkse werk?",
+   "options": [
+    "Om kritisch nadenken volledig over te nemen.",
+    "Als hulpmiddel om sneller een eerste opzet, samenvatting of uitleg te maken, die jij daarna controleert.",
+    "Om besluiten te nemen waar je zelf geen tijd voor hebt.",
+    "Om wachtwoorden te genereren en op te slaan voor klanten."
+   ],
+   "answer": 1,
+   "uitleg": "Gebruik AI om sneller en beter te werken, niet om kritisch nadenken te vervangen. Jij controleert en beslist."
+  }
+ ]
+}

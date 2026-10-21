@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { basisKaarten, bouwInstructie, geldigeKaart, createVoiceStore, importeer, besluit, oefenKaarten, terugblikVraag, maakTerugblik, voiceLiveUrl } from '../lib/voice.mjs';
+import { basisKaarten, bouwInstructie, geldigeKaart, createVoiceStore, importeer, besluit, oefenKaarten, terugblikVraag, maakTerugblik, voiceLiveUrl, voiceTokenUrl } from '../lib/voice.mjs';
 
 function fresh() {
   const dir = mkdtempSync(join(tmpdir(), 'camai-voice-'));
@@ -55,6 +55,17 @@ test('maakTerugblik stuurt naar de EU-deployment met de sleutel als header', asy
   assert.ok(seen.u.startsWith('https://f.example/openai/deployments/gpt-5.5-eu/'));
   assert.equal(seen.o.headers['api-key'], 'geheim');
   assert.ok(!seen.u.includes('geheim'));
+});
+
+test('voiceTokenUrl: zonder managed identity null, met identiteit een URL met Bearer-token', async () => {
+  assert.equal(await voiceTokenUrl({ env: { VOICE_LIVE_HOST: 'x' } }), null);
+  let gevraagd;
+  const fetchImpl = async (u, o) => { gevraagd = { u, o }; return { ok: true, json: async () => ({ access_token: 'tok', expires_on: '123' }) }; };
+  const r = await voiceTokenUrl({ fetchImpl, env: { IDENTITY_ENDPOINT: 'http://mi', IDENTITY_HEADER: 'h', VOICE_LIVE_HOST: 'x.cognitiveservices.azure.com', VOICE_LIVE_KEY: 'geheim' } });
+  assert.ok(gevraagd.u.includes('resource=https%3A%2F%2Fcognitiveservices.azure.com'));
+  assert.equal(gevraagd.o.headers['X-IDENTITY-HEADER'], 'h');
+  assert.ok(r.url.includes('Authorization=Bearer%20tok'));
+  assert.ok(!r.url.includes('geheim'));
 });
 
 test('voiceLiveUrl gebruikt alleen het datazone-model en bevat geen sleutel', () => {

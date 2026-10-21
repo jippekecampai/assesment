@@ -1,0 +1,27 @@
+/* Toetsvraag in de opbouw van het oefen-artifact, met Campai-kleuren. */
+.toets-optie {
+  display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 8px;
+  border: 1.5px solid var(--mantine-color-gray-3); background: var(--mantine-color-body); line-height: 1.4;
+  font-size: 15px; transition: border-color .15s, background .15s;
+}
+.toets-optie:hover:not(:disabled) { border-color: var(--mantine-color-campaiNavy-4); }
+.toets-optie:focus-visible { outline: 3px solid var(--mantine-color-campaiCyan-5); outline-offset: 2px; }
+.toets-optie:disabled { cursor: default; }
+.toets-letter { font-family: var(--mantine-font-family-monospace); font-weight: 700; min-width: 1.4em; color: var(--mantine-color-dimmed); }
+.toets-optie.gekozen { border-color: var(--mantine-color-campaiNavy-6); background: var(--mantine-color-campaiNavy-0); }
+.toets-optie.gekozen .toets-letter { color: var(--mantine-color-campaiNavy-7); }
+.toets-optie.goed { border-color: var(--mantine-color-green-6); background: var(--mantine-color-green-0); }
+.toets-optie.goed .toets-letter { color: var(--mantine-color-green-8); }
+.toets-optie.fout { border-color: var(--mantine-color-campaiRed-6); background: var(--mantine-color-campaiRed-0); }
+.toets-optie.fout .toets-letter { color: var(--mantine-color-campaiRed-7); }
+.toets-optie.dim { opacity: .55; }
+.toets-uitleg { border-left: 3px solid var(--mantine-color-campaiCyan-5); padding: 4px 0 4px 14px; }
+.toets-voortgang { margin-bottom: 14px; }
+.toets-balk { flex: 1; display: flex; gap: 2px; height: 8px; min-width: 0; }
+.toets-balk span { flex: 1; border-radius: 3px; background: var(--mantine-color-gray-3); }
+.toets-balk span.beantwoord { background: var(--mantine-color-campaiNavy-4); }
+.toets-balk span.goed { background: var(--mantine-color-green-6); }
+.toets-balk span.fout { background: var(--mantine-color-campaiRed-6); }
+.toets-balk span.nu { outline: 2px solid var(--mantine-color-campaiNavy-7); outline-offset: 1px; }
+@media (prefers-reduced-motion: no-preference) { .toetsvraag { animation: toets-in .18s ease-out; } }
+@keyframes toets-in { from { transform: translateY(4px); opacity: .6; } to { transform: none; opacity: 1; } }
