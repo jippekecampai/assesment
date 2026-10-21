@@ -230,6 +230,13 @@ async function currentProfile(request) {
 }
 
 async function handleApi(request, response, url) {
+  // Fouten uit de browser (src/components/Foutopvang) in de serverlog, zodat ze terug te vinden zijn.
+  if (url.pathname === '/api/clientfout' && request.method === 'POST') {
+    const b = await readRequestBody(request).catch(() => ({}));
+    const wie = readIdentity(request);
+    console.error('clientfout', JSON.stringify({ wie: wie.email || null, scherm: String(b.scherm || '').slice(0, 60), melding: String(b.melding || '').slice(0, 500), pad: String(b.pad || '').slice(0, 200), stack: String(b.stack || '').slice(0, 1500) }));
+    sendJson(response, 200, { ok: true }); return true;
+  }
   if (url.pathname === "/api/health") {
     sendJson(response, 200, { ok: true, mode: "campai-only" });
     return true;
@@ -714,8 +721,10 @@ async function handleApi(request, response, url) {
   return false;
 }
 
+// De build heeft vaste bestandsnamen (assets/app.js, nodig voor de excludedPaths van Easy Auth). Zonder no-cache kan
+// een browser na een deploy een oude app.js naast de nieuwe server gebruiken; met no-cache vraagt hij elke keer na.
 function serveFile(response, filePath) {
-  response.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream" });
+  response.writeHead(200, { "Content-Type": types[extname(filePath)] || "application/octet-stream", "Cache-Control": "no-cache" });
   createReadStream(filePath).pipe(response);
 }
 

@@ -21,6 +21,7 @@ import { Oefenen } from "./views/Oefenen";
 import { MijnVoortgang } from "./views/MijnVoortgang";
 import { Instellingen } from "./views/Instellingen";
 import campaiLogo from "./assets/campai-logo.svg";
+import { Foutopvang } from "./components/Foutopvang";
 
 // Twee werkplekken: Recruitment (sollicitanten beoordelen) en Training (zelf oefenen). Beheer staat los onderaan.
 export type ViewId = "sollicitanten" | "candidateReviews" | "questions" | "oefenen" | "voortgang" | "performance" | "beheer";
@@ -127,6 +128,7 @@ export function App() {
 
       <AppShell.Main>
         <Box key={view}>
+          <Foutopvang scherm={view}>
           {view === "sollicitanten" && <Sollicitanten />}
           {view === "candidateReviews" && <Beoordelen search={search} />}
           {view === "questions" && <Vragenfabriek search={search} />}
@@ -134,6 +136,7 @@ export function App() {
           {view === "voortgang" && <MijnVoortgang />}
           {view === "performance" && <Performanceloop />}
           {view === "beheer" && <Instellingen />}
+          </Foutopvang>
         </Box>
       </AppShell.Main>
     </AppShell>
