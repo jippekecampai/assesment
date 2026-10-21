@@ -19,6 +19,11 @@
   "AI ziet alleen wat jij deelt. Deel nooit klantdata, persoonsgegevens of wachtwoorden met externe AI-tools; gebruik alleen goedgekeurde tools.",
   "Jij blijft eindverantwoordelijk voor wat je met AI oplevert, en besluiten over mensen neem je nooit op basis van AI zonder menselijke review."
  ],
+ "illustratiePerOnderwerp": {
+  "ai": "ai",
+  "data": "ai",
+  "verantwoord": "ai"
+ },
  "vragen": [
   {
    "id": "ai-01",

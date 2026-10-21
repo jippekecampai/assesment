@@ -14,6 +14,22 @@
   "au": "Automatisering (Ansible)",
   "ko": "Kosten & duurzaamheid"
  },
+ "intro": [
+  "Deze toets gaat over de basis van cloud engineering: welk cloudmodel past, hoe je schaalt, hoe netwerken en subnetten werken, hoe je beveiligt en hoe je herstelt na een storing.",
+  "Bij elke vraag kun je een interactieve illustratie openen die het mechanisme laat zien, en uitleg vragen over een begrip."
+ ],
+ "illustratiePerOnderwerp": {
+  "cm": "cloud",
+  "ow": "scale",
+  "nw": "pad",
+  "sn": "subnet",
+  "op": "cloud",
+  "bv": "ca",
+  "bh": "rto",
+  "bm": "lb",
+  "au": "ansible",
+  "ko": "cloud"
+ },
  "vragen": [
   {
    "id": "cn-01",

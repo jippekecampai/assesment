@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-21 — v2.3: uitleg-illustratie bij elke oefening
+
+- Elke oefenset start met een uitleg en een interactieve illustratie; elke vraag zonder eigen illustratie valt terug op die van haar onderwerp.
+- Zeven nieuwe illustraties: Conditional Access (Microsoft 365), delen in SharePoint/Teams (incl. Copilot-oversharing), baseline en drift (Inforcer), migratie met cutover, van RMM-alert naar klantupdate (Kaseya-stack), hoe een VoIP-gesprek loopt, en een goede klantupdate (werkhouding).
+- "Uitleg vragen" zonder interne ondertitel.
+
 ## 2026-10-21 — v2.2: één toetsvorm, AI-geletterdheid en natuurlijkere voice
 
 - **Eén toetsvorm:** sollicitantentoets en alle oefentoetsen gebruiken dezelfde toetsvraag (opbouw van het oefen-artifact: één vraag per kaart, A–D met toetsenbord, voortgangsbalk, uitleg vragen) in Campai-kleuren.

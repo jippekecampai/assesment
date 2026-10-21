@@ -172,3 +172,189 @@ button.ill-slab { font: inherit; font-weight: 700; width: 100%; text-align: left
 .ill-tm-node.ok { border-color: var(--mantine-color-campaiNavy-5); background: var(--mantine-color-campaiNavy-0); }
 .ill-tm-node.let { border-color: var(--mantine-color-campaiRed-5); background: var(--mantine-color-campaiRed-0); }
 .ill-tm-pijl { color: var(--mantine-color-dimmed); font-size: 18px; }
+
+/* ===== Conditional Access (ill-ca-) ===== */
+.ill-ca-bed { display: flex; flex-direction: column; gap: 8px; }
+.ill-ca-pad { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.ill-ca-stap {
+  position: relative; border: 1.5px solid var(--ill-line); border-radius: 8px; padding: 10px; background: var(--ill-surface);
+  display: flex; flex-direction: column; gap: 4px; font-size: 14px; min-width: 0; opacity: .4; transition: opacity .25s, border-color .25s;
+}
+.ill-ca-stap.is-on { opacity: 1; border-color: var(--ill-accent); }
+.ill-ca-stap small { font-size: 12.5px; color: var(--ill-muted); }
+.ill-ca-stap:not(:last-child)::after {
+  content: "→"; position: absolute; right: -18px; top: 50%; transform: translateY(-50%);
+  color: var(--ill-muted); font-weight: 700;
+}
+.ill-ca-nr {
+  width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700;
+  background: var(--ill-accent-soft); color: var(--ill-accent);
+}
+.ill-ca-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ill-ca-chip { font-size: 11.5px; padding: 2px 6px; border-radius: 10px; background: var(--ill-ok-soft); color: var(--ill-ok-text); }
+.ill-ca-chip.is-risico { background: var(--ill-bad-soft); color: var(--ill-bad); }
+.ill-ca-uit { font-weight: 800; font-size: 16px; }
+.ill-ca-eind.is-on.is-toegestaan { border-color: var(--ill-ok); background: var(--ill-ok-soft); }
+.ill-ca-eind.is-on.is-toegestaan .ill-ca-uit { color: var(--ill-ok-text); }
+.ill-ca-eind.is-on.is-mfa { border-color: var(--ill-hi-strong); background: var(--ill-hi-soft); }
+.ill-ca-eind.is-on.is-mfa .ill-ca-uit { color: var(--ill-hi); }
+.ill-ca-eind.is-on.is-geblokkeerd { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-ca-eind.is-on.is-geblokkeerd .ill-ca-uit { color: var(--ill-bad); }
+@media (max-width: 640px) {
+  .ill-ca-pad { grid-template-columns: 1fr; gap: 20px; }
+  .ill-ca-stap:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -19px; transform: translateX(-50%); }
+}
+.ill-ca-regels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; transition: opacity .25s; }
+.ill-ca-regels.is-dicht { opacity: .35; }
+@media (max-width: 640px) { .ill-ca-regels { grid-template-columns: 1fr; } }
+.ill-ca-regel {
+  border: 1.5px dashed var(--ill-line); border-radius: 8px; padding: 8px 10px; background: var(--ill-surface);
+  display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; min-width: 0;
+}
+.ill-ca-regel small { font-size: 12.5px; color: var(--ill-muted); }
+.ill-ca-regel.is-raakt { border-style: solid; }
+.ill-ca-regel.is-raakt.is-mfa { border-color: var(--ill-hi-strong); }
+.ill-ca-regel.is-raakt.is-geblokkeerd { border-color: var(--ill-bad); }
+.ill-ca-regel.is-wint.is-mfa { background: var(--ill-hi-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ill-hi-strong) 25%, transparent); }
+.ill-ca-regel.is-wint.is-geblokkeerd { background: var(--ill-bad-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ill-bad) 25%, transparent); }
+.ill-ca-regelkop { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.ill-ca-ladder { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+.ill-ca-trede { padding: 3px 10px; border-radius: 12px; border: 1px solid var(--ill-line); color: var(--ill-muted); display: inline-flex; gap: 6px; }
+.ill-ca-trede i { font-style: normal; color: var(--ill-muted); }
+.ill-ca-trede.is-hier.is-toegestaan { background: var(--ill-ok); color: var(--mantine-color-white); border-color: var(--ill-ok); }
+.ill-ca-trede.is-hier.is-mfa { background: var(--ill-hi-strong); color: var(--mantine-color-campaiNavy-9); border-color: var(--ill-hi-strong); }
+.ill-ca-trede.is-hier.is-geblokkeerd { background: var(--ill-bad); color: var(--mantine-color-white); border-color: var(--ill-bad); }
+.ill-ca-trede.is-hier i { color: inherit; }
+
+/* ===== SharePoint delen (ill-sp-) ===== */
+.ill-sp-veld { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 16px; align-items: center; }
+@media (max-width: 640px) { .ill-sp-veld { grid-template-columns: 1fr; } }
+.ill-sp-bestand {
+  display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 8px;
+  border: 2px solid var(--ill-accent); background: var(--ill-surface); min-width: 0;
+}
+.ill-sp-bestand > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+.ill-sp-bestand small { font-size: 12.5px; color: var(--ill-muted); }
+.ill-sp-doc {
+  flex: none; width: 40px; height: 50px; border-radius: 4px 12px 4px 4px; background: var(--ill-ok); color: var(--mantine-color-white);
+  font-family: var(--ill-mono); font-size: 10px; font-weight: 700; display: grid; place-items: end center; padding-bottom: 6px;
+}
+.ill-sp-link { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 10px; align-self: flex-start; }
+.ill-sp-link.is-specifiek { background: var(--ill-ok-soft); color: var(--ill-ok-text); }
+.ill-sp-link.is-organisatie { background: var(--ill-hi-soft); color: var(--ill-hi); }
+.ill-sp-link.is-iedereen { background: var(--ill-bad-soft); color: var(--ill-bad); }
+.ill-sp-kijkers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.ill-sp-kijker {
+  font: inherit; text-align: left; cursor: pointer; position: relative; padding: 10px 10px 10px 40px; border-radius: 8px;
+  border: 1.5px solid var(--ill-line); background: var(--ill-surface); color: var(--ill-fg);
+  display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; min-width: 0; transition: border-color .15s, background .15s;
+}
+.ill-sp-kijker small { font-size: 12px; color: var(--ill-muted); }
+.ill-sp-teken {
+  position: absolute; left: 10px; top: 10px; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--mantine-color-white);
+}
+.ill-sp-kijker.is-ja .ill-sp-teken { background: var(--ill-ok); }
+.ill-sp-kijker.is-nee .ill-sp-teken { background: var(--mantine-color-gray-6); }
+.ill-sp-oordeel { font-size: 12px; font-weight: 700; }
+.ill-sp-kijker.is-ja .ill-sp-oordeel { color: var(--ill-ok-text); }
+.ill-sp-kijker.is-nee .ill-sp-oordeel { color: var(--ill-muted); }
+.ill-sp-kijker.is-aan { border-color: var(--ill-accent); box-shadow: 0 0 0 2px var(--ill-accent); background: var(--ill-accent-soft); }
+.ill-sp-waarom { border-left: 4px solid var(--ill-line); padding: 6px 12px; display: flex; flex-direction: column; gap: 4px; }
+.ill-sp-waarom.is-ja { border-color: var(--ill-ok); }
+.ill-sp-waarom.is-nee { border-color: var(--mantine-color-gray-6); }
+.ill-sp-tip { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--ill-surface); border: 1px solid var(--ill-line); align-items: flex-start; }
+
+/* ===== Baseline en drift (ill-bl-) ===== */
+.ill-bl-meter { display: flex; flex-direction: column; gap: 6px; }
+.ill-bl-balk { display: flex; gap: 3px; height: 12px; }
+.ill-bl-balk span { flex: 1; border-radius: 3px; background: var(--ill-ok); transition: background .2s; }
+.ill-bl-balk span.is-drift { background: var(--ill-bad); }
+.ill-bl-balk span.is-uitzondering { background: repeating-linear-gradient(45deg, var(--ill-ok) 0 4px, var(--ill-ok-soft) 4px 8px); }
+.ill-bl-sub { font-weight: 400; font-size: 14px; color: var(--ill-muted); }
+.ill-bl-sub.is-drift { color: var(--ill-bad); font-weight: 700; }
+.ill-bl-lijst { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ill-bl-rij {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px;
+  border: 1.5px solid var(--ill-line); border-left: 5px solid var(--ill-ok); background: var(--ill-surface);
+  transition: background .2s, border-color .2s;
+}
+.ill-bl-rij.is-drift { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-bl-rij.is-uitzondering { border-color: var(--ill-ok); border-style: dashed; border-left-style: solid; background: var(--ill-ok-soft); }
+.ill-bl-rij.is-nieuw.is-drift { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ill-bad) 25%, transparent); }
+.ill-bl-stip {
+  flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 12px; font-weight: 800; color: var(--mantine-color-white); background: var(--ill-ok);
+}
+.ill-bl-rij.is-drift .ill-bl-stip { background: var(--ill-bad); }
+.ill-bl-tekst { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.ill-bl-tekst small { font-size: 12.5px; color: var(--ill-muted); }
+.ill-bl-nu { font-weight: 700; color: var(--ill-bad); }
+.ill-bl-rij.is-uitzondering .ill-bl-nu { color: var(--ill-ok-text); }
+.ill-bl-label { align-self: flex-start; font-weight: 700; color: var(--ill-ok-text) !important; border: 1px solid var(--ill-ok); padding: 0 6px; border-radius: 8px; }
+.ill-bl-uitz {
+  flex: none; font: inherit; font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--ill-line); background: var(--ill-surface); color: var(--ill-fg);
+}
+.ill-bl-uitz[aria-pressed="true"] { border-color: var(--ill-ok); background: var(--ill-ok-soft); color: var(--ill-ok-text); font-weight: 700; }
+.ill-bl-uitz:disabled { opacity: .4; cursor: not-allowed; }
+@media (max-width: 480px) {
+  .ill-bl-rij { flex-wrap: wrap; }
+  .ill-bl-uitz { margin-left: 32px; }
+}
+.ill-bl-log {
+  font-family: var(--ill-mono); font-size: 12.5px; margin: 0; padding: 10px 12px; border-radius: 8px; white-space: pre-wrap;
+  background: var(--mantine-color-campaiNavy-9); color: #dce6ee; border-left: 4px solid var(--mantine-color-campaiNavy-4);
+}
+.ill-bl-log.is-drift { border-left-color: var(--mantine-color-campaiRed-4); }
+.ill-bl-log.is-toepassen { border-left-color: var(--mantine-color-campaiLime-4); }
+
+/* ===== Migratie (ill-mg-) ===== */
+.ill-mg-tl { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.ill-mg-tl li { min-width: 0; }
+.ill-mg-fase {
+  font: inherit; width: 100%; height: 100%; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 4px; border-radius: 8px; border: 1.5px solid var(--ill-line); background: var(--ill-surface); color: var(--ill-fg);
+  font-size: 12.5px; font-weight: 700; text-align: center; overflow-wrap: anywhere; transition: background .15s, border-color .15s;
+}
+.ill-mg-nr {
+  flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700;
+  background: var(--ill-accent-soft); color: var(--ill-accent);
+}
+.ill-mg-fase.is-klaar { border-color: var(--ill-ok); }
+.ill-mg-fase.is-klaar .ill-mg-nr { background: var(--ill-ok); color: var(--mantine-color-white); }
+.ill-mg-fase.is-nu { border-color: var(--ill-accent); background: var(--ill-accent-soft); }
+.ill-mg-fase.is-nu .ill-mg-nr { background: var(--ill-accent); color: var(--mantine-color-white); }
+.ill-mg-fase.is-fout { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-mg-fase.is-fout .ill-mg-nr { background: var(--ill-bad); }
+@media (max-width: 640px) { .ill-mg-tl { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ill-mg-omg { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ill-mg-box {
+  min-width: 120px; padding: 10px 14px; border-radius: 8px; border: 2px dashed var(--ill-line); background: var(--ill-surface);
+  display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 14px; color: var(--ill-muted); transition: background .2s, border-color .2s;
+}
+.ill-mg-box small { font-size: 12px; }
+.ill-mg-box.is-actief { border-style: solid; border-color: var(--ill-accent); background: var(--ill-accent-soft); color: var(--ill-fg); }
+.ill-mg-pijl { font-family: var(--ill-mono); font-size: 13px; color: var(--ill-hi); font-weight: 700; }
+.ill-mg-pijl.is-terug { color: var(--ill-bad); }
+.ill-mg-kaarten { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 640px) { .ill-mg-kaarten { grid-template-columns: 1fr; } }
+.ill-mg-kaart {
+  border: 1px solid var(--ill-line); border-radius: 8px; padding: 10px; background: var(--ill-surface);
+  display: flex; flex-direction: column; gap: 6px; align-items: flex-start; min-width: 0;
+}
+.ill-mg-kaart.is-risico { border-color: color-mix(in srgb, var(--ill-bad) 45%, var(--ill-line)); }
+.ill-mg-rollback { border: 2px solid var(--ill-bad); border-radius: 8px; padding: 10px 12px; background: var(--ill-bad-soft); display: flex; flex-direction: column; gap: 8px; }
+.ill-mg-rb { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
+.ill-mg-rb li { position: relative; display: flex; gap: 6px; align-items: flex-start; font-size: 13px; min-width: 0; }
+.ill-mg-rb li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ill-mg-rb small { font-size: 12px; color: var(--ill-fg); }
+.ill-mg-rb .ill-mg-nr { background: var(--ill-bad); color: var(--mantine-color-white); }
+.ill-mg-rb li:not(:last-child)::after { content: "→"; position: absolute; right: -14px; top: 2px; color: var(--ill-bad); font-weight: 700; }
+@media (max-width: 760px) {
+  .ill-mg-rb { grid-template-columns: 1fr; gap: 8px; }
+  .ill-mg-rb li:not(:last-child)::after { content: none; }
+}
+.ill-mg-delta { border-top: 1px solid var(--ill-line); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ill-mg-meter { height: 14px; border-radius: 7px; background: var(--ill-surface); border: 1px solid var(--ill-line); overflow: hidden; }
+.ill-mg-meter span { display: block; height: 100%; min-width: 4px; background: var(--ill-hi-strong); transition: width .3s; }

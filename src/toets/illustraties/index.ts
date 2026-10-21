@@ -12,6 +12,13 @@ import { Schalen } from "./Schalen";
 import { SubnetRekenaar } from "./SubnetRekenaar";
 import { Webverzoek } from "./Webverzoek";
 import { TaalModel } from "./TaalModel";
+import { ConditionalAccess } from "./ConditionalAccess";
+import { SharePointDelen } from "./SharePointDelen";
+import { BaselineDrift } from "./BaselineDrift";
+import { Migratie } from "./Migratie";
+import { RmmAlert } from "./RmmAlert";
+import { VoipGesprek } from "./VoipGesprek";
+import { Klantupdate } from "./Klantupdate";
 import type { IllustratieKey } from "./trefwoorden";
 
 export type { IllustratieKey } from "./trefwoorden";
@@ -27,4 +34,11 @@ export const ILLUSTRATIES: Record<IllustratieKey, { titel: string; Component: Co
   pad: { titel: "De weg van een webverzoek", Component: Webverzoek },
   ansible: { titel: "Ansible en idempotentie", Component: Ansible },
   ai: { titel: "Hoe een taalmodel antwoordt", Component: TaalModel },
+  ca: { titel: "Conditional Access: wie mag erin?", Component: ConditionalAccess },
+  delen: { titel: "Delen in SharePoint en Teams", Component: SharePointDelen },
+  baseline: { titel: "Baseline en drift", Component: BaselineDrift },
+  migratie: { titel: "Een migratie met cutover", Component: Migratie },
+  rmm: { titel: "Van monitoring-alert naar klantupdate", Component: RmmAlert },
+  voip: { titel: "Hoe een VoIP-gesprek loopt", Component: VoipGesprek },
+  klantupdate: { titel: "Een goede klantupdate", Component: Klantupdate },
 };

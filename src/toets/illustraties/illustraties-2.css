@@ -1,0 +1,140 @@
+/* src/toets/illustraties/illustraties-2.css
+   Visuele delen van RmmAlert, VoipGesprek en Klantupdate. Bouwt voort op de --ill-*-variabelen
+   uit illustraties.css; alles hangt onder .ill. */
+
+/* ---------- RmmAlert ---------- */
+.ill-rmm-keten { list-style: none; margin: 0; padding: 4px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 4px; }
+.ill-rmm-keten > li { display: flex; }
+.ill-rmm-pijl { color: var(--ill-line); font-weight: 700; font-size: 16px; transition: color .2s; }
+.ill-rmm-pijl.is-on { color: var(--ill-hi-strong); }
+.ill-rmm-pijl.is-kapot { color: var(--ill-bad); }
+.ill-rmm-stap {
+  --kl: var(--ill-accent);
+  font: inherit; position: relative; cursor: pointer; min-width: 84px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 8px 8px 6px; border-radius: 8px; border: 1.5px dashed var(--ill-line);
+  background: var(--ill-surface); color: var(--ill-muted); opacity: .6;
+  transition: border-color .2s, background .2s, transform .2s, opacity .2s;
+}
+.ill-rmm-stap.is-rmm { --kl: var(--mantine-color-campaiCyan-6); }
+.ill-rmm-stap.is-at { --kl: var(--ill-accent); }
+.ill-rmm-stap.is-itg { --kl: var(--mantine-color-campaiLime-7); }
+.ill-rmm-stap.is-eng { --kl: var(--mantine-color-orange-6); }
+.ill-rmm-stap:disabled { cursor: default; }
+.ill-rmm-stap.is-on { opacity: 1; color: var(--ill-fg); border-style: solid; border-color: var(--kl); background: color-mix(in srgb, var(--kl) 9%, var(--ill-surface)); }
+.ill-rmm-stap.is-cur { transform: translateY(-3px); box-shadow: 0 4px 0 0 color-mix(in srgb, var(--kl) 35%, transparent); }
+.ill-rmm-stap.is-dood { border-color: var(--ill-bad); opacity: .35; text-decoration: line-through; }
+.ill-rmm-stap b { font-size: 13.5px; }
+.ill-rmm-stap small { font-size: 11px; color: var(--ill-muted); }
+.ill-rmm-nr {
+  width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; background: var(--kl); color: var(--mantine-color-white); margin-bottom: 2px;
+}
+.ill-rmm-auto {
+  position: absolute; top: -8px; right: -6px; font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 6px; background: var(--ill-hi-soft); color: var(--ill-hi); border: 1px solid var(--ill-hi-strong);
+}
+.ill-rmm-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; }
+@media (max-width: 620px) { .ill-rmm-grid { grid-template-columns: 1fr; } }
+.ill-rmm-ticket {
+  border: 1.5px solid var(--ill-accent); border-radius: 8px; padding: 10px 12px; background: var(--ill-surface);
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  box-shadow: 4px 4px 0 0 var(--ill-accent-soft);
+}
+.ill-rmm-ticket.is-leeg { border-style: dashed; border-color: var(--ill-line); box-shadow: none; }
+.ill-rmm-ticketkop { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: var(--ill-muted); }
+.ill-rmm-kv { font-size: 13.5px; }
+.ill-rmm-kv dd { font-family: inherit; }
+.ill-rmm-dim { color: var(--ill-muted); font-weight: 400; font-size: 11.5px; }
+.ill-rmm-status { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12.5px; font-weight: 700; background: var(--ill-hi-soft); color: var(--ill-hi); }
+.ill-rmm-status.is-ok { background: var(--ill-ok-soft); color: var(--ill-ok-text); }
+.ill-rmm-sla { display: flex; flex-direction: column; gap: 4px; }
+.ill-rmm-slabalk { height: 10px; border-radius: 5px; background: var(--ill-line); overflow: hidden; }
+.ill-rmm-slabalk span { display: block; height: 100%; border-radius: 5px; transition: width .3s; }
+.ill-rmm-slabalk span.is-ok { background: var(--ill-ok); }
+.ill-rmm-slabalk span.is-bad { background: var(--ill-bad); }
+.ill-rmm-uitleg { min-width: 0; }
+.ill-rmm-valkuil { padding: 6px 8px; border-radius: 6px; background: var(--ill-bad-soft); font-size: 14px; }
+.ill-rmm-valkuil b { color: var(--ill-bad); }
+
+/* ---------- VoipGesprek ---------- */
+.ill-voip-alg {
+  display: block; margin-top: 4px; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 6px;
+  background: var(--ill-ok-soft); color: var(--ill-ok-text);
+}
+.ill-voip-alg.is-aan { background: var(--ill-bad); color: var(--mantine-color-white); }
+.ill-nd.ill-voip-fwalg { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-voip-stromen { display: flex; flex-direction: column; gap: 8px; }
+.ill-voip-stroom { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px; align-items: center; }
+@media (max-width: 560px) { .ill-voip-stroom { grid-template-columns: 1fr; gap: 4px; } }
+.ill-voip-label { font-size: 13.5px; line-height: 1.25; }
+.ill-voip-label small { display: block; font-size: 11px; color: var(--ill-muted); }
+.ill-voip-lijn {
+  position: relative; min-height: 26px; display: flex; align-items: center; gap: 2px; flex-wrap: nowrap;
+  padding: 4px 6px; border-radius: 13px; background: var(--ill-accent-soft); border: 1.5px solid var(--ill-accent); overflow: hidden;
+}
+.ill-voip-lijn.is-sip { border-style: dashed; background: var(--ill-surface); flex-wrap: wrap; gap: 4px; }
+.ill-voip-lijn.is-kapot { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-voip-msg { font-family: var(--ill-mono); font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--ill-hi-soft); color: var(--ill-hi); white-space: nowrap; }
+.ill-voip-msg.is-bad { background: var(--ill-bad); color: var(--mantine-color-white); white-space: normal; }
+.ill-voip-pk { flex: 1 1 0; min-width: 2px; max-width: 8px; height: 10px; border-radius: 2px; background: var(--ill-accent); transition: transform .25s, background .25s, opacity .25s; }
+.ill-voip-pk.is-terug { background: var(--ill-hi-strong); }
+.ill-voip-pk.is-weg { background: transparent; outline: 1.5px dashed var(--ill-bad); outline-offset: -1.5px; opacity: .9; }
+@media (prefers-reduced-motion: no-preference) {
+  .ill-voip-lijn:not(.is-sip):not(.is-kapot) .ill-voip-pk:not(.is-weg) { animation: ill-voip-puls 1s linear infinite; }
+  .ill-voip-lijn .ill-voip-pk:nth-child(5n+2) { animation-delay: -.2s; }
+  .ill-voip-lijn .ill-voip-pk:nth-child(5n+3) { animation-delay: -.4s; }
+  .ill-voip-lijn .ill-voip-pk:nth-child(5n+4) { animation-delay: -.6s; }
+  .ill-voip-lijn .ill-voip-pk:nth-child(5n) { animation-delay: -.8s; }
+}
+@keyframes ill-voip-puls { 50% { opacity: .45; } }
+.ill-voip-meters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 680px) { .ill-voip-meters { grid-template-columns: 1fr; } }
+.ill-voip-meter { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid var(--ill-line); border-radius: 8px; background: var(--ill-surface); min-width: 0; }
+.ill-voip-zones { display: flex; height: 6px; border-radius: 3px; overflow: hidden; }
+.ill-voip-zones .is-goed { background: var(--ill-ok); }
+.ill-voip-zones .is-matig { background: var(--mantine-color-orange-5); }
+.ill-voip-zones .is-slecht { flex: 1; background: var(--ill-bad); }
+.ill-voip-uitkomst { border-left: 4px solid var(--ill-ok); padding: 8px 12px; border-radius: 0 8px 8px 0; background: var(--ill-ok-soft); display: flex; flex-direction: column; gap: 6px; }
+.ill-voip-uitkomst.is-matig { border-left-color: var(--mantine-color-orange-6); background: color-mix(in srgb, var(--mantine-color-orange-5) 12%, var(--ill-surface)); }
+.ill-voip-uitkomst.is-slecht { border-left-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-voip-tips { margin: 0; padding-left: 18px; font-size: 14px; display: flex; flex-direction: column; gap: 3px; }
+
+/* ---------- Klantupdate ---------- */
+.ill-ku-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 14px; align-items: start; }
+@media (max-width: 620px) { .ill-ku-grid { grid-template-columns: 1fr; } }
+.ill-ku-stenen { display: flex; flex-direction: column; gap: 6px; }
+.ill-ku-steen {
+  font: inherit; font-size: 14px; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px; border: 1.5px dashed var(--ill-line); background: var(--ill-surface); color: var(--ill-muted);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.ill-ku-steen.is-on { border-style: solid; border-color: var(--ill-accent); background: var(--ill-accent-soft); color: var(--ill-fg); font-weight: 700; transform: translateX(4px); }
+.ill-ku-steen.is-sleutel:not(.is-on) { border-color: var(--ill-bad); }
+.ill-ku-vink {
+  flex: none; width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--ill-line); background: var(--ill-surface);
+}
+.ill-ku-steen.is-on .ill-ku-vink { background: var(--ill-ok); border-color: var(--ill-ok); color: var(--mantine-color-white); }
+.ill-ku-bericht { border: 1px solid var(--ill-line); border-radius: 10px; background: var(--ill-surface); overflow: hidden; min-width: 0; box-shadow: 0 2px 8px color-mix(in srgb, var(--ill-accent) 12%, transparent); }
+.ill-ku-mailkop { display: flex; gap: 10px; align-items: center; padding: 8px 12px; background: var(--ill-accent-soft); border-bottom: 1px solid var(--ill-line); }
+.ill-ku-mailkop b { display: block; font-size: 14px; }
+.ill-ku-mailkop small { display: block; font-size: 11.5px; color: var(--ill-muted); overflow-wrap: anywhere; }
+.ill-ku-avatar { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--ill-accent); color: var(--mantine-color-white); font-weight: 700; }
+.ill-ku-body { padding: 10px 12px; font-size: 14px; line-height: 1.45; }
+.ill-ku-body p { margin: 0 0 8px; }
+.ill-ku-zin { border-left: 3px solid var(--ill-hi-strong); padding-left: 8px; }
+.ill-ku-zin.is-volgende { border-left-color: var(--ill-ok); font-weight: 700; }
+.ill-ku-leeg { color: var(--ill-muted); font-style: italic; }
+.ill-ku-slot { white-space: pre-line; color: var(--ill-muted); margin-bottom: 0 !important; }
+.ill-ku-status { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 12px; border-radius: 8px; border: 1.5px solid var(--ill-line); }
+.ill-ku-status.is-compleet { border-color: var(--ill-ok); background: var(--ill-ok-soft); }
+.ill-ku-status.is-bellen { border-color: var(--ill-bad); background: var(--ill-bad-soft); }
+.ill-ku-status.is-onvolledig { border-color: var(--mantine-color-orange-5); }
+.ill-ku-vragen { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ill-ku-vraag { font-size: 13px; padding: 4px 10px; border-radius: 12px 12px 12px 2px; background: var(--ill-hi-soft); color: var(--ill-hi); }
+.ill-ku-vraag.is-bad { background: var(--ill-bad); color: var(--mantine-color-white); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ill-rmm-stap.is-cur, .ill-ku-steen.is-on { transform: none; }
+}

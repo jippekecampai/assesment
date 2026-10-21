@@ -7,7 +7,8 @@ import { Alert, Badge, Box, Button, Card, Group, List, Stack, Table, Text, Title
 import { IconArrowLeft } from "@tabler/icons-react";
 import { ackPolicy, bewaarOefenResultaat, getPolicyAcks, oefenUitleg, type OefenSet } from "../lib/api";
 import { POLICIES } from "../views/Beleid";
-import { illustratieVoor, isIllustratieKey } from "./illustraties";
+import { illustratieVoor, isIllustratieKey, type IllustratieKey } from "./illustraties";
+import { domainIntros } from "../lib/data";
 import { Illustratie } from "./illustraties/Illustratie";
 import { Toetsvraag, Voortgang } from "./Toetsvraag";
 import { UitlegChat } from "./UitlegChat";
@@ -15,8 +16,16 @@ import { UitlegChat } from "./UitlegChat";
 type Stand = { volgorde: number[]; i: number; antwoorden: Record<string, number>; gestart: boolean };
 const L = "ABCD";
 
+// Elke set begint met een uitleg: de eigen intro, of anders de beschrijving van het domein.
+const introVan = (set: OefenSet) => set.intro?.length ? set.intro : set.domein && domainIntros[set.domein] ? [domainIntros[set.domein]] : [];
+// Illustratie bij een vraag: eigen illustratie, dan trefwoorden, dan die van het onderwerp.
+function illustratieBij(set: OefenSet, v: OefenSet["vragen"][number]): IllustratieKey | null {
+  const perOnderwerp = set.illustratiePerOnderwerp?.[v.onderwerp];
+  return illustratieVoor({ prompt: v.prompt, illustratie: v.illustratie }) ?? (isIllustratieKey(perOnderwerp) ? perOnderwerp : null);
+}
+
 function laad(set: OefenSet): Stand {
-  const leeg = { volgorde: set.vragen.map((_, k) => k), i: 0, antwoorden: {}, gestart: !set.intro?.length };
+  const leeg = { volgorde: set.vragen.map((_, k) => k), i: 0, antwoorden: {}, gestart: !introVan(set).length };
   try {
     const s = JSON.parse(localStorage.getItem(`oefen.${set.id}`) || "null") as Stand | null;
     if (s && Array.isArray(s.volgorde) && s.volgorde.every((n) => n >= 0 && n < set.vragen.length)) return s;
@@ -59,8 +68,11 @@ export function OefenToets({ set, onTerug }: { set: OefenSet; onTerug: () => voi
 
   const terug = <Button variant="subtle" color="gray" leftSection={<IconArrowLeft size={16} />} onClick={onTerug} px={0} w="fit-content">Alle oefentoetsen</Button>;
 
-  if (!stand.gestart && set.intro?.length) {
-    const ill = set.vragen.map((v) => v.illustratie).find(isIllustratieKey) ?? null;
+  const intro = introVan(set);
+  if (!stand.gestart && intro.length) {
+    // De intro toont de uitleg van het domein of het eerste onderwerp; anders die van de eerste vraag.
+    const ill = Object.values(set.illustratiePerOnderwerp ?? {}).find(isIllustratieKey)
+      ?? set.vragen.map((v) => illustratieBij(set, v)).find(Boolean) ?? null;
     const nodig = POLICIES.filter((p) => set.bevestigingen?.includes(p.id));
     const open = acks === null ? nodig : nodig.filter((p) => !acks[p.id]);
     return (
@@ -69,7 +81,7 @@ export function OefenToets({ set, onTerug }: { set: OefenSet; onTerug: () => voi
         <Card withBorder radius="md" padding="lg">
           <Title order={2} fz={22} c="campaiNavy.7">{set.titel}</Title>
           <Text size="sm" c="dimmed" mt={4}>{set.omschrijving}</Text>
-          <List spacing="xs" size="sm" mt="md">{set.intro.map((t, k) => <List.Item key={k}>{t}</List.Item>)}</List>
+          <List spacing="xs" size="sm" mt="md">{intro.map((t, k) => <List.Item key={k}>{t}</List.Item>)}</List>
         </Card>
         {ill && <Illustratie k={ill} />}
         {nodig.map((p, n) => (
@@ -174,11 +186,10 @@ export function OefenToets({ set, onTerug }: { set: OefenSet; onTerug: () => voi
         gekozen={gekozen}
         onKies={kies}
         uitslag={gekozen !== null ? { juist: v.answer, uitleg: v.uitleg } : null}
-        illustratie={illustratieVoor({ prompt: v.prompt, illustratie: v.illustratie })}
+        illustratie={illustratieBij(set, v)}
         uitlegPaneel={
           <UitlegChat
             sleutel={v.id}
-            ondertitel={gekozen === null ? "verklapt het antwoord niet" : "bespreek je antwoord"}
             vraag={(tekst, history) => oefenUitleg(set.id, { vraagId: v.id, vraag: tekst, history, ...(gekozen !== null ? { gekozen } : {}) })}
           />
         }

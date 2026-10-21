@@ -15,7 +15,7 @@ const FOUT: Record<string, string> = {
   ai_not_configured: "Uitleg is nu niet beschikbaar.",
 };
 
-export function UitlegChat({ sleutel, vraag, ondertitel, plakMelding = 0 }: { sleutel: string; vraag: UitlegVraag; ondertitel: string; plakMelding?: number }) {
+export function UitlegChat({ sleutel, vraag, plakMelding = 0 }: { sleutel: string; vraag: UitlegVraag; plakMelding?: number }) {
   const [gesprekken, setGesprekken] = useState<Record<string, Bericht[]>>({});
   const [tekst, setTekst] = useState("");
   const [busy, setBusy] = useState(false);
@@ -51,10 +51,7 @@ export function UitlegChat({ sleutel, vraag, ondertitel, plakMelding = 0 }: { sl
   return (
     <Card withBorder radius="md" p="md" bg="var(--mantine-color-gray-0)">
       <Stack gap="sm">
-        <Group justify="space-between" align="baseline">
-          <Text size="sm" fw={700} c="campaiNavy.7">Uitleg vragen</Text>
-          <Text size="xs" c="dimmed">{ondertitel}</Text>
-        </Group>
+        <Text size="sm" fw={700} c="campaiNavy.7">Uitleg vragen</Text>
         {berichten.map((b, i) => (
           <Box
             key={i}

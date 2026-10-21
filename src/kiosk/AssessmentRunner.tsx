@@ -131,7 +131,6 @@ export function AssessmentRunner({ code, data, onDone }: { code: string; data: S
           uitlegPaneel={uitlegHier ? (
             <UitlegChat
               sleutel={q.id}
-              ondertitel="je krijgt uitleg, nooit het antwoord"
               plakMelding={toezicht.plakMelding}
               vraag={(tekst, history) => vraagUitleg(code, q.id, tekst, history)}
             />

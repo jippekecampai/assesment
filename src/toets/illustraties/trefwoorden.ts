@@ -3,7 +3,7 @@
 // Volgorde telt: de specifiekste onderwerpen eerst. Trefwoorden zijn bewust smal gehouden;
 // algemene woorden als "cloud", "poort" of "regio" alleen matchen met kwalificatie ernaast.
 
-export const ILLUSTRATIE_KEYS = ["cloud", "osi", "subnet", "scale", "lb", "rto", "pad", "ansible", "ai"] as const;
+export const ILLUSTRATIE_KEYS = ["cloud", "osi", "subnet", "scale", "lb", "rto", "pad", "ansible", "ai", "ca", "delen", "baseline", "migratie", "rmm", "voip", "klantupdate"] as const;
 export type IllustratieKey = (typeof ILLUSTRATIE_KEYS)[number];
 
 export function isIllustratieKey(x: unknown): x is IllustratieKey {
@@ -11,6 +11,12 @@ export function isIllustratieKey(x: unknown): x is IllustratieKey {
 }
 
 const REGELS: Array<[IllustratieKey, RegExp]> = [
+  ["ca", /conditional access|voorwaardelijke toegang|MFA|legacy[- ]auth/i],
+  ["voip", /VoIP|SIP|jitter|eenrichtingsgeluid|SIP ALG/i],
+  ["baseline", /baseline|Inforcer|drift/i],
+  ["rmm", /Datto RMM|RMM|Autotask|IT Glue/i],
+  ["migratie", /migrati|cutover|delta[- ]sync/i],
+  ["delen", /delen met|externe deling|gasttoegang|oversharing|deellink|iedereen met de link/i],
   ["ai", /taalmodel|Copilot|ChatGPT|generatieve AI|hallucin|AI-tool|chatbot/i],
   ["ansible", /\bansible\b|playbook|inventory\.ini|\binventory\b|idempoten|changed=\d/i],
   ["subnet", /subnetmasker|subnet ?mask|\/(?:2[4-9]|30)\b|broadcast|netwerkadres|bruikbare host|hostadressen|hetzelfde[^.?]{0,30}subnet|subnetten (?:rekenen|indelen)/i],

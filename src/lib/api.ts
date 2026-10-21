@@ -104,7 +104,7 @@ export const besluitVoiceKaart = (id: string, status: "goedgekeurd" | "afgekeurd
 // Oefentoetsen (lib/oefenen.mjs)
 export type OefenVraag = { id: string; onderwerp: string; prompt: string; options: string[]; answer: number; uitleg: string; illustratie?: string };
 export type OefenSetMeta = { id: string; titel: string; omschrijving: string; aantal: number; soort: "vast" | "domein"; domein?: string; slaaggrens?: number };
-export type OefenSet = Omit<OefenSetMeta, "aantal" | "soort"> & { onderwerpen: Record<string, string>; intro?: string[]; bevestigingen?: string[]; vragen: OefenVraag[] };
+export type OefenSet = Omit<OefenSetMeta, "aantal" | "soort"> & { onderwerpen: Record<string, string>; intro?: string[]; bevestigingen?: string[]; illustratiePerOnderwerp?: Record<string, string>; vragen: OefenVraag[] };
 export const listOefenSets = () => get<OefenSetMeta[]>("/api/oefen/sets");
 export const getOefenSet = (id: string) => get<OefenSet>(`/api/oefen/sets/${encodeURIComponent(id)}`);
 export const oefenUitleg = (setId: string, input: { vraagId: string; vraag: string; history: UitlegTurn[]; gekozen?: number }) =>
