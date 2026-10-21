@@ -298,7 +298,7 @@ export function MedewerkerOverview({ onOpenAcademy }: { onOpenAcademy: () => voi
         <SimpleGrid cols={{ base: 1, md: 3 }} spacing="md">
           <OverviewCard icon={<IconTargetArrow size={18} />} title="Ontwikkeling" text="Doelen, blockers en voortgang horen bij medewerkerontwikkeling, niet bij recruitment." />
           <OverviewCard icon={<IconBook2 size={18} />} title="Skills Academy" text="Leren, oefenen en toetsen op MSP-domeinen. Hier bouwt de medewerker bewijs en XP op." />
-          <OverviewCard icon={<IconUserCircle size={18} />} title="Profiel" text="Naam, rol en afdeling komen uit SSO. Geen Lotte/Daan/Noa als medewerkerbron." />
+          <OverviewCard icon={<IconUserCircle size={18} />} title="Profiel" text="Je naam, functie en afdeling komen uit je Campai-account." />
         </SimpleGrid>
       </Stack>
     </>

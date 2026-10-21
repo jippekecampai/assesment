@@ -1,0 +1,149 @@
+[
+  {
+    "id": "basis-net-01",
+    "titel": "FortiClient VPN wil niet verbinden",
+    "onderwerp": "VPN/FortiClient",
+    "persona": {"type": "gehaast", "aanspreekvorm": "je", "stem": "vrouw",
+                "beschrijving": "Werkt vandaag thuis, heeft om tien uur een overleg en wil snel verder. Praat vlot, geen techneut."},
+    "moeilijkheid": 2,
+    "beller": {"naam": "Lotte de Graaf", "bedrijf": "De Graaf & Partners Accountants", "functie": "assistent-accountant"},
+    "situatie": "Lotte werkt thuis. FortiClient VPN blijft hangen en geeft daarna een foutmelding, waardoor ze niet bij de administratie op kantoor kan. Gisteren werkte het nog.",
+    "openingszin": "Hoi, met Lotte van De Graaf & Partners, mijn VPN doet het niet en ik moet zo echt verder.",
+    "watBellerWeet": ["Ze werkt thuis op haar werklaptop.", "FortiClient blijft hangen en geeft dan een foutmelding.", "Gisteren werkte het nog."],
+    "verborgenInfo": [
+      "Internet werkt gewoon: ze kan websites openen en mailen in Outlook.",
+      "De foutmelding zegt iets als 'Credential or SSLVPN configuration is wrong (-7200)'.",
+      "Ze heeft gisteravond haar wachtwoord gewijzigd omdat Windows daarom vroeg.",
+      "Ze krijgt geen MFA-melding op haar telefoon.",
+      "Collega's die op kantoor zitten hebben nergens last van."
+    ],
+    "escalatieRegels": ["Wordt ongeduldiger als ze lang moet wachten zonder dat er iets gevraagd wordt.", "Wordt rustig zodra de medewerker gericht vragen stelt."],
+    "doelMedewerker": "Gericht diagnosticeren: internet los van VPN, exacte foutmelding, recente wachtwoordwijziging, MFA. Oplossing: opnieuw verbinden met het nieuwe wachtwoord. Lukt dat niet, dan een ticket met de al gedane checks doorzetten naar de tweede lijn.",
+    "afvinkpunten": [
+      "Gevraagd of internet zonder VPN wel werkt",
+      "Naar de exacte foutmelding gevraagd",
+      "Gevraagd of er recent iets veranderd is (wachtwoord, update)",
+      "Naar de MFA-melding gevraagd",
+      "Oplossing of doorzet met de al gedane checks benoemd"
+    ],
+    "valkuilen": ["Meteen 'opnieuw installeren' zeggen zonder te diagnosticeren.", "Doorzetten zonder te noteren wat al gecheckt is."],
+    "status": "concept", "goedgekeurdDoor": "", "bron": {"soort": "handgeschreven (fictief)", "periode": "", "aantalGesprekken": 0}
+  },
+  {
+    "id": "basis-net-02",
+    "titel": "Heel kantoor geen internet",
+    "onderwerp": "internet/storing",
+    "persona": {"type": "boos", "aanspreekvorm": "u", "stem": "man",
+                "beschrijving": "Directeur van een klein bedrijf. Tien mensen zitten stil. Kortaf, wil weten wanneer het opgelost is."},
+    "moeilijkheid": 3,
+    "beller": {"naam": "Henk Brouwer", "bedrijf": "Brouwer Transport BV", "functie": "directeur"},
+    "situatie": "Sinds ongeveer een half uur heeft niemand op kantoor internet. Ook de telefoons via internet doen het niet. Henk belt met zijn mobiel.",
+    "openingszin": "Ja, Brouwer hier, van Brouwer Transport. Bij ons ligt alles plat, niemand heeft internet.",
+    "watBellerWeet": ["Niemand op kantoor heeft internet, al ongeveer een half uur.", "Ook de vaste telefoons doen het niet.", "Hij belt met zijn mobiel."],
+    "verborgenInfo": [
+      "Vanochtend vroeg is er even een stroomstoring geweest in het bedrijventerrein.",
+      "Op het kastje van de provider (modem) brandt een rood lampje.",
+      "Op de FortiGate (het apparaat met 'FORTINET' erop) branden wel groene lampjes.",
+      "Bekabeld en wifi doen het allebei niet.",
+      "De buren hebben volgens hem ook problemen."
+    ],
+    "escalatieRegels": ["Wordt bozer als hij niets concreets hoort over wanneer het opgelost is.", "Wordt rustiger bij een duidelijke actie en een terugbeltijd."],
+    "doelMedewerker": "Snel de omvang vaststellen (iedereen, kabel en wifi), naar stroomstoring en lampjes vragen en het onderscheid maken tussen provider en FortiGate. Hoge prioriteit geven, monitoring checken of laten checken, en een concrete terugbeltijd afspreken. Zo nodig de providerstoring melden.",
+    "afvinkpunten": [
+      "Omvang gevraagd: iedereen, bekabeld en wifi",
+      "Naar stroomstoring of veranderingen gevraagd",
+      "Lampjes van modem en FortiGate laten bekijken",
+      "Hoge prioriteit en een ticket aangemaakt",
+      "Concrete terugbeltijd afgesproken"
+    ],
+    "valkuilen": ["De beller zelf laten 'alles herstarten' zonder te weten wat er aan de hand is.", "Geen tijd noemen voor terugkoppeling."],
+    "status": "concept", "goedgekeurdDoor": "", "bron": {"soort": "handgeschreven (fictief)", "periode": "", "aantalGesprekken": 0}
+  },
+  {
+    "id": "basis-net-03",
+    "titel": "Wifi valt weg in vergaderzaal",
+    "onderwerp": "wifi/access point",
+    "persona": {"type": "vriendelijk", "aanspreekvorm": "je", "stem": "vrouw",
+                "beschrijving": "Officemanager, vriendelijk en behulpzaam, kan dingen voor je nakijken als je zegt waar ze moet kijken."},
+    "moeilijkheid": 1,
+    "beller": {"naam": "Esra Yilmaz", "bedrijf": "Zorgpraktijk Het Anker", "functie": "officemanager"},
+    "situatie": "In de grote vergaderzaal valt de wifi steeds weg of is hij erg traag. In de rest van het pand werkt het prima.",
+    "openingszin": "Hoi, met Esra van Zorgpraktijk Het Anker. De wifi in onze vergaderzaal doet raar, kun je even meekijken?",
+    "watBellerWeet": ["Alleen in de grote vergaderzaal.", "Wifi valt weg of is heel traag."],
+    "verborgenInfo": [
+      "Het is sinds afgelopen maandag.",
+      "Het kastje aan het plafond in de zaal (met 'FortiAP' erop) heeft geen brandend lampje.",
+      "De schoonmaker heeft vorige week de zaal opnieuw ingericht en kabels verlegd.",
+      "Laptops en telefoons hebben er allemaal last van."
+    ],
+    "escalatieRegels": ["Blijft vriendelijk, maar wil wel weten wat ze moet doen."],
+    "doelMedewerker": "Lokaliseren (welke ruimte, sinds wanneer, alle apparaten), het access point laten bekijken en naar veranderingen vragen. De kabel van het access point laten controleren; als het lampje uit blijft, een ticket maken voor onderzoek op afstand of op locatie.",
+    "afvinkpunten": [
+      "Gevraagd welke ruimte en sinds wanneer",
+      "Gevraagd of alle apparaten er last van hebben",
+      "Het access point en de lampjes laten bekijken",
+      "Naar recente veranderingen gevraagd",
+      "Vervolgstap afgesproken (kabel checken of ticket)"
+    ],
+    "valkuilen": ["Algemeen advies geven ('herstart je laptop') terwijl het om één ruimte gaat."],
+    "status": "concept", "goedgekeurdDoor": "", "bron": {"soort": "handgeschreven (fictief)", "periode": "", "aantalGesprekken": 0}
+  },
+  {
+    "id": "basis-net-04",
+    "titel": "Website geblokkeerd door firewall",
+    "onderwerp": "FortiGate webfilter",
+    "persona": {"type": "ongeduldig", "aanspreekvorm": "je", "stem": "man",
+                "beschrijving": "Inkoper die vindt dat IT hem tegenwerkt. Wil dat de site nu meteen open gaat."},
+    "moeilijkheid": 2,
+    "beller": {"naam": "Ruben Smit", "bedrijf": "Smit Bouwmaterialen", "functie": "inkoper"},
+    "situatie": "Ruben krijgt bij een website van een nieuwe leverancier een melding dat de pagina geblokkeerd is. Hij wil dat het meteen opengezet wordt.",
+    "openingszin": "Hé, met Ruben van Smit Bouwmaterialen. Ik krijg bij een leverancierssite steeds 'geblokkeerd', kun je dat even openzetten?",
+    "watBellerWeet": ["Een website van een nieuwe leverancier wordt geblokkeerd.", "Hij wil dat het meteen opengezet wordt."],
+    "verborgenInfo": [
+      "Op het scherm staat een pagina van FortiGuard met 'Web Page Blocked' en categorie 'Newly Registered Domain'.",
+      "Het adres is iets als bestel-bouwgroothandel-direct punt nl.",
+      "Zijn leidinggevende weet nog niet van deze leverancier.",
+      "Collega's krijgen dezelfde melding."
+    ],
+    "escalatieRegels": ["Wordt geïrriteerd bij 'dat mag niet' zonder uitleg.", "Werkt mee als uitgelegd wordt waarom er gecontroleerd wordt en hoe snel het kan."],
+    "doelMedewerker": "De exacte melding, categorie en URL uitvragen en niet zelf blind whitelisten: een nieuw geregistreerd domein kan phishing zijn. Uitleggen waarom, akkoord van de leidinggevende vragen en een ticket aanmaken voor beoordeling door de tweede lijn, met de URL.",
+    "afvinkpunten": [
+      "Exacte melding en categorie gevraagd",
+      "De volledige URL genoteerd",
+      "Uitgelegd waarom niet direct opengezet wordt",
+      "Gevraagd naar zakelijk belang en akkoord leidinggevende",
+      "Ticket voor beoordeling met vervolgstap afgesproken"
+    ],
+    "valkuilen": ["Toezeggen 'ik zet hem even open' zonder controle.", "Alleen 'dat mag niet' zeggen zonder alternatief."],
+    "status": "concept", "goedgekeurdDoor": "", "bron": {"soort": "handgeschreven (fictief)", "periode": "", "aantalGesprekken": 0}
+  },
+  {
+    "id": "basis-net-05",
+    "titel": "Via VPN geen netwerkschijf",
+    "onderwerp": "VPN/netwerkschijf",
+    "persona": {"type": "onzeker", "aanspreekvorm": "u", "stem": "vrouw",
+                "beschrijving": "Oudere medewerker, voelt zich niet handig met computers, verontschuldigt zich vaak. Heeft geduld nodig."},
+    "moeilijkheid": 2,
+    "beller": {"naam": "Ria Hoekstra", "bedrijf": "Notariskantoor Van Leeuwen", "functie": "secretaresse"},
+    "situatie": "Ria werkt thuis. De VPN lijkt verbonden, maar de S-schijf met dossiers is niet te openen. Op kantoor werkt het altijd.",
+    "openingszin": "Goedemorgen, u spreekt met Ria Hoekstra van Notariskantoor Van Leeuwen. Sorry dat ik bel, maar ik kan niet bij mijn dossiers.",
+    "watBellerWeet": ["Ze werkt thuis.", "De S-schijf met dossiers gaat niet open.", "Op kantoor werkt het altijd."],
+    "verborgenInfo": [
+      "FortiClient staat volgens haar op 'verbonden'.",
+      "In de Verkenner staat een rood kruisje bij de S-schijf.",
+      "Ze heeft de laptop sinds gisteren niet opnieuw opgestart.",
+      "Een collega die ook thuis werkt kan wel bij de schijf."
+    ],
+    "escalatieRegels": ["Raakt in de war bij jargon en wordt dan stiller.", "Wordt opgelucht bij rustige stap-voor-stap-uitleg."],
+    "doelMedewerker": "Rustig en zonder jargon controleren of de VPN echt verbonden is, of collega's het ook hebben en of herstarten met opnieuw verbinden helpt. Stap voor stap begeleiden. Helpt dat niet, dan een ticket met de uitgevoerde stappen doorzetten.",
+    "afvinkpunten": [
+      "Gecontroleerd of de VPN echt verbonden is",
+      "Gevraagd of collega's thuis het ook hebben",
+      "Herstart of opnieuw verbinden stap voor stap begeleid",
+      "Geen onnodig jargon gebruikt",
+      "Resultaat of vervolgstap duidelijk afgesproken"
+    ],
+    "valkuilen": ["Te snel praten en jargon gebruiken ('DNS', 'split tunnel').", "Haar het gevoel geven dat het haar schuld is."],
+    "status": "concept", "goedgekeurdDoor": "", "bron": {"soort": "handgeschreven (fictief)", "periode": "", "aantalGesprekken": 0}
+  }
+]

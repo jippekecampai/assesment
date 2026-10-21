@@ -74,6 +74,33 @@ export type ToezichtSamenvatting = {
 export type Toezicht = { events: ToezichtEvent[]; samenvatting: ToezichtSamenvatting | null };
 export const getToezicht = (id: string) => get<Toezicht>(`/api/candidates/${encodeURIComponent(id)}/toezicht`);
 
+// Voice training (lib/voice.mjs)
+export type VoiceScenario = {
+  id: string; titel: string; onderwerp: string; moeilijkheid?: number; situatie: string; afvinkpunten: string[];
+  persona: { type: string; stem: "vrouw" | "man"; beschrijving: string; aanspreekvorm: string };
+  beller: { naam: string; bedrijf: string; functie: string };
+  instructies: Record<string, string>;
+};
+export type VoiceAanbod = { beschikbaar: boolean; terugblik: boolean; verlopen: Record<string, number>; scenarios: VoiceScenario[] };
+export type Terugblik = {
+  kern: string; voorbeeldzin: string;
+  goed: { punt: string; citaat: string }[];
+  aandacht: { punt: string; citaat: string; beter: string }[];
+  afvinkpunten: { punt: string; status: "ja" | "nee" | "niet van toepassing" }[];
+};
+export type VoiceKaart = {
+  id: string; titel: string; onderwerp: string; situatie: string; afvinkpunten: string[]; valkuilen?: string[];
+  persona: { type: string }; beller: { naam: string; bedrijf: string; functie: string };
+  status: "concept" | "goedgekeurd" | "afgekeurd"; geimporteerdOp: string; besluitDoor?: string | null; besluitOp?: string | null;
+};
+export const getVoiceAanbod = () => get<VoiceAanbod>("/api/voice/scenarios");
+export const maakTerugblik = (input: { titel: string; verloop: string; afvinkpunten: string[]; transcript: { wie: string; tekst: string }[] }) =>
+  post<Terugblik>("/api/voice/terugblik", input);
+export const listVoiceKaarten = () => get<VoiceKaart[]>("/api/voice/kaarten");
+export const importVoiceKaarten = (kaarten: unknown) => post<{ toegevoegd: number; overgeslagen: number }>("/api/voice/kaarten", { kaarten });
+export const besluitVoiceKaart = (id: string, status: "goedgekeurd" | "afgekeurd") =>
+  post<{ id: string; status: string }>(`/api/voice/kaarten/${encodeURIComponent(id)}/besluit`, { status });
+
 export type ArtifactApp = { slug: string; titel: string; omschrijving: string };
 export const listApps = () => get<ArtifactApp[]>("/api/apps");
 

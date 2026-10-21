@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-21 — v2.1: rustiger indeling en voice training
+
+- **Navigatie:** twee werkplekken. Recruitment (Sollicitanten, Beoordelen, Vragenbank) en Training (Oefenen, Mijn voortgang), plus Management (Performance loop) en Beheer los onderaan. Was 10 items in 4 groepen.
+- **Kopbalk:** zoeken alleen bij Beoordelen en Vragenbank; de knop "Rapport exporteren" (zonder functie) is weg.
+- **Mijn voortgang:** overzicht en Skills Academy als twee tabbladen van één plek.
+- **Beheer:** rollen & cijfers, beleid en voice-scenario's als tabbladen; technische details (registraties, app-model, lokale opslag, regels) standaard ingeklapt.
+- **Voice training (Oefenen → Telefoongesprek):** de Oefenlijn uit VoiceAI. De browser praat met `/api/voice/live`; de server geeft het gesprek door aan Azure Voice Live (EU Data Zone) met de sleutel, die nooit in de browser komt. Terugblik via gpt-5.5-eu (EU Data Zone), alleen voor de medewerker zelf, zonder cijfers. Server bewaart geen audio, transcript of terugblik.
+- **Voice-scenario's:** vijf fictieve basiskaarten altijd; kaarten uit echte gesprekken importeren in Beheer en pas na goedkeuring aangeboden. Die kaarten staan in de opslag van de site, nooit in deze repo.
+
 ## 2026-10-21 — v2: toezicht, uitleg en training achter SSO
 
 - **Kandidaattest (/test):** startscherm met spelregels, volledig scherm, weggaan vastleggen en melden ("ik zag dat je even weg was"), plakken/kopiëren geblokkeerd, bevestigen bij inleveren in de pagina.

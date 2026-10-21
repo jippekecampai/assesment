@@ -19,6 +19,8 @@ import { createQuestionBank } from './lib/question-bank.mjs';
 import { createFlagStore } from './lib/flag-store.mjs';
 import { generateQuestions, chat, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
 import { ARTIFACTS, loadArtifactPage, createRateLimiter, toMessages } from './lib/artifacts.mjs';
+import { createVoiceStore, oefenKaarten, importeer, besluit, maakTerugblik, voiceConfigured, terugblikConfigured, voiceLiveUrl, VERLOPEN } from './lib/voice.mjs';
+import { WebSocketServer, WebSocket } from 'ws';
 import { recordEvents, canSeeLogboek } from './lib/toezicht.mjs';
 import { explain, UITLEG_MAX, UITLEG_UIT_DOMEINEN } from './lib/uitleg.mjs';
 
@@ -33,6 +35,8 @@ const goalsStore = createGoalsStore({ filePath: join(root, 'data', 'goals.json')
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
 const artifactAiLimit = createRateLimiter({ max: 60 }); // AI-vragen per medewerker per uur vanuit artifacts
+const voiceStore = createVoiceStore({ filePath: join(root, 'data', 'voice-kaarten.json') });
+const terugblikLimit = createRateLimiter({ max: 30 }); // terugblikken per medewerker per uur
 function requireStaff(request, response) {
   if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
     sendJson(response, 401, { error: 'auth_required' }); return false;
@@ -462,6 +466,43 @@ async function handleApi(request, response, url) {
     return true;
   }
 
+  // Voice training (lib/voice.mjs): alleen na SSO-login.
+  if (url.pathname === '/api/voice/scenarios' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, { beschikbaar: voiceConfigured(), terugblik: terugblikConfigured(), verlopen: Object.fromEntries(Object.entries(VERLOPEN).map(([v, [kans]]) => [v, kans])), scenarios: await oefenKaarten(voiceStore) });
+    return true;
+  }
+  if (url.pathname === '/api/voice/kaarten' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    const lijst = (await voiceStore.list()).map(({ id, titel, onderwerp, persona, beller, situatie, afvinkpunten, valkuilen, status, bron, geimporteerdOp, goedgekeurdDoor, besluitDoor, besluitOp }) => ({ id, titel, onderwerp, persona, beller, situatie, afvinkpunten, valkuilen, status, bron, geimporteerdOp, goedgekeurdDoor, besluitDoor, besluitOp }));
+    sendJson(response, 200, lijst.sort((a, b) => String(b.geimporteerdOp).localeCompare(String(a.geimporteerdOp)))); return true;
+  }
+  if (url.pathname === '/api/voice/kaarten' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const identity = readIdentity(request);
+    sendJson(response, 200, await importeer(voiceStore, (await readRequestBody(request)).kaarten, identity.email || identity.name)); return true;
+  }
+  const vk = url.pathname.match(/^\/api\/voice\/kaarten\/([^/]+)\/besluit$/);
+  if (vk && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    const identity = readIdentity(request);
+    try {
+      const k = await besluit(voiceStore, decodeURIComponent(vk[1]), (await readRequestBody(request)).status, identity.email || identity.name);
+      if (!k) { sendJson(response, 404, { error: 'not_found' }); return true; }
+      sendJson(response, 200, { id: k.id, status: k.status });
+    } catch { sendJson(response, 400, { error: 'ongeldige_status' }); }
+    return true;
+  }
+  if (url.pathname === '/api/voice/terugblik' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    if (!terugblikConfigured()) { sendJson(response, 503, { fout: 'terugblik niet ingesteld' }); return true; }
+    const identity = readIdentity(request);
+    if (!terugblikLimit(identity.email || identity.name)) { sendJson(response, 429, { fout: 'te veel terugblikken dit uur' }); return true; }
+    try { sendJson(response, 200, await maakTerugblik(await readRequestBody(request))); }
+    catch (e) { console.error('voice/terugblik fout:', e.message); sendJson(response, 502, { fout: 'terugblik mislukt' }); }
+    return true;
+  }
+
   // Toezicht (kandidaat, zonder Entra-login; staat bij Easy Auth in excludedPaths net als start/submit).
   if (url.pathname === '/api/assessment/event' && request.method === 'POST') {
     const body = await readRequestBody(request);
@@ -589,7 +630,7 @@ function serveFile(response, filePath) {
   createReadStream(filePath).pipe(response);
 }
 
-createServer(async (request, response) => {
+const httpServer = createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://${host}:${port}`);
   if (url.pathname.startsWith("/api/") && await handleApi(request, response, url)) return;
 
@@ -622,6 +663,39 @@ createServer(async (request, response) => {
   }
 
   serveFile(response, join(distDir, "index.html"));
-}).listen(port, host, () => {
+});
+
+// Voice Live-doorgifte: de browser opent /api/voice/live (achter Easy Auth, dus alleen na SSO), de server
+// verbindt met Azure Voice Live mét de sleutel en geeft berichten in beide richtingen door. Niets wordt bewaard.
+// Eén gesprek per medewerker tegelijk, hooguit 15 minuten.
+const voiceWss = new WebSocketServer({ noServer: true, maxPayload: 4 * 1024 * 1024 });
+const actieveGesprekken = new Set();
+httpServer.on("upgrade", (request, socket, head) => {
+  const url = new URL(request.url || "/", `http://${host}:${port}`);
+  if (url.pathname !== "/api/voice/live") { socket.destroy(); return; }
+  const wie = readIdentity(request);
+  if ((!request.headers["x-ms-client-principal"] && !process.env.AUTH_DEV_MODE) || !voiceConfigured() || actieveGesprekken.has(wie.email)) {
+    socket.write("HTTP/1.1 403 Forbidden\r\n\r\n"); socket.destroy(); return;
+  }
+  voiceWss.handleUpgrade(request, socket, head, (browser) => {
+    actieveGesprekken.add(wie.email);
+    const azure = new WebSocket(`${voiceLiveUrl()}&api-key=${encodeURIComponent(process.env.VOICE_LIVE_KEY)}`);
+    const wachtrij = [];
+    const stop = () => { clearTimeout(limiet); actieveGesprekken.delete(wie.email); try { browser.close(); } catch {} try { azure.close(); } catch {} };
+    const limiet = setTimeout(stop, 15 * 60 * 1000);
+    browser.on("message", (data, isBinary) => {
+      if (azure.readyState === WebSocket.OPEN) azure.send(data, { binary: isBinary });
+      else if (azure.readyState === WebSocket.CONNECTING && wachtrij.length < 200) wachtrij.push([data, isBinary]);
+    });
+    azure.on("open", () => { for (const [d, b] of wachtrij.splice(0)) azure.send(d, { binary: b }); });
+    azure.on("message", (data, isBinary) => { if (browser.readyState === WebSocket.OPEN) browser.send(data, { binary: isBinary }); });
+    azure.on("error", (e) => { console.error("voice live fout:", e.message); stop(); });
+    azure.on("close", stop);
+    browser.on("close", stop);
+    browser.on("error", stop);
+  });
+});
+
+httpServer.listen(port, host, () => {
   console.log(`Campai Assessment running at http://${host}:${port}`);
 });

@@ -1,13 +1,12 @@
-// src/views/Training.tsx
+// src/views/Oefentoetsen.tsx
 // Artifacts uit claude.ai die hier achter SSO draaien (lib/artifacts.mjs). De pagina opent in een frame;
 // "Openen in nieuw tabblad" geeft hem het hele scherm.
 import { useEffect, useState } from "react";
 import { Anchor, Box, Button, Card, Group, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 import { listApps, type ArtifactApp } from "../lib/api";
-import { ViewHead } from "./_shared";
 
-export function Training() {
+export function Oefentoetsen() {
   const [apps, setApps] = useState<ArtifactApp[] | null>(null);
   const [open, setOpen] = useState<string | null>(null);
 
@@ -19,11 +18,6 @@ export function Training() {
 
   return (
     <Stack gap="lg">
-      <ViewHead mode="academy" banner="oefenen" title="Training">
-        Oefenmateriaal voor medewerkers. De uitleg in deze oefeningen loopt via het AI-model van deze site; je
-        hebt er geen Claude-account voor nodig.
-      </ViewHead>
-
       {apps && apps.length === 0 && <Text c="dimmed" size="sm">Nog geen oefeningen beschikbaar.</Text>}
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>

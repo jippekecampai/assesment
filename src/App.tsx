@@ -1,54 +1,29 @@
 import { useState } from "react";
-import {
-  AppShell,
-  Box,
-  Burger,
-  Button,
-  Group,
-  NavLink,
-  ScrollArea,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { AppShell, Box, Burger, Divider, Group, NavLink, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
-  IconBook2,
-  IconBriefcase,
   IconClipboardList,
-  IconDownload,
   IconFileText,
-  IconSchool,
+  IconHeadset,
   IconSearch,
   IconSettings,
-  IconShieldCheck,
   IconTargetArrow,
-  IconUserCircle,
+  IconTrendingUp,
   IconUserPlus,
   type Icon,
 } from "@tabler/icons-react";
 
 import { Reviewdashboard } from "./views/Reviewdashboard";
 import { Vragenfabriek } from "./views/Vragenfabriek";
-import { SkillsAcademy } from "./views/SkillsAcademy";
 import { Performanceloop } from "./views/Performanceloop";
-import { MedewerkerOverview } from "./views/MedewerkerOverview";
-import { Beleid } from "./views/Beleid";
-import { Beheer } from "./views/Beheer";
 import { Sollicitanten } from "./views/Sollicitanten";
-import { Training } from "./views/Training";
+import { Oefenen } from "./views/Oefenen";
+import { MijnVoortgang } from "./views/MijnVoortgang";
+import { Instellingen } from "./views/Instellingen";
 import campaiLogo from "./assets/campai-logo.svg";
 
-export type ViewId =
-  | "employeeOverview"
-  | "academy"
-  | "training"
-  | "performance"
-  | "sollicitanten"
-  | "candidateReviews"
-  | "questions"
-  | "governance"
-  | "admin";
+// Twee werkplekken: Recruitment (sollicitanten beoordelen) en Training (zelf oefenen). Beheer staat los onderaan.
+export type ViewId = "sollicitanten" | "candidateReviews" | "questions" | "oefenen" | "voortgang" | "performance" | "beheer";
 
 interface NavEntry {
   id: ViewId;
@@ -58,50 +33,51 @@ interface NavEntry {
 }
 
 const navEntries: NavEntry[] = [
-  { id: "employeeOverview", label: "Mijn overview", icon: IconUserCircle, group: "Medewerker" },
-  { id: "academy", label: "Skills Academy", icon: IconBook2, group: "Medewerker" },
-  { id: "training", label: "Training", icon: IconSchool, group: "Medewerker" },
-  { id: "performance", label: "Performance loop", icon: IconTargetArrow, group: "Management" },
   { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
-  { id: "candidateReviews", label: "Kandidaat reviews", icon: IconClipboardList, group: "Recruitment" },
+  { id: "candidateReviews", label: "Beoordelen", icon: IconClipboardList, group: "Recruitment" },
   { id: "questions", label: "Vragenbank", icon: IconFileText, group: "Recruitment" },
-  { id: "governance", label: "Beleid", icon: IconShieldCheck, group: "Governance" },
-  { id: "admin", label: "Beheer", icon: IconSettings, group: "Governance" },
+  { id: "oefenen", label: "Oefenen", icon: IconHeadset, group: "Training" },
+  { id: "voortgang", label: "Mijn voortgang", icon: IconTrendingUp, group: "Training" },
+  { id: "performance", label: "Performance loop", icon: IconTargetArrow, group: "Management" },
 ];
 
-const viewTitles: Record<ViewId, string> = {
-  employeeOverview: "Mijn overview",
-  academy: "Skills Academy",
-  training: "Training",
-  performance: "Performance loop",
-  sollicitanten: "Sollicitanten",
-  candidateReviews: "Kandidaat reviews",
-  questions: "Vragenbank",
-  governance: "Beleid",
-  admin: "Beheer",
+const groupOrder = ["Recruitment", "Training", "Management"];
+
+// Zoeken staat alleen boven de schermen die er iets mee doen.
+const zoekPlaceholder: Partial<Record<ViewId, string>> = {
+  candidateReviews: "Zoek een kandidaat of functie",
+  questions: "Zoek in de vragen",
 };
 
-const groupOrder = ["Medewerker", "Management", "Recruitment", "Governance"];
-
 export function App() {
-  const [view, setView] = useState<ViewId>("employeeOverview");
+  const [view, setView] = useState<ViewId>("sollicitanten");
   const [search, setSearch] = useState("");
-  const [mobileNavOpened, { toggle: toggleMobileNav, close: closeMobileNav }] =
-    useDisclosure(false);
+  const [mobileNavOpened, { toggle: toggleMobileNav, close: closeMobileNav }] = useDisclosure(false);
 
   const openView = (next: ViewId) => {
     setView(next);
+    setSearch("");
     closeMobileNav();
   };
+  const placeholder = zoekPlaceholder[view];
+
+  const navLink = (entry: { id: ViewId; label: string; icon: Icon }) => (
+    <NavLink
+      key={entry.id}
+      active={view === entry.id}
+      label={entry.label}
+      leftSection={<entry.icon size={18} stroke={1.6} />}
+      color="campaiNavy"
+      variant="filled"
+      styles={{ root: { borderRadius: 10 } }}
+      onClick={() => openView(entry.id)}
+    />
+  );
 
   return (
     <AppShell
-      header={{ height: 96 }}
-      navbar={{
-        width: 280,
-        breakpoint: "sm",
-        collapsed: { mobile: !mobileNavOpened },
-      }}
+      header={{ height: 80 }}
+      navbar={{ width: 240, breakpoint: "sm", collapsed: { mobile: !mobileNavOpened } }}
       padding="lg"
       styles={{
         main: { background: "var(--mantine-color-gray-0)" },
@@ -112,77 +88,54 @@ export function App() {
       <AppShell.Header>
         <Group h="100%" px="lg" justify="space-between" wrap="nowrap" gap="md">
           <Group gap="sm" wrap="nowrap">
-            <Burger
-              opened={mobileNavOpened}
-              onClick={toggleMobileNav}
-              hiddenFrom="sm"
-              size="sm"
-              aria-label="Menu openen"
-            />
-            <Box component="img" src={campaiLogo} alt="Campai" h={72} style={{ display: "block" }} />
+            <Burger opened={mobileNavOpened} onClick={toggleMobileNav} hiddenFrom="sm" size="sm" aria-label="Menu openen" />
+            <Box component="img" src={campaiLogo} alt="Campai" h={64} style={{ display: "block" }} />
           </Group>
-          <TextInput
-            placeholder="Zoeken op domein, module of kandidaat"
-            leftSection={<IconSearch size={16} />}
-            radius="md"
-            size="sm"
-            w={380}
-            visibleFrom="md"
-            value={search}
-            onChange={(event) => setSearch(event.currentTarget.value)}
-          />
-          <Button variant="default" leftSection={<IconDownload size={16} />} radius="md" size="sm">
-            Rapport exporteren
-          </Button>
+          {placeholder && (
+            <TextInput
+              placeholder={placeholder}
+              leftSection={<IconSearch size={16} />}
+              radius="md"
+              size="sm"
+              w={340}
+              visibleFrom="md"
+              value={search}
+              onChange={(event) => setSearch(event.currentTarget.value)}
+            />
+          )}
         </Group>
       </AppShell.Header>
 
       <AppShell.Navbar p="xs">
-        <ScrollArea h="100%">
+        <AppShell.Section grow component={ScrollArea}>
           <Stack gap="lg" px={4} py="xs">
             {groupOrder.map((group) => (
               <Stack key={group} gap={2}>
-                <Group gap={6} px="sm" mb={2}>
-                  {group === "Medewerker" && <IconBriefcase size={13} stroke={1.7} />}
-                  <Text size="10px" tt="uppercase" fw={700} c="dimmed" lts={1}>
-                    {group}
-                  </Text>
-                </Group>
-                {navEntries
-                  .filter((entry) => entry.group === group)
-                  .map((entry) => (
-                    <NavLink
-                      key={entry.id}
-                      active={view === entry.id}
-                      label={entry.label}
-                      leftSection={<entry.icon size={18} stroke={1.6} />}
-                      color="campaiNavy"
-                      variant="filled"
-                      styles={{ root: { borderRadius: 10 } }}
-                      onClick={() => openView(entry.id)}
-                    />
-                  ))}
+                <Text size="10px" tt="uppercase" fw={700} c="dimmed" lts={1} px="sm" mb={2}>
+                  {group}
+                </Text>
+                {navEntries.filter((entry) => entry.group === group).map(navLink)}
               </Stack>
             ))}
           </Stack>
-        </ScrollArea>
+        </AppShell.Section>
+        <AppShell.Section>
+          <Divider my="xs" />
+          <Box px={4} pb="xs">{navLink({ id: "beheer", label: "Beheer", icon: IconSettings })}</Box>
+        </AppShell.Section>
       </AppShell.Navbar>
 
       <AppShell.Main>
         <Box key={view}>
-          {view === "employeeOverview" && <MedewerkerOverview onOpenAcademy={() => setView("academy")} />}
-          {view === "academy" && <SkillsAcademy />}
-          {view === "training" && <Training />}
-          {view === "performance" && <Performanceloop />}
           {view === "sollicitanten" && <Sollicitanten />}
           {view === "candidateReviews" && <Reviewdashboard search={search} />}
           {view === "questions" && <Vragenfabriek search={search} />}
-          {view === "governance" && <Beleid />}
-          {view === "admin" && <Beheer />}
+          {view === "oefenen" && <Oefenen />}
+          {view === "voortgang" && <MijnVoortgang />}
+          {view === "performance" && <Performanceloop />}
+          {view === "beheer" && <Instellingen />}
         </Box>
       </AppShell.Main>
     </AppShell>
   );
 }
-
-export { viewTitles };

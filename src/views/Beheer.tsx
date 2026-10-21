@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Accordion,
   Badge,
   Box,
   Button,
@@ -102,7 +103,7 @@ export function Beheer() {
     : currentUserProfile;
 
   const dataStructureItems: Array<[string, string, string]> = [
-    ["/api/me", me?.authenticated ? "SSO actief" : "fallback", "Medewerkerprofiel komt uit Microsoft Entra ID; geen Lotte/Daan/Noa in de medewerkerflow."],
+    ["/api/me", me?.authenticated ? "SSO actief" : "fallback", "Medewerkerprofiel komt uit Microsoft Entra ID."],
     ["candidates[]", `${candidates.length} kandidaten`, "Recruitmentprofielen met scores, assessmentstatus en rol-fit."],
     ["learning/me", "per SSO-profiel", "Modulevoortgang wordt aan de ingelogde gebruiker gekoppeld; lokale opslag is alleen fallback/prototype."],
     ["domains[]", `${domains.length} domeinen`, "MSP-domeinen voor scoring, heatmap, competentiekaart en vragen."],
@@ -136,9 +137,8 @@ export function Beheer() {
 
   return (
     <>
-      <ViewHead mode="governance" banner="app-rollen & documentatie" title="Beheer">
-        Approllen, registraties en het lokale wijzigingslog. Productie vereist server-side
-        autorisatie via Entra ID.
+      <ViewHead mode="governance" banner="rollen & cijfers" title="Beheer">
+        Cijfers van de vragenbank, rollen en rechten, en het wijzigingslog.
       </ViewHead>
 
       <Stack gap="lg">
@@ -268,6 +268,15 @@ export function Beheer() {
           </Grid.Col>
         </Grid>
 
+        {/* Technische achtergrond voor wie de app onderhoudt: standaard ingeklapt (heuristiek 8, minimalisme). */}
+        <Accordion variant="contained" radius="md">
+          <Accordion.Item value="technisch">
+            <Accordion.Control>
+              <Text size="sm" fw={700} c="campaiNavy.7">Technische details</Text>
+              <Text size="xs" c="dimmed">Registraties, app-model, lokale opslag en actieve regels</Text>
+            </Accordion.Control>
+            <Accordion.Panel>
+        <Stack gap="lg">
         <Card withBorder padding="lg" radius="md">
           <Box mb="md">
             <Text size="xs" tt="uppercase" c="dimmed" lts={0.5} fw={700}>
@@ -320,6 +329,10 @@ export function Beheer() {
             </Stack>
           </Grid.Col>
         </Grid>
+        </Stack>
+            </Accordion.Panel>
+          </Accordion.Item>
+        </Accordion>
 
         <Card withBorder padding="lg" radius="md">
           <Group justify="space-between" mb="md">
