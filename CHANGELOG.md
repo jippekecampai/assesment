@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-21 — v2: toezicht, uitleg en training achter SSO
+
+- **Kandidaattest (/test):** startscherm met spelregels, volledig scherm, weggaan vastleggen en melden ("ik zag dat je even weg was"), plakken/kopiëren geblokkeerd, bevestigen bij inleveren in de pagina.
+- **Uitleg tijdens de test:** de kandidaat mag om uitleg vragen; de uitleg-aanroep krijgt het antwoord niet, een controle-aanroep houdt verklappende antwoorden tegen. Niet bij Engels, max 20 per test.
+- **Logboek:** per kandidaat in het Reviewdashboard, los van score en rol-fit; alleen voor `LOGBOEK_GROUP_ID` of (tijdelijk) `LOGBOEK_USERS`.
+- **Anonimisering:** accounts, aanhef/ondertekening en ticketnamen weg; CVE-nummers, datums en tijden blijven (uit de Casusfabriek).
+- **Training:** claude.ai-artifacts draaien onder `/apps/<naam>` met een runtime die `window.claude.use()` nabootst (sample via het AI-model van de site, user via SSO). Eerste artifact: de oefentoets cloud en netwerken.
+- **Easy Auth:** nieuwe kandidaat-paden `/api/assessment/event` en `/api/assessment/uitleg` in excludedPaths; `/apps` en `/api/ai/sample` alleen na login.
+
 ## 2026-06-27 — Medewerkerflow, SSO-profiel en Campai-logo
 
 - **Navigatie:** medewerkerflow gescheiden van recruitment: `Mijn overview` + `Skills Academy` onder Medewerker, `Sollicitanten` + `Kandidaat reviews` + `Vragenbank` onder Recruitment.
