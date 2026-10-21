@@ -1,6 +1,32 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { scrubText, anonymizeTicket, anonymizeDevice, anonymizeLive } from '../lib/anonymize.mjs';
+import { scrubText, anonymizeTicket, anonymizeDevice, anonymizeLive, nameTerms, scrubNames } from '../lib/anonymize.mjs';
+
+test('scrubText haalt accounts, aanhef en ondertekening weg', () => {
+  const out = scrubText('Beste Piet,\nInlog met KLANT\\pjansen faalt sinds vanochtend.\n\nMet vriendelijke groet,\nPiet Jansen\n06-12345678');
+  assert.ok(!out.includes('pjansen'));
+  assert.ok(!out.includes('Piet'));
+  assert.ok(out.includes('[account]') && out.includes('[aanhef]') && out.includes('[ondertekening]'));
+  assert.ok(out.includes('faalt sinds vanochtend'));
+});
+
+test('scrubText laat CVE-nummers en datums met tijd staan', () => {
+  assert.equal(scrubText('Patch voor CVE-2024-21412 gepland'), 'Patch voor CVE-2024-21412 gepland');
+  assert.equal(scrubText('back-up gefaald op 2026-10-20 03:15'), 'back-up gefaald op 2026-10-20 03:15');
+});
+
+test('scrubNames vervangt namen die het ticket zelf meedraagt', () => {
+  const terms = nameTerms(['⟦extern⟧Bakkerij De Molen B.V.⟦/extern⟧', 'Kees Visser']);
+  const out = scrubNames('Kees meldt dat bij Bakkerij De Molen B.V. de printer van Visser niet print.', terms);
+  assert.ok(!/Kees|Visser|Molen/.test(out));
+  assert.ok(out.includes('[klant]') && out.includes('[naam]'));
+  assert.ok(out.includes('printer'));
+});
+
+test('anonymizeTicket gebruikt de namen uit het ticket', () => {
+  const t = anonymizeTicket({ title: 'Mail van Hakvoort komt niet aan', companyName: 'Hakvoort Professional' });
+  assert.ok(!t.title.includes('Hakvoort'));
+});
 
 test('scrubText verwijdert e-mail, IP, domein en bedrag', () => {
   const out = scrubText('Mail jan@klantbv.nl vanaf 10.0.12.34 op klantbv.sharepoint.com, factuur EUR 1.250,00');
