@@ -17,7 +17,8 @@ import { generateCode } from './lib/codes.mjs';
 import { roles, domains, testQuestions } from './lib/assessment-content.mjs';
 import { createQuestionBank } from './lib/question-bank.mjs';
 import { createFlagStore } from './lib/flag-store.mjs';
-import { generateQuestions, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
+import { generateQuestions, chat, isConfigured as aiConfigured, AiError } from './lib/ai-client.mjs';
+import { ARTIFACTS, loadArtifactPage, createRateLimiter, toMessages } from './lib/artifacts.mjs';
 import { recordEvents, canSeeLogboek } from './lib/toezicht.mjs';
 import { explain, UITLEG_MAX, UITLEG_UIT_DOMEINEN } from './lib/uitleg.mjs';
 
@@ -31,6 +32,7 @@ const policyStore = createPolicyStore({ filePath: join(root, 'data', 'policy-ack
 const goalsStore = createGoalsStore({ filePath: join(root, 'data', 'goals.json') });
 const questionBank = createQuestionBank({ filePath: join(root, 'data', 'questions.json') });
 const flagStore = createFlagStore({ filePath: join(root, 'data', 'flags.json') });
+const artifactAiLimit = createRateLimiter({ max: 60 }); // AI-vragen per medewerker per uur vanuit artifacts
 function requireStaff(request, response) {
   if (!request.headers['x-ms-client-principal'] && !process.env.AUTH_DEV_MODE) {
     sendJson(response, 401, { error: 'auth_required' }); return false;
@@ -443,6 +445,23 @@ async function handleApi(request, response, url) {
     return true;
   }
 
+  // Artifacts achter SSO (lib/artifacts.mjs): de lijst en de AI-weg van artifacts/runtime.js.
+  if (url.pathname === '/api/apps' && request.method === 'GET') {
+    if (!requireStaff(request, response)) return true;
+    sendJson(response, 200, ARTIFACTS.map(({ slug, titel, omschrijving }) => ({ slug, titel, omschrijving }))); return true;
+  }
+  if (url.pathname === '/api/ai/sample' && request.method === 'POST') {
+    if (!requireStaff(request, response)) return true;
+    if (!aiConfigured()) { sendJson(response, 503, { error: 'ai_not_configured' }); return true; }
+    const identity = readIdentity(request);
+    if (!artifactAiLimit(identity.email || identity.name)) { sendJson(response, 429, { error: 'rate_limited' }); return true; }
+    const messages = toMessages((await readRequestBody(request)).input);
+    if (!messages) { sendJson(response, 400, { error: 'ongeldige_invoer' }); return true; }
+    try { sendJson(response, 200, { text: await chat(messages), truncated: false }); }
+    catch (e) { if (!(e instanceof AiError)) console.error('ai/sample fout:', e); sendJson(response, 502, { error: 'ai_error' }); }
+    return true;
+  }
+
   // Toezicht (kandidaat, zonder Entra-login; staat bij Easy Auth in excludedPaths net als start/submit).
   if (url.pathname === '/api/assessment/event' && request.method === 'POST') {
     const body = await readRequestBody(request);
@@ -573,6 +592,17 @@ function serveFile(response, filePath) {
 createServer(async (request, response) => {
   const url = new URL(request.url || "/", `http://${host}:${port}`);
   if (url.pathname.startsWith("/api/") && await handleApi(request, response, url)) return;
+
+  // Artifacts (alleen achter Easy Auth: /apps staat niet in excludedPaths). Lokaal zonder login alleen in AUTH_DEV_MODE.
+  if (url.pathname === "/apps/runtime.js" || url.pathname.startsWith("/apps/")) {
+    if (!requireStaff(request, response)) return;
+    if (url.pathname === "/apps/runtime.js") { serveFile(response, join(root, "artifacts", "runtime.js")); return; }
+    const page = await loadArtifactPage(root, decodeURIComponent(url.pathname.slice("/apps/".length)));
+    if (!page) { response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); response.end("Onbekende app."); return; }
+    response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+    response.end(page);
+    return;
+  }
 
   if (!existsSync(distDir)) {
     response.writeHead(503, { "Content-Type": "text/plain; charset=utf-8" });

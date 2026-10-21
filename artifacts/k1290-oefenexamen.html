@@ -1,0 +1,575 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>K1290 Oefenexamen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: één smalle kolom, één vraag tegelijk; voortgangsbalk bovenaan als "terminal"-strip */
+:root{
+  --bg:#f4f7f8; --surface:#ffffff; --fg:#14232b; --muted:#5a6d76; --line:#d5e0e4;
+  --accent:#0b6e8a; --accent-soft:#e1f0f4;
+  --ok:#1f7a4d; --ok-soft:#e3f4ea; --bad:#b33a2e; --bad-soft:#fbe8e5;
+  --warm:#b4610f; --warm-soft:#fbeedd;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f181c; --surface:#16232a; --fg:#e4edf0; --muted:#97aab2; --line:#293b43;
+  --accent:#4fb6d3; --accent-soft:#16343e; --ok:#5ccf93; --ok-soft:#163626; --bad:#f08376; --bad-soft:#3d1f1b; --warm:#f0a35e; --warm-soft:#3a2a17; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f181c; --surface:#16232a; --fg:#e4edf0; --muted:#97aab2; --line:#293b43;
+  --accent:#4fb6d3; --accent-soft:#16343e; --ok:#5ccf93; --ok-soft:#163626; --bad:#f08376; --bad-soft:#3d1f1b; --warm:#f0a35e; --warm-soft:#3a2a17; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0;font-size:28px;line-height:1.15;text-wrap:balance}
+.sub{color:var(--muted);font-size:15px;margin:0}
+.bar{display:flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.track{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden;display:flex}
+.track span{height:100%}
+.track .g{background:var(--ok)} .track .r{background:var(--bad)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-family:var(--f-mono);font-size:12.5px;color:var(--muted)}
+.topic{background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:4px}
+.q{font-size:20px;font-weight:700;margin:0;text-wrap:pretty}
+.q code,.opt code,.exp code{font-family:var(--f-mono);font-size:.9em}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{all:unset;box-sizing:border-box;display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:var(--surface);color:var(--fg);line-height:1.4}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opt .k{font-family:var(--f-mono);font-weight:700;min-width:1.4em;color:var(--muted)}
+.opt[disabled]{cursor:default}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .k{color:var(--ok)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{color:var(--bad)}
+.opt.dim{opacity:.55}
+.verdict{font-weight:700;font-size:17px}
+.verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)}
+.exp{border-left:3px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.exp p{margin:0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+.btn{font:inherit;font-weight:700;font-size:15px;padding:10px 18px;border-radius:8px;border:1.5px solid var(--accent);background:var(--accent);color:var(--surface);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn[disabled]{opacity:.4;cursor:default}
+.hint{font-size:14px;color:var(--muted)}
+.kbd{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.score{font-family:var(--f-mono);font-size:48px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.pass{font-weight:700}
+.topics{width:100%;border-collapse:collapse;font-size:15px}
+.topics td{padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.topics td.n{font-family:var(--f-mono);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:12px;padding:2px 8px;border-radius:999px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.mid{background:var(--accent-soft);color:var(--accent)}
+.wronglist{display:flex;flex-direction:column;gap:12px}
+.wr{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.wr b{font-size:16px}
+.ans-bad{color:var(--bad)} .ans-ok{color:var(--ok)}
+h2{margin:0;font-size:19px}
+.ask{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.ask h3{margin:0;font-size:15px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ask h3 small{font-weight:400;color:var(--muted);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--accent);cursor:pointer}
+.chip:focus-visible,.askrow input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.chip[disabled]{opacity:.45;cursor:default}
+.askrow{display:flex;gap:8px}
+.askrow input{flex:1;min-width:0;font:inherit;font-size:15px;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.askrow .btn{padding:9px 14px}
+.log{display:flex;flex-direction:column;gap:10px}
+.log:empty{display:none}
+.msg{padding:10px 12px;border-radius:8px;font-size:15px;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+.msg.u{align-self:flex-end;background:var(--accent-soft);max-width:85%}
+.msg.a{background:var(--bg);border:1px solid var(--line)}
+.msg.a p{margin:0 0 6px}.msg.a p:last-child{margin:0}
+.msg ul{margin:4px 0 6px;padding-left:20px}
+.msg .note{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .18s ease-out}@keyframes in{from{transform:translateY(4px);opacity:.6}to{transform:none;opacity:1}}}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tab{font:inherit;font-weight:700;font-size:15px;padding:8px 14px;border:0;border-bottom:3px solid transparent;background:none;color:var(--muted);cursor:pointer;margin-bottom:-1px}
+.tab[aria-current="page"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.viz{margin-top:12px;border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--bg);display:flex;flex-direction:column;gap:14px;min-width:0}
+.viz h4{margin:0;font-size:16px}
+.viz p{margin:0;font-size:15px}
+.viz .small{font-size:13.5px;color:var(--muted)}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{font:inherit;font-size:14px;font-weight:700;padding:7px 12px;border-radius:7px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.seg[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--surface)}
+.seg:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+/* 3D-stapel */
+.stack{display:flex;flex-direction:column;gap:6px;perspective:900px;padding:6px 0}
+.slab{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 14px;border-radius:8px;font-size:14.5px;font-weight:700;transform:rotateX(18deg);transform-origin:center bottom;box-shadow:0 5px 0 0 color-mix(in srgb,currentColor 25%,transparent);transition:background .25s,color .25s,transform .25s;border:1.5px solid transparent;cursor:default}
+.slab small{font-weight:400;font-size:12.5px;opacity:.9}
+.slab.k{background:var(--accent);color:var(--surface)}
+.slab.p{background:var(--surface);color:var(--muted);border-color:var(--line)}
+button.slab{font:inherit;font-weight:700;width:100%;text-align:left;cursor:pointer}
+button.slab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.slab.on{background:var(--warm);color:var(--surface);transform:rotateX(0deg) translateX(6px)}
+.osi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:560px){.osi{grid-template-columns:1fr}}
+.detail{border-left:3px solid var(--warm);padding-left:12px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.pkt{font-family:var(--f-mono);font-size:13px;display:flex;flex-wrap:wrap;gap:3px}
+.pkt span{padding:3px 7px;border-radius:4px;background:var(--surface);border:1px solid var(--line)}
+.pkt span.new{background:var(--warm-soft);border-color:var(--warm);color:var(--warm)}
+/* subnet */
+.ipin{font-family:var(--f-mono);font:inherit;font-size:15px;padding:7px 10px;border:1.5px solid var(--line);border-radius:7px;background:var(--surface);color:var(--fg);width:12em;max-width:100%}
+.bits{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:13px}
+.oct{display:flex;gap:1px}
+.oct b{width:1.2em;text-align:center;padding:4px 0;border-radius:3px;font-weight:700}
+.oct b.n{background:var(--accent);color:var(--surface)}
+.oct b.h{background:var(--warm-soft);color:var(--warm)}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;font-size:15px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ruler{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.ruler span{flex:1;border-right:1px solid var(--line);font-family:var(--f-mono);font-size:10.5px;color:var(--muted);padding:2px;overflow:hidden;white-space:nowrap}
+.ruler span.cur{background:var(--warm-soft);color:var(--warm);font-weight:700}
+input[type=range]{width:100%;accent-color:var(--accent)}
+/* schalen */
+.scale{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.scale{grid-template-columns:1fr}}
+.pane{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
+.pane h5{margin:0;font-size:14.5px}
+.floor{min-height:150px;display:flex;align-items:flex-end;justify-content:center;gap:8px;perspective:600px}
+.srv{border-radius:6px;background:var(--accent-soft);border:2px solid var(--accent);position:relative;transition:all .35s;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;transform:rotateX(10deg)}
+.srv .cpu{position:absolute;inset:auto 0 0 0;background:color-mix(in srgb,var(--accent) 45%,transparent);transition:height .35s}
+.srv.hot{border-color:var(--bad)} .srv.hot .cpu{background:color-mix(in srgb,var(--bad) 45%,transparent)}
+.srv span{position:relative;font-family:var(--f-mono);font-size:11.5px;padding:3px;color:var(--fg)}
+.srv.ghost{border-style:dashed;opacity:.35}
+.badge{font-family:var(--f-mono);font-size:12.5px;padding:3px 8px;border-radius:999px;align-self:flex-start}
+.badge.bad{background:var(--bad-soft);color:var(--bad)} .badge.ok{background:var(--ok-soft);color:var(--ok)} .badge.mid{background:var(--accent-soft);color:var(--accent)}
+/* load balancer */
+.lb{display:flex;flex-direction:column;align-items:center;gap:12px}
+.lbnode{padding:8px 16px;border-radius:8px;background:var(--accent);color:var(--surface);font-weight:700;font-size:14.5px}
+.lbsrv{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.ws{font:inherit;width:118px;padding:10px;border-radius:8px;border:2px solid var(--ok);background:var(--surface);color:var(--fg);cursor:pointer;display:flex;flex-direction:column;gap:3px;align-items:center;transition:background .15s}
+.ws.down{border-color:var(--bad);background:var(--bad-soft)}
+.ws.flash{background:var(--ok-soft)}
+.ws b{font-size:14.5px} .ws small{font-size:12px;color:var(--muted)} .ws .c{font-family:var(--f-mono);font-size:13px}
+.ws:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.status{font-weight:700;font-size:15px}
+/* tijdlijn */
+.tl{position:relative;height:56px;border-radius:6px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.tl .seg2{position:absolute;top:0;bottom:0}
+.tl .tick{position:absolute;top:0;bottom:0;width:2px;background:var(--accent)}
+.tl .inc{position:absolute;top:0;bottom:0;width:3px;background:var(--bad)}
+.tlaxis{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+/* netwerkpad */
+.path{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center}
+.nd{padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);font-size:13.5px;font-weight:700;text-align:center;min-width:72px;transition:all .2s}
+.nd small{display:block;font-weight:400;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.nd.on{border-color:var(--warm);background:var(--warm-soft);color:var(--warm);transform:translateY(-3px)}
+.ln{width:18px;height:3px;background:var(--line);border-radius:2px;transition:background .2s}
+.ln.on{background:var(--warm)}
+.console{font-family:var(--f-mono);font-size:12.5px;background:#0e1a1f;color:#d7e6ea;border-radius:8px;padding:12px;white-space:pre-wrap;overflow-x:auto;min-height:120px;line-height:1.55}
+.console .chg{color:#f0c36a} .console .okc{color:#7fe0a8} .console .dim{color:#7f97a0}
+.code{font-family:var(--f-mono);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;white-space:pre;overflow-x:auto;margin:0}
+.gal{display:flex;flex-wrap:wrap;gap:8px}
+@media (hover:none),(max-width:560px){.kbd[aria-hidden="true"]{display:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Keuzedeel K1290 · Cloud Engineering</span>
+    <h1>Oefenexamen kennistoets</h1>
+    <p class="sub">45 vragen, één beste antwoord. Na elk antwoord zie je het juiste antwoord en de uitleg. Het echte examen: 40 vragen in 45 minuten.</p>
+  </header>
+  <nav class="tabs" aria-label="Weergave"><button class="tab" id="tabQuiz" aria-current="page">Quiz</button><button class="tab" id="tabViz">Illustraties</button></nav>
+  <div class="bar" id="bar" aria-live="polite"><span id="pos">1 / 45</span><div class="track" id="track"></div><span id="tally">0 goed · 0 fout</span></div>
+  <main id="app"></main>
+</div>
+
+<script>
+const T={cm:"Cloudmodellen & compute",ow:"Ontwerp & schalen",nw:"Netwerken",sn:"Subnetten",op:"Opslag & data",bv:"Beveiliging",bh:"Back-up & herstel",bm:"Beschikbaarheid & monitoring",au:"Automatisering (Ansible)",ko:"Kosten & duurzaamheid"};
+const Q=[
+["cm","Een bedrijf wil zelf het besturingssysteem van een virtuele server beheren. Welk cloudmodel past daarbij?",["SaaS","IaaS","PaaS","Alleen private cloud"],1,"Bij IaaS levert de provider hardware, netwerk en virtualisatie; de klant beheert zelf het besturingssysteem, de middleware en de applicatie. Bij PaaS en SaaS beheert de provider het OS. Private cloud is een uitrolmodel, geen servicemodel."],
+["cm","Wat is een belangrijk voordeel van PaaS ten opzichte van een zelf beheerde VM?",["De klant hoeft geen toegangsrechten meer te beheren.","De applicatie heeft automatisch onbeperkte capaciteit.","Alle beveiligingsverantwoordelijkheid ligt bij de provider.","De provider beheert meer van het onderliggende platform."],3,"Bij PaaS beheert de provider ook OS, runtime en patching. Toegangsrechten, data en app-configuratie blijven bij de klant (gedeelde verantwoordelijkheid). Capaciteit is nooit onbeperkt. Let bij meerkeuze op absolute woorden als 'alle', 'automatisch' en 'onbeperkt'."],
+["cm","Welke oplossing is een voorbeeld van SaaS?",["Microsoft 365 als kant-en-klare dienst gebruiken.","Zelf Linux op een Azure-VM installeren.","Zelf een fysieke server aanschaffen.","Zelf een database-engine op een VM onderhouden."],0,"SaaS is een complete applicatie die je alleen gebruikt en configureert. Linux of een database-engine op een VM is IaaS; een eigen fysieke server is on-premises."],
+["cm","Een bedrijf koppelt zijn eigen datacenter aan diensten in een public cloud. Hoe heet deze inrichting?",["Alleen private cloud","Alleen public cloud","Hybride cloud","Serverless computing"],2,"Hybride cloud combineert eigen (on-premises of private) infrastructuur met public cloud, met een koppeling ertussen, bijvoorbeeld een site-to-site-VPN. Serverless is een uitvoeringsmodel, geen uitrolmodel."],
+["cm","Wat is een belangrijk verschil tussen een container en een VM?",["Een container heeft altijd een eigen fysieke processor.","Containers delen doorgaans de kernel van hun host; VM's hebben een eigen gastbesturingssysteem.","Een VM kan geen Linux draaien.","Containers hebben geen beveiligingsmaatregelen nodig."],1,"Een VM virtualiseert hardware via een hypervisor en draait een volledig eigen OS. Een container virtualiseert op OS-niveau en deelt de kernel van de host. Daardoor is hij lichter en start hij sneller."],
+["ow","Welke eis is niet-functioneel?",["Een klant kan een boek zoeken.","Een klant kan een bestelling plaatsen.","Een beheerder kan een boek toevoegen.","Bij de afgesproken belasting verschijnt de productpagina binnen twee seconden."],3,"Functioneel is wát het systeem doet: zoeken, bestellen, toevoegen. Niet-functioneel is hoe goed het dat doet: snelheid, beschikbaarheid, beveiliging, capaciteit. In je eigen PvE is dit eis N-02."],
+["ow","Wat is de beste eerste stap bij het ontwerpen van een cloudoplossing?",["De klantbehoeften en toetsbare eisen vaststellen.","De grootste VM kiezen.","Alle beschikbare beveiligingsproducten aanschaffen.","Eerst bouwen en daarna het budget bepalen."],0,"Eerst inventariseren (klantgesprek, PvE met meetbare eisen), daarna ontwerpen, ramen en bouwen. Dat is de volgorde van onderdeel A in je portfolio."],
+["ow","Een VM krijgt meer RAM en meer CPU-capaciteit. Wat gebeurt hier?",["Scale out","Failover","Scale up","Replicatie"],2,"Scale up (verticaal schalen) betekent een zwaardere machine. Scale out (horizontaal schalen) betekent meer instanties. Ezelsbruggetje: omhoog = groter, opzij = meer."],
+["ow","Tijdens een drukke periode groeit een app van twee naar vier instanties. Wat is dit?",["Scale down","Scale out","Verticale schaling","Back-up"],1,"Meer instanties is scale out, oftewel horizontaal schalen. Dat doet autoscaling in je App Service-ontwerp (2 naar 5 instances)."],
+["nw","Op welke OSI-laag werkt IP-routering hoofdzakelijk?",["Laag 1 — fysiek","Laag 2 — datalink","Laag 7 — applicatie","Laag 3 — netwerk"],3,"Laag 3 (netwerk): IP-adressen en routers. Laag 2: MAC-adressen en switches. Laag 1: kabels en signalen. Laag 4: TCP en UDP. Laag 7: HTTP, DNS."],
+["nw","Waarop baseert een gewone Ethernet-switch hoofdzakelijk zijn doorstuurkeuze?",["MAC-adressen","DNS-namen","Gebruikersrollen","HTTPS-certificaten"],0,"Een switch (laag 2) leert welk MAC-adres op welke poort zit (de MAC-tabel) en stuurt frames daarop door. In je netwerk.json staat die macTable ook."],
+["nw","Wat is de functie van een default gateway?",["Wachtwoorden voor gebruikers opslaan.","Namen naar IP-adressen vertalen.","Verkeer naar bestemmingen buiten het eigen subnet doorsturen.","Automatisch een back-up maken."],2,"Alles wat niet in het eigen subnet zit, gaat naar de default gateway. Dat is meestal de routerinterface, zoals 192.168.1.1 in je Nexys-netwerk. Namen vertalen doet DNS."],
+["sn","Welk subnetmasker hoort bij <code>/24</code>?",["<code>255.255.0.0</code>","<code>255.255.255.0</code>","<code>255.255.255.128</code>","<code>255.0.0.0</code>"],1,"/24 betekent 24 enen, dus drie volle octetten van 255: 255.255.255.0. Om te onthouden: /8 = 255.0.0.0, /16 = 255.255.0.0, /25 = .128, /26 = .192, /27 = .224, /28 = .240."],
+["sn","Welk adres ligt in hetzelfde <code>/24</code>-subnet als <code>192.168.1.10</code>?",["<code>192.168.2.10</code>","<code>192.168.10.1</code>","<code>192.169.1.20</code>","<code>192.168.1.200</code>"],3,"Bij /24 moeten de eerste drie octetten gelijk zijn: 192.168.1.x. Alleen 192.168.1.200 voldoet."],
+["sn","Hoeveel bruikbare hostadressen heeft een gewoon IPv4-<code>/26</code>-subnet, na aftrek van netwerk- en broadcastadres?",["62","64","126","254"],0,"/26 laat 32 − 26 = 6 hostbits over: 2⁶ = 64 adressen. Min het netwerkadres en de broadcast blijven er 62 bruikbaar. Rijtje: /24 = 254, /25 = 126, /26 = 62, /27 = 30, /28 = 14."],
+["sn","Wat is het netwerkadres van <code>192.168.1.130/26</code>?",["<code>192.168.1.0</code>","<code>192.168.1.64</code>","<code>192.168.1.128</code>","<code>192.168.1.192</code>"],2,"Bij /26 is de blokgrootte 256 − 192 = 64. De blokken beginnen bij .0, .64, .128 en .192. Het getal 130 valt in het blok .128–.191, dus het netwerkadres is 192.168.1.128."],
+["sn","Wat is het broadcastadres van <code>192.168.1.128/26</code>?",["<code>192.168.1.129</code>","<code>192.168.1.191</code>","<code>192.168.1.192</code>","<code>192.168.1.255</code>"],1,"Het blok loopt van .128 tot .191 (128 + 64 − 1). Het laatste adres is de broadcast: .191. De bruikbare hosts zijn .129 tot en met .190; .192 is al het volgende subnet."],
+["nw","Een website werkt via het IP-adres, maar niet via de domeinnaam. Welke dienst onderzoek je eerst?",["DHCP","Nginx-installatie","Back-updienst","DNS"],3,"Via het IP werkt het, dus de server en de webserver zijn in orde. Alleen de vertaling van naam naar IP faalt, en dat is DNS. Test bijvoorbeeld met nslookup."],
+["nw","Wat doet DHCP?",["Automatisch IP-configuratie aan apparaten toekennen.","Webverkeer versleutelen.","Bestanden over meerdere regio's repliceren.","Rechten aan gebruikers toekennen."],0,"DHCP deelt automatisch een IP-adres, subnetmasker, gateway en DNS-server uit. Versleutelen doet TLS."],
+["nw","Wat is een kenmerk van TCP?",["Het verstuurt uitsluitend broadcastberichten.","Het vervangt IP-adressen door MAC-adressen.","Het biedt een geordende, betrouwbare gegevensstroom met onder andere hertransmissie.","Het werkt uitsluitend voor DNS."],2,"TCP (laag 4) is verbindingsgericht: three-way handshake, vaste volgorde, bevestigingen en hertransmissie. UDP is verbindingsloos en sneller, maar zonder garanties; het wordt gebruikt voor bijvoorbeeld DNS-queries en streaming."],
+["nw","Welke combinatie van protocol en standaardpoort klopt?",["HTTPS — 22","SSH — 22","HTTP — 443","DNS — 3389"],1,"Dit rijtje moet je kennen: SSH 22, SMTP 25, DNS 53, HTTP 80, HTTPS 443, SQL Server 1433, RDP 3389."],
+["nw","Wat doet NAT doorgaans bij een verbinding van een privé-netwerk naar internet?",["Het versleutelt automatisch alle gegevens.","Het controleert de gebruikersidentiteit.","Het maakt een DNS-record aan.","Het vertaalt IP-adressen en vaak ook poortnummers."],3,"NAT vertaalt privé-adressen (zoals 192.168.x.x) naar een publiek adres. Bij PAT (overload) worden ook poorten vertaald, zodat veel apparaten één publiek IP kunnen delen. NAT versleutelt niets."],
+["nw","Wat is het belangrijkste doel van een VPN?",["Een beschermde verbinding tussen eindpunten over een tussenliggend netwerk opzetten.","Een database automatisch sneller maken.","Alle firewalls vervangen.","Het aantal beschikbare IP-adressen onbeperkt maken."],0,"Een VPN maakt een versleutelde tunnel over een onvertrouwd netwerk zoals internet. Voorbeelden zijn site-to-site tussen kantoor en Azure (hybride cloud) en point-to-site voor een laptop."],
+["nw","Een pc kan zijn eigen gateway bereiken, maar geen host in een ander subnet. Wat is een logische vervolgstap?",["Direct de complete omgeving opnieuw installeren.","Alle beveiligingsregels verwijderen.","Routerinterfaces, routes en relevante firewallregels controleren.","Alleen de achtergrondkleur van de website aanpassen."],2,"Het eigen subnet en de gateway werken, dus het probleem zit verderop. Controleer de tweede routerinterface (staat die op shutdown, heeft hij het goede IP?), de routes, de gateway-instelling van de doelhost en de firewall. Werk systematisch, bijvoorbeeld met tracert. Dit is het type storing uit 'Are you up?'."],
+["op","Waarvoor is Blob Storage in het ontwerp van De Boekenkast vooral geschikt?",["Het uitvoeren van SQL-transacties.","Het opslaan van boekomslagen en andere bestanden als objecten.","Het routeren tussen subnetten.","Het toekennen van beheerdersrollen."],1,"Blob Storage is objectopslag voor ongestructureerde bestanden, zoals afbeeldingen en PDF-facturen. Gestructureerde data met transacties gaat naar Azure SQL."],
+["op","Waarom past een relationele database bij klanten, bestellingen en bestelregels?",["Omdat een relationele database geen opslag nodig heeft.","Omdat afbeeldingen alleen in SQL kunnen worden opgeslagen.","Omdat een relationele database automatisch alle privacyproblemen oplost.","Omdat relaties, gegevensconsistentie en transacties belangrijk zijn."],3,"Klant, bestelling en bestelregel zijn met elkaar verbonden via sleutels. Dankzij ACID-transacties raak je geen bestelling kwijt en verwerk je niets dubbel (eis N-04)."],
+["op","Je bewaart 50.000 boeken met elk twee afbeeldingen van 300 kB. Hoeveel opslag is dat ongeveer (decimaal, zonder overhead)?",["30 GB","3 GB","300 GB","300 MB"],0,"50.000 × 2 × 300 kB = 30.000.000 kB = 30.000 MB = 30 GB. Van kB naar MB naar GB deel je steeds door 1000. Dit getal staat ook in je PvE."],
+["bv","Wat is het verschil tussen authenticatie en autorisatie?",["Authenticatie bepaalt de netwerkroute; autorisatie maakt een back-up.","Het zijn twee woorden voor precies hetzelfde.","Authenticatie controleert je identiteit; autorisatie bepaalt wat je mag.","Authenticatie versleutelt bestanden; autorisatie controleert de CPU."],2,"Authenticatie: wie ben je (wachtwoord, MFA). Autorisatie: wat mag je (RBAC-rollen, rechten). Eerst authenticatie, dan autorisatie."],
+["bv","Wat betekent least privilege?",["Iedereen krijgt Contributor om vertraging te voorkomen.","Je geeft alleen de rechten die voor de taak nodig zijn, op een passende scope.","Alleen externe medewerkers krijgen beperkte rechten.","Alle gebruikers krijgen dezelfde rechten."],1,"Minimale rechten op de kleinst passende scope (resource, resourcegroep of abonnement), liefst tijdelijk. Denk aan de stagiair met Owner-rechten uit je beveiligingsrapport."],
+["bv","Wat voegt MFA toe aan aanmelden met een wachtwoord?",["Een garantie dat phishing onmogelijk wordt.","Automatisch Owner-rechten.","Een reservekopie van het account.","Een extra verificatiefactor, bijvoorbeeld een beveiligingssleutel of authenticator."],3,"MFA combineert iets wat je weet met iets wat je hebt of bent. Het is geen garantie: codes en pushmeldingen kunnen nog steeds gephisht worden. Daarom gebruik je voor beheerders een phishingbestendige methode zoals FIDO2 of een passkey."],
+["bv","Wat beschermt TLS bij een HTTPS-verbinding?",["Vertrouwelijkheid en integriteit tijdens transport, met controle van de serveridentiteit via certificaten.","Alleen de fysieke toegang tot het datacenter.","Automatisch alle opgeslagen gegevens en back-ups.","Alleen de snelheid van de verbinding."],0,"TLS beschermt data in transit (versleuteling en integriteit) en bewijst met een certificaat dat de server echt is. Opgeslagen data (at rest) heeft aparte versleuteling nodig, zoals TDE of storage encryption."],
+["bv","Wat is een passende maatregel voor SSH-beheer van een cloudserver?",["Poort 22 permanent vanaf ieder internetadres toestaan.","Alle logging uitschakelen.","Toegang beperken tot vertrouwde bronnen en waar passend tijdelijk toestaan.","Het wachtwoord opnemen in het architectuurdiagram."],2,"Beperk SSH met een NSG tot vertrouwde IP-adressen en open de poort liefst tijdelijk met JIT, of gebruik Bastion. Dat heb je in de simulator ook getest."],
+["bv","Een cloudprovider is ISO 27001-gecertificeerd. Wat betekent dit voor de klant?",["De klant voldoet daardoor automatisch aan alle privacyverplichtingen.","De klant blijft verantwoordelijk voor onder andere eigen instellingen, toegangsrechten en gegevensgebruik.","De klant hoeft geen risicoanalyse meer uit te voeren.","De klant hoeft geen herstelprocedure meer te hebben."],1,"Gedeelde verantwoordelijkheid: de certificering dekt alleen het deel van de provider. Configuratie, identiteiten, data, AVG-verplichtingen en de eigen risicoanalyse blijven bij de klant."],
+["bh","Waarom vervangt replicatie geen back-up?",["Replicatie werkt alleen voor afbeeldingen.","Een back-up houdt uitsluitend de actuele versie bij.","Replicatie kan nooit gegevensverlies beperken.","Ook verwijderingen of beschadigingen kunnen worden gerepliceerd; een back-up biedt eerdere herstelpunten."],3,"Een replica neemt alles direct over, dus ook een DELETE of ransomware. Met een back-up of point-in-time restore ga je terug naar een moment vóór de fout."],
+["bh","Wat betekent een RTO van twee uur?",["De afgesproken maximale tijd om de dienstverlening na een verstoring te herstellen is twee uur.","Elke twee uur moet een gebruiker zijn wachtwoord wijzigen.","De database bewaart maar twee uur gegevens.","Er mag precies twee uur aan gegevens verloren gaan."],0,"RTO (Recovery Time Objective) is hoelang het herstel mag duren. Optie D beschrijft de RPO. Ezelsbruggetje: T = Time (hersteltijd), P = Point (herstelpunt)."],
+["bh","Wat betekent een RPO van vijftien minuten?",["Elke storing moet binnen vijftien minuten zijn opgelost.","Een server moet iedere vijftien minuten herstarten.","Het maximaal acceptabele gegevensverlies is uitgedrukt als vijftien minuten terug in de tijd.","Een back-up mag hoogstens vijftien minuten duren."],2,"RPO (Recovery Point Objective) is hoe ver terug in de tijd je herstelpunt mag liggen. Dat bepaalt hoe vaak je back-ups of herstelpunten maakt. Optie A beschrijft een RTO."],
+["bm","Waarvoor gebruikt een load balancer een health probe?",["Om gebruikerswachtwoorden te controleren.","Om te bepalen welke backends gezond genoeg zijn om verkeer te ontvangen.","Om back-ups te versleutelen.","Om de opslagrekening te betalen."],1,"De probe controleert regelmatig of een backend reageert, bijvoorbeeld met HTTP 200 op /health. Een server die niet reageert, krijgt geen verkeer meer."],
+["bm","Wat is een single point of failure?",["Een melding die één keer per dag wordt verstuurd.","Een server met maar één gebruiker.","Een database met één tabel.","Een onderdeel waarvan uitval de hele dienst kan laten uitvallen."],3,"Een single point of failure is een onderdeel zonder reserve, zoals de oude kantoorserver van De Boekenkast. De oplossing is redundantie: meer instanties, zones of replica's."],
+["bm","Een oplossing gebruikt meerdere availability zones binnen één regio. Welke uitval vangt dit op zichzelf niet op?",["Uitval van de volledige regio.","Uitval van één zone, mits de oplossing daarvoor goed is ingericht.","Uitval van één server, mits verkeer naar gezonde instanties kan gaan.","Uitval van een onderdeel waarvoor een werkende redundante tegenhanger bestaat."],0,"Zones zijn aparte datacenters binnen één regio. Valt de hele regio uit (bijvoorbeeld West Europe), dan heb je een tweede regio nodig met geo-replicatie en failover. Let op het woord 'niet' in de vraag."],
+["bm","Wat is het verschil tussen een alert en autoscaling?",["Een alert maakt altijd automatisch een extra VM aan.","Autoscaling stuurt uitsluitend een e-mail.","Een alert signaleert een situatie; autoscaling verandert capaciteit volgens regels.","Er is geen verschil."],2,"Een alert meldt iets, bijvoorbeeld een e-mail of sms bij CPU boven 80%. Autoscaling onderneemt actie: één instance erbij bij CPU boven 75%. In het storingsplan gebruik je ze allebei."],
+["bm","Wat doe je nadat een storing tijdelijk is opgelost met een workaround?",["Direct alle logs verwijderen.","De dienst controleren, de aanpak vastleggen en de achterliggende oorzaak verder onderzoeken.","De monitoring permanent uitschakelen.","Het incident altijd afsluiten zonder verdere controle."],1,"Na een workaround test je of de dienst werkt, leg je het vast in het incident, zoek je de oorzaak uit (problem management) en zorg je voor een structurele oplossing. Dat ken je uit de servicedesk-praktijk."],
+["au","Waarvoor dient <code>inventory.ini</code> bij de Ansible-opdracht?",["Om de HTML-opmaak van de website vast te leggen.","Om databaseback-ups te bewaren.","Om de maandelijkse Azure-prijzen op te slaan.","Om doelhosts, groepen en relevante verbindingsinstellingen vast te leggen."],3,"De inventory bepaalt op welke hosts Ansible werkt, bijvoorbeeld [webservers] met localhost ansible_connection=local. Het playbook (YAML) bepaalt wát er gebeurt. Kort: inventory = waar, playbook = wat."],
+["au","Wat betekent <code>changed=0</code> na een geslaagde tweede Ansible-run zonder configuratiewijzigingen?",["Er waren geen wijzigingen nodig om de gewenste toestand te bereiken.","Ansible heeft geen enkele host kunnen bereiken.","Nginx is automatisch verwijderd.","Het YAML-bestand is leeg."],0,"Dit heet idempotentie. Ansible beschrijft de gewenste toestand (state: present of started). Is die toestand er al, dan verandert Ansible niets en staat changed op 0. Een onbereikbare host zie je aan unreachable=1."],
+["ko","Wat is de beste basis voor een complete cloudkostenraming?",["Alleen de prijs van de goedkoopste VM.","Alleen de aanschafprijs van fysieke hardware.","Het gekozen ontwerp en geraamd gebruik, inclusief relevante compute-, opslag-, netwerk-, back-up- en monitoringkosten.","Alleen het maximale budget van de klant."],2,"Dit is de les uit je eigen portfolio: de eerste raming van €52,71 miste onderdelen uit het ontwerp. Raam alles wat in het diagram staat, plus het verwachte gebruik."],
+["ko","Een ontwikkelomgeving draait nu 168 uur per week en straks 60 uur. Hoeveel neemt de draaitijd ongeveer af?",["36%","64%","108%","28%"],1,"(168 − 60) / 168 = 108 / 168 ≈ 0,64, dus 64% minder. 36% is wat er overblijft (60 / 168). De afname is het verschil gedeeld door de oude waarde."]
+];
+const L="ABCD";
+let order=[...Q.keys()], i=0, answers={}; // answers[qIndex]=chosen
+const app=document.getElementById("app");
+
+function store(){try{localStorage.setItem("k1290quiz",JSON.stringify({order,i,answers}))}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem("k1290quiz")||"null");if(s&&Array.isArray(s.order)&&s.order.every(n=>n>=0&&n<Q.length)){order=s.order;i=Math.min(s.i,order.length);answers=s.answers||{}}}catch(e){}}
+
+function tally(){let g=0,f=0;order.forEach(n=>{if(n in answers){answers[n]===Q[n][3]?g++:f++}});return{g,f}}
+function header(){
+  const {g,f}=tally();
+  document.getElementById("pos").textContent=i<order.length?`${i+1} / ${order.length}`:`${order.length} / ${order.length}`;
+  document.getElementById("tally").textContent=`${g} goed · ${f} fout`;
+  const t=document.getElementById("track");t.innerHTML="";
+  const w=100/order.length;
+  order.forEach(n=>{if(n in answers){const s=document.createElement("span");s.className=answers[n]===Q[n][3]?"g":"r";s.style.width=w+"%";t.appendChild(s)}});
+}
+
+function renderQ(){
+  stopViz();view="quiz";syncNav();
+  header();
+  if(i>=order.length)return renderEnd();
+  const n=order[i],[tp,q,opts,c,ex]=Q[n],done=n in answers;
+  app.innerHTML=`<section class="card" aria-labelledby="qt">
+    <div class="meta"><span class="topic">${T[tp]}</span><span>Vraag ${n+1}</span></div>
+    <p class="q" id="qt">${q}</p>
+    <div class="opts" role="group" aria-label="Antwoorden">${opts.map((o,k)=>`<button class="opt" id="opt${k}" data-k="${k}"><span class="k">${L[k]}</span><span>${o}</span></button>`).join("")}</div>
+    <div id="fb"></div>
+    ${VIZMAP[n]?`<div><button class="btn ghost" id="vizbtn" aria-expanded="false">Toon illustratie: ${VIZ[VIZMAP[n]].title}</button><div class="viz" id="vizbox" hidden></div></div>`:""}
+    <div class="ask" id="ask" ${sampleFn?"":"hidden"}>
+      <h3>Vraag het Claude <small>${done?"":"verklapt het antwoord niet"}</small></h3>
+      <div class="chips">
+                <button class="chip" id="chipWhy" ${done?"":"disabled"}>Waarom zijn de andere opties fout?</button>
+        <button class="chip" id="chipEx">Geef een praktijkvoorbeeld</button>
+      </div>
+      <div class="log" id="log"></div>
+      <form class="askrow" id="askform"><label for="askq" class="kbd" hidden>Jouw vraag</label>
+        <input id="askq" autocomplete="off" placeholder="Stel een vraag, bijv. ‘Wat is het OSI-model?’">
+        <button class="btn" id="askbtn" type="submit">Vraag</button></form>
+    </div>
+    <div class="actions"><button class="btn ghost" id="prev" ${i===0?"disabled":""}>Vorige</button>
+      <span class="kbd" aria-hidden="true">toets A–D of 1–4 · Enter = volgende</span>
+      <button class="btn" id="next" ${done?"":"disabled"}>${i===order.length-1?"Bekijk resultaat":"Volgende vraag"}</button></div>
+  </section>`;
+  app.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>choose(+b.dataset.k)));
+  document.getElementById("next").onclick=()=>{ctl?.abort();i++;store();renderQ();window.scrollTo({top:0})};
+  document.getElementById("prev").onclick=()=>{if(i>0){ctl?.abort();i--;store();renderQ()}};
+  if(done)showFb(answers[n]);
+  setupAsk(n);
+}
+
+/* ---------- Vraag het Claude ---------- */
+let sampleFn=null, ctl=null, busy=false;
+const chats={}; // per vraag: [{role,content,label}]
+const strip=s=>s.replace(/<[^>]+>/g,"");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function md(t){
+  const blocks=esc(t).trim().split(/\n{2,}/);
+  return blocks.map(b=>{
+    const lines=b.split("\n");
+    const fmt=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>");
+    if(lines.every(l=>/^\s*[-*•] /.test(l)))return"<ul>"+lines.map(l=>"<li>"+fmt(l.replace(/^\s*[-*•] /,""))+"</li>").join("")+"</ul>";
+    return"<p>"+lines.map(fmt).join("<br>")+"</p>";
+  }).join("");
+}
+function context(n){
+  const [tp,q,o,c,ex]=Q[n];
+  let s=`Je bent een geduldige docent voor het mbo-keuzedeel Cloud Engineering (K1290). De student oefent voor een meerkeuze-kennistoets en werkt in de IT (Microsoft 365, Azure, beveiliging). Antwoord in het Nederlands, kort (maximaal ongeveer 150 woorden), concreet en zonder inleiding of afsluitende vraag. Opmaak: korte alinea's, eventueel een opsomming met '- ', **vet** voor kernbegrippen. Geen koppen.\n\nHuidige oefenvraag (onderwerp: ${T[tp]}):\n${strip(q)}\nOpties:\n${o.map((x,k)=>L[k]+". "+strip(x)).join("\n")}\n`;
+  if(n in answers) s+=`\nDe student koos ${L[answers[n]]}; het juiste antwoord is ${L[c]}. Uitleg uit de quiz: ${strip(ex)}\n`;
+  else s+=`\nLET OP: de student heeft deze vraag nog NIET beantwoord. Verklap het juiste antwoord niet, noem of wijs geen optie(letter) aan als goed of fout. Leg alleen de begrippen uit, zodat de student zelf kan kiezen.\n`;
+  return s;
+}
+const PRESET={
+  why:{label:"Waarom zijn de andere opties fout?",text:"Leg per foute optie in één zin uit waarom die niet klopt."},
+  ex:{label:"Geef een praktijkvoorbeeld",text:"Geef één kort, concreet praktijkvoorbeeld uit een Azure- of kantooromgeving dat dit onderwerp laat zien."}
+};
+function renderLog(n){
+  const log=document.getElementById("log");if(!log)return;
+  log.innerHTML=(chats[n]||[]).map((m,k)=>m.role==="user"
+    ?`<div class="msg u">${esc(m.label||m.content)}</div>`
+    :`<div class="msg a" id="m${k}">${m.content?md(m.content):"<span class='note'>Claude denkt na…</span>"}${m.note?`<span class="note">${esc(m.note)}</span>`:""}</div>`).join("");
+}
+function setBusy(b){busy=b;["askbtn","chipEx"].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=b});
+  const w=document.getElementById("chipWhy");if(w)w.disabled=b||!(order[i] in answers);
+  const ab=document.getElementById("askbtn");if(ab){ab.disabled=false;ab.textContent=b?"Stop":"Vraag";ab.type=b?"button":"submit";ab.onclick=b?()=>ctl?.abort():null}}
+function errCopy(c){return{not_granted:"Je hebt de pagina geen toestemming gegeven om Claude te gebruiken.",sampling_disabled:"Claude is niet beschikbaar voor dit account.",rate_limited:"Even te veel vragen achter elkaar. Probeer het over een minuut opnieuw.",session_expired:"Je sessie is verlopen. Log opnieuw in.",refused:"Deze vraag kon Claude niet beantwoorden. Formuleer hem anders."}[c]||"Er ging iets mis met de verbinding. Probeer het opnieuw."}
+async function ask(n,content,label){
+  if(!sampleFn||busy||!content.trim())return;
+  const turns=chats[n]=chats[n]||[];
+  turns.push({role:"user",content,label});
+  const a={role:"assistant",content:""};turns.push(a);
+  renderLog(n);setBusy(true);
+  ctl=new AbortController();const my=ctl;
+  const input=[{role:"user",content:context(n)},...turns.slice(0,-1).filter(t=>t.content).map(t=>({role:t.role,content:t.content}))];
+  try{
+    const {truncated}=await sampleFn(input,{modelTier:"quick",cache:false,signal:my.signal,onText:({text})=>{a.content=text;if(order[i]===n){const el=document.getElementById("m"+(turns.length-1));if(el)el.innerHTML=md(text)}}});
+    if(truncated)a.note="Antwoord afgekapt. Vraag om een korter antwoord.";
+  }catch(e){
+    a.content=e.text||"";
+    if(e.code!=="cancelled")a.note=errCopy(e.code);
+    if(!a.content&&e.code==="cancelled")a.note="Gestopt.";
+    if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)){sampleFn=null;}
+  }finally{
+    if(!a.content&&!a.note)turns.splice(-2,2);
+    if(my===ctl){setBusy(false)}
+    if(order[i]===n){renderLog(n);if(!sampleFn){const box=document.getElementById("ask");if(box)box.hidden=true}}
+  }
+}
+function setupAsk(n){
+  const vb=document.getElementById("vizbtn");
+  if(vb)vb.onclick=()=>{const box=document.getElementById("vizbox");const open=box.hidden;stopViz();box.hidden=!open;vb.setAttribute("aria-expanded",String(open));vb.textContent=(open?"Verberg illustratie: ":"Toon illustratie: ")+VIZ[VIZMAP[n]].title;if(open)mountViz(VIZMAP[n],box)};
+  renderLog(n);
+  const f=document.getElementById("askform");if(!f)return;
+  f.onsubmit=e=>{e.preventDefault();const q=document.getElementById("askq");const v=q.value;q.value="";ask(n,v)};
+  document.getElementById("chipWhy").onclick=()=>ask(n,PRESET.why.text,PRESET.why.label);
+  document.getElementById("chipEx").onclick=()=>ask(n,PRESET.ex.text,PRESET.ex.label);
+  setBusy(busy);
+}
+if(window.claude&&claude.use){claude.use("sample").then(s=>{sampleFn=s||null;const box=document.getElementById("ask");if(box)box.hidden=!sampleFn}).catch(()=>{})}
+function choose(k){const n=order[i];if(n in answers)return;answers[n]=k;store();showFb(k);header();const sm=document.querySelector(".ask h3 small");if(sm)sm.textContent="";setBusy(busy);const nx=document.getElementById("next");nx.disabled=false;nx.focus({preventScroll:true});const fb=document.getElementById("fb");if(fb)fb.scrollIntoView({block:"nearest",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
+function showFb(k){
+  const n=order[i],[, ,opts,c,ex]=Q[n],ok=k===c;
+  app.querySelectorAll(".opt").forEach(b=>{const j=+b.dataset.k;b.disabled=true;if(j===c)b.classList.add("correct");else if(j===k)b.classList.add("wrong");else b.classList.add("dim")});
+  document.getElementById("fb").innerHTML=`<div class="exp"><span class="verdict ${ok?"ok":"bad"}">${ok?"Goed!":"Fout."} Het juiste antwoord is ${L[c]}.</span><p>${ex}</p></div>`;
+}
+
+function renderEnd(){
+  stopViz();
+  const {g,f}=tally(),tot=order.length,pct=Math.round(g/tot*100);
+  const per={};order.forEach(n=>{const t=Q[n][0];per[t]=per[t]||{g:0,t:0};per[t].t++;if(answers[n]===Q[n][3])per[t].g++});
+  const wrong=order.filter(n=>answers[n]!==Q[n][3]);
+  const rows=Object.keys(T).filter(t=>per[t]).map(t=>{const p=per[t],r=p.g/p.t;const cls=r===1?"ok":r>=.6?"mid":"bad";const lab=r===1?"beheerst":r>=.6?"bijna":"herhalen";return`<tr><td>${T[t]}</td><td class="n">${p.g}/${p.t}</td><td class="n"><span class="pill ${cls}">${lab}</span></td></tr>`}).join("");
+  app.innerHTML=`<section class="card">
+    <h2>Resultaat</h2>
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><span class="score">${g}/${tot}</span><span class="pass" style="color:var(${pct>=55?"--ok":"--bad"})">${pct}% ${pct>=55?"· voldoende niveau":"· nog onder de 55%"}</span></div>
+    <p class="hint" style="margin:0">De 55% is een richtwaarde voor deze oefenset, niet de officiële cesuur van het examen.</p>
+    <div style="overflow-x:auto"><table class="topics"><tbody>${rows}</tbody></table></div>
+    <div class="actions">${wrong.length?`<button class="btn" id="retry">Alleen de ${wrong.length} foute vragen opnieuw</button>`:""}<button class="btn ghost" id="restart">Alles opnieuw</button></div>
+  </section>
+  ${wrong.length?`<section class="card"><h2>Fout beantwoord</h2><div class="wronglist">${wrong.map(n=>{const[tp,q,o,c,ex]=Q[n];return`<div class="wr"><span class="kbd">Vraag ${n+1} · ${T[tp]}</span><b>${q}</b><span class="ans-bad">Jouw antwoord: ${L[answers[n]]}. ${o[answers[n]]}</span><span class="ans-ok">Juist: ${L[c]}. ${o[c]}</span><span>${ex}</span></div>`}).join("")}</div></section>`:""}`;
+  const r=document.getElementById("retry");if(r)r.onclick=()=>{order=wrong;wrong.forEach(n=>delete answers[n]);i=0;store();renderQ()};
+  document.getElementById("restart").onclick=()=>{order=[...Q.keys()];answers={};i=0;store();renderQ()};
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("input,textarea"))return;
+  const m={a:0,b:1,c:2,d:3,"1":0,"2":1,"3":2,"4":3}[e.key.toLowerCase()];
+  if(m!==undefined&&i<order.length){const b=document.getElementById("opt"+m);if(b&&!b.disabled)choose(m)}
+  else if(e.key==="Enter"){const nx=document.getElementById("next");if(nx&&!nx.disabled&&document.activeElement!==nx){e.preventDefault();nx.click()}}
+});
+/* ---------- Illustraties ---------- */
+const VIZMAP={0:"cloud",1:"cloud",2:"cloud",3:"cloud",4:"cloud",7:"scale",8:"scale",39:"scale",9:"osi",10:"osi",19:"osi",20:"osi",11:"pad",17:"pad",18:"pad",21:"pad",22:"pad",23:"pad",12:"subnet",13:"subnet",14:"subnet",15:"subnet",16:"subnet",33:"rto",34:"rto",35:"rto",36:"lb",37:"lb",38:"lb",41:"ansible",42:"ansible"};
+let vizStop=[], view="quiz";
+function stopViz(){vizStop.forEach(f=>{try{f()}catch(e){}});vizStop=[]}
+function every(ms,fn){const id=setInterval(fn,ms);vizStop.push(()=>clearInterval(id))}
+function later(ms,fn){const id=setTimeout(fn,ms);vizStop.push(()=>clearTimeout(id));return id}
+function h(html){const d=document.createElement("div");d.innerHTML=html.trim();return d.firstElementChild}
+function mountViz(k,box){stopViz();box.innerHTML="";VIZ[k].fn(box)}
+
+const VIZ={
+cloud:{title:"Wie beheert wat?",fn(el){
+  const L=["Applicatie","Data","Runtime","Middleware","Besturingssysteem","Virtualisatie","Servers","Opslag","Netwerk"];
+  const M={"On-premises":9,"IaaS":5,"PaaS":2,"SaaS":0};
+  const ex={"On-premises":"Eigen serverruimte: alles is van jou, ook stroom en hardware.","IaaS":"Azure-VM: jij beheert het besturingssysteem en alles erboven.","PaaS":"App Service / Azure SQL: jij levert code en data, Microsoft de rest.","SaaS":"Microsoft 365: je gebruikt en configureert alleen de dienst."};
+  let cur="IaaS";
+  el.innerHTML=`<h4>Cloudmodellen als stapel</h4><p class="small">Kies een model. Gekleurde lagen beheert de klant, grijze lagen de provider.</p>
+  <div class="vrow" role="group" aria-label="Model">${Object.keys(M).map(m=>`<button class="seg" data-m="${m}">${m}</button>`).join("")}</div>
+  <div class="stack" id="cs"></div><p id="cx"></p>
+  <div class="legend"><span><i style="background:var(--accent)"></i>klant beheert</span><span><i style="background:var(--surface);border:1px solid var(--line)"></i>provider beheert</span></div>
+  <p class="small">Bij elk model blijft de klant verantwoordelijk voor gebruikers, toegangsrechten en zijn eigen data (gedeelde verantwoordelijkheid).</p>`;
+  const draw=()=>{el.querySelectorAll(".seg").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===cur));
+    el.querySelector("#cs").innerHTML=L.map((l,i)=>`<div class="slab ${i<M[cur]?"k":"p"}"><span>${l}</span><small>${i<M[cur]?"klant":"provider"}</small></div>`).join("");
+    el.querySelector("#cx").textContent=ex[cur]};
+  el.querySelectorAll(".seg").forEach(b=>b.onclick=()=>{cur=b.dataset.m;draw()});draw();}},
+
+osi:{title:"Het OSI-model",fn(el){
+  const O=[
+    [7,"Applicatie","Data","HTTP(S), DNS, SSH, SMTP","—","De dienst die de gebruiker ziet: de webshop, e-mail."],
+    [6,"Presentatie","Data","TLS-versleuteling, JPEG, UTF-8","—","Vertaalt en versleutelt gegevens zodat beide kanten ze begrijpen."],
+    [5,"Sessie","Data","Sessies opzetten en afsluiten","—","Houdt een gesprek tussen twee programma's bij."],
+    [4,"Transport","Segment","TCP (betrouwbaar), UDP (snel); poorten 22, 53, 80, 443","Firewall / NSG op poort","Zorgt dat data bij het juiste programma (poort) aankomt, bij TCP compleet en op volgorde."],
+    [3,"Netwerk","Pakket","IP-adressen, routering, ICMP (ping)","Router","Kiest de route tussen netwerken op basis van IP-adressen."],
+    [2,"Datalink","Frame","MAC-adressen, Ethernet, VLAN","Switch","Brengt frames naar het juiste apparaat binnen hetzelfde netwerk via MAC-adressen."],
+    [1,"Fysiek","Bits","Kabel, glasvezel, wifi-signaal","Kabel, hub","Zet nullen en enen om in elektrische, licht- of radiosignalen."]];
+  const ENC={7:["Data"],4:["TCP :443","Data"],3:["IP 192.168.1.10 → 20.50.1.2","TCP :443","Data"],2:["ETH MAC","IP","TCP","Data","FCS"],1:["0101 1100 0011…"]};
+  let sel=3;
+  el.innerHTML=`<h4>OSI-model: 7 lagen</h4><p class="small">Klik een laag voor uitleg. Ezelsbruggetje van 7 naar 1: <b>A</b>lle <b>P</b>rogrammeurs <b>S</b>turen <b>T</b>och <b>N</b>ooit <b>D</b>omme <b>F</b>outen.</p>
+  <div class="osi"><div class="stack" id="os"></div><div class="detail" id="od"></div></div>
+  <div class="vrow"><button class="btn" id="send">Verstuur een webverzoek</button><span class="small" id="sl"></span></div><div class="pkt" id="pk"></div>`;
+  const draw=()=>{el.querySelector("#os").innerHTML=O.map(o=>`<button class="slab ${o[0]===sel?"on":"p"}" data-l="${o[0]}"><span>${o[0]} · ${o[1]}</span><small>${o[2]}</small></button>`).join("");
+    el.querySelectorAll("#os .slab").forEach(b=>b.onclick=()=>{sel=+b.dataset.l;draw()});
+    const o=O.find(x=>x[0]===sel);
+    el.querySelector("#od").innerHTML=`<b>Laag ${o[0]}: ${o[1]}</b><span>${o[5]}</span><span><span class="small">Voorbeelden:</span> ${o[3]}</span><span><span class="small">Apparaat:</span> ${o[4]}</span><span><span class="small">Eenheid (PDU):</span> ${o[2]}</span>`};
+  el.querySelector("#send").onclick=()=>{stopViz();const seq=[7,6,5,4,3,2,1];let k=0;
+    const step=()=>{sel=seq[k];draw();const enc=ENC[sel]||ENC[7];const prevLen=k?(ENC[seq[k-1]]||ENC[7]).length:0;
+      el.querySelector("#pk").innerHTML=enc.map((x,j)=>`<span class="${enc.length>prevLen&&(j===0||x==="FCS")?"new":""}">${x}</span>`).join("");
+      el.querySelector("#sl").textContent=`Laag ${sel}: ${sel===4?"TCP-header met poort erbij":sel===3?"IP-header erbij":sel===2?"Ethernet-header en controlesom erbij":sel===1?"alles wordt bits op de kabel":"data van de browser"}`;
+      if(++k<seq.length)later(1100,step);else later(1100,()=>{el.querySelector("#sl").textContent="Bij de ontvanger gaat het precies andersom: van laag 1 omhoog, elke laag haalt zijn eigen header eraf."})};
+    step()};
+  draw();}},
+
+subnet:{title:"Subnetten rekenen",fn(el){
+  el.innerHTML=`<h4>Subnet-rekenaar</h4><p class="small">Typ een IP-adres en schuif met het prefix. Blauw = netwerkdeel, oranje = hostdeel.</p>
+  <div class="vrow"><label for="sip" class="small">IP-adres</label><input class="ipin" id="sip" value="192.168.1.130"><label for="spf" class="small">Prefix</label><b id="spv" style="font-family:var(--f-mono)">/26</b></div>
+  <input type="range" id="spf" min="8" max="30" value="26" aria-label="Prefix">
+  <div class="bits" id="sb"></div><dl class="kv" id="skv"></dl>
+  <div id="srw"></div><p class="small" id="sexp"></p>`;
+  const toInt=s=>{const p=s.trim().split(".").map(Number);if(p.length!==4||p.some(x=>!Number.isInteger(x)||x<0||x>255))return null;return((p[0]*16777216)+(p[1]<<16)+(p[2]<<8)+p[3])>>>0};
+  const toIp=n=>[n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join(".");
+  const draw=()=>{const ip=toInt(el.querySelector("#sip").value),p=+el.querySelector("#spf").value;el.querySelector("#spv").textContent="/"+p;
+    if(ip===null){el.querySelector("#skv").innerHTML=`<dt>Fout</dt><dd>Geen geldig IPv4-adres (4 getallen van 0 tot 255).</dd>`;return}
+    const mask=(0xFFFFFFFF<<(32-p))>>>0,net=(ip&mask)>>>0,bc=(net|(~mask>>>0))>>>0,size=2**(32-p);
+    let b="";for(let o=0;o<4;o++){b+='<span class="oct">';for(let j=0;j<8;j++){const i=o*8+j;b+=`<b class="${i<p?"n":"h"}">${(ip>>>(31-i))&1}</b>`}b+="</span>"}
+    el.querySelector("#sb").innerHTML=b;
+    el.querySelector("#skv").innerHTML=`<dt>Subnetmasker</dt><dd>${toIp(mask)}</dd><dt>Netwerkadres</dt><dd>${toIp(net)}</dd><dt>Eerste host</dt><dd>${toIp(net+1)}</dd><dt>Laatste host</dt><dd>${toIp(bc-1)}</dd><dt>Broadcast</dt><dd>${toIp(bc)}</dd><dt>Bruikbare hosts</dt><dd>2^${32-p} − 2 = ${(size-2).toLocaleString("nl-NL")}</dd>`;
+    const rw=el.querySelector("#srw");
+    if(p>=24&&p<=30){const bs=2**(32-p),last=ip&255,n=256/bs;
+      rw.innerHTML=`<p class="small">Laatste octet in blokken van ${bs}: het adres valt in het gemarkeerde blok.</p><div class="ruler">${Array.from({length:n},(_,k)=>`<span class="${Math.floor(last/bs)===k?"cur":""}" title="${k*bs}–${k*bs+bs-1}">${n<=8?k*bs+"–"+(k*bs+bs-1):n<=16?k*bs:""}</span>`).join("")}</div>`;
+      el.querySelector("#sexp").textContent=`Snelle methode: blokgrootte = 256 − ${256-bs} = ${bs}. Het getal ${last} valt in het blok ${Math.floor(last/bs)*bs}–${Math.floor(last/bs)*bs+bs-1}: eerste getal = netwerkadres, laatste = broadcast.`}
+    else{rw.innerHTML="";el.querySelector("#sexp").textContent="Elk volle octet van enen is 255: /8 = 255.0.0.0, /16 = 255.255.0.0, /24 = 255.255.255.0."}};
+  el.querySelector("#sip").oninput=draw;el.querySelector("#spf").oninput=draw;draw();}},
+
+scale:{title:"Scale up versus scale out",fn(el){
+  el.innerHTML=`<h4>Opschalen: groter of meer?</h4><p class="small">Schuif met de drukte. Links groeit één server (scale up), rechts komen er instanties bij (scale out, autoscaling 2–5).</p>
+  <label class="small" for="ld">Drukte: <b id="ldv" style="font-family:var(--f-mono)"></b> verzoeken per seconde</label><input type="range" id="ld" min="0" max="420" value="120">
+  <div class="scale"><div class="pane"><h5>Scale up (verticaal)</h5><div class="floor" id="up"></div><span id="upb"></span><p class="small">Meer CPU en RAM in dezelfde machine. Herstart nodig en er is een maximum. Valt hij uit, dan ligt alles plat.</p></div>
+  <div class="pane"><h5>Scale out (horizontaal)</h5><div class="floor" id="out"></div><span id="outb"></span><p class="small">Regel: CPU boven 75% → +1 instance, onder 30% → −1. Een alert meldt alleen; autoscaling handelt.</p></div></div>`;
+  const S=[["S",100,44],["M",200,62],["L",300,80],["XL",400,100]];
+  const draw=()=>{const ld=+el.querySelector("#ld").value;el.querySelector("#ldv").textContent=ld;
+    const s=S.find(x=>x[1]>=ld)||S[3],cpu=Math.min(100,Math.round(ld/s[1]*100));
+    el.querySelector("#up").innerHTML=`<div class="srv ${cpu>80?"hot":""}" style="width:${s[2]+20}px;height:${s[2]+30}px"><div class="cpu" style="height:${cpu}%"></div><span>${s[0]} · ${cpu}%</span></div>`;
+    el.querySelector("#upb").innerHTML=cpu>80?`<span class="badge bad">Alert: CPU ${cpu}% (> 80%)</span>`:`<span class="badge ok">VM-formaat ${s[0]}</span>`;
+    const n=Math.min(5,Math.max(2,Math.ceil(ld/75))),c=Math.min(100,Math.round(ld/(n*100)*100));
+    el.querySelector("#out").innerHTML=Array.from({length:5},(_,k)=>k<n?`<div class="srv ${c>80?"hot":""}" style="width:42px;height:70px"><div class="cpu" style="height:${c}%"></div><span>${c}%</span></div>`:`<div class="srv ghost" style="width:42px;height:70px"><span>—</span></div>`).join("");
+    el.querySelector("#outb").innerHTML=`<span class="badge ${c>80?"bad":"mid"}">${n} instances${n===5&&c>75?" · maximum bereikt":""}</span>`};
+  el.querySelector("#ld").oninput=draw;draw();}},
+
+lb:{title:"Load balancer en health probe",fn(el){
+  let srv=[], rr=0, mode=3;
+  const reset=m=>{mode=m;srv=Array.from({length:m},(_,k)=>({n:"Web "+(k+1),z:"Zone "+(k+1),up:true,ok:true,c:0}))};
+  el.innerHTML=`<h4>Verkeer verdelen</h4><p class="small">Klik een webserver om hem te laten uitvallen. De health probe controleert elke 2 seconden en stuurt daarna geen verkeer meer naar een ongezonde server.</p>
+  <div class="vrow" role="group" aria-label="Opzet"><button class="seg" data-m="1">1 server</button><button class="seg" data-m="3">3 servers in 3 zones</button><button class="seg" id="reg">Regio valt uit</button></div>
+  <div class="lb"><div class="lbnode">Klanten → Load balancer</div><div class="lbsrv" id="lbs"></div></div><p class="status" id="lbst" aria-live="polite"></p><p class="small" id="lbx"></p>`;
+  const draw=()=>{el.querySelectorAll(".seg[data-m]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.m===mode));
+    el.querySelector("#lbs").innerHTML=srv.map((s,k)=>`<button class="ws ${s.up?"":"down"}" data-k="${k}"><b>${s.n}</b><small>${s.z}</small><span class="c">${s.c} verzoeken</span><small>${s.up?(s.ok?"gezond":"probe…"):(s.ok?"uitgevallen, probe nog niet":"ongezond")}</small></button>`).join("");
+    el.querySelectorAll(".ws").forEach(b=>b.onclick=()=>{const s=srv[+b.dataset.k];s.up=!s.up;draw()});
+    const healthy=srv.filter(s=>s.ok).length;
+    el.querySelector("#lbst").innerHTML=healthy?`<span style="color:var(--ok)">Webshop bereikbaar via ${healthy} server${healthy>1?"s":""}</span>`:`<span style="color:var(--bad)">503: webshop onbereikbaar</span>`;
+    el.querySelector("#lbx").textContent=mode===1?"Met één server is die server een single point of failure: valt hij uit, dan ligt alles plat.":srv.every(s=>!s.up)?"Zones beschermen tegen uitval van één datacenter, niet tegen uitval van de hele regio. Daarvoor heb je een tweede regio met replicatie en failover nodig.":"Valt één zone uit, dan nemen de andere servers het verkeer over."};
+  el.querySelectorAll(".seg[data-m]").forEach(b=>b.onclick=()=>{reset(+b.dataset.m);draw()});
+  el.querySelector("#reg").onclick=()=>{srv.forEach(s=>s.up=false);draw()};
+  every(2000,()=>{srv.forEach(s=>s.ok=s.up);draw()});
+  every(650,()=>{const hs=srv.map((s,k)=>s.ok?k:-1).filter(k=>k>=0);if(!hs.length)return;const k=hs[rr++%hs.length];srv[k].c++;draw();const b=el.querySelector(`.ws[data-k="${k}"]`);if(b){b.classList.add("flash");later(200,()=>b.classList.remove("flash"))}});
+  reset(3);draw();}},
+
+rto:{title:"RTO en RPO op een tijdlijn",fn(el){
+  el.innerHTML=`<h4>Back-up, RPO en RTO</h4><p class="small">Kies hoe vaak er een herstelpunt is, schuif het moment van de storing en de hersteltijd. Doelen uit het portfolio: RPO 15 min, RTO 2 uur.</p>
+  <div class="vrow" role="group" aria-label="Herstelpunt">${[15,60,240].map(m=>`<button class="seg" data-n="${m}">elke ${m<60?m+" min":m/60+" uur"}</button>`).join("")}</div>
+  <label class="small" for="ti">Storing om <b id="tiv" style="font-family:var(--f-mono)"></b></label><input type="range" id="ti" min="5" max="355" value="200">
+  <label class="small" for="re">Herstel duurt <b id="rev" style="font-family:var(--f-mono)"></b></label><input type="range" id="re" min="15" max="240" step="15" value="90">
+  <div class="tl" id="tl"></div><div class="tlaxis"><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span></div>
+  <div class="legend"><span><i style="background:var(--ok-soft);border:1px solid var(--ok)"></i>veilig in herstelpunt</span><span><i style="background:var(--bad)"></i>verloren data (RPO)</span><span><i style="background:var(--warm-soft);border:1px solid var(--warm)"></i>webshop plat (RTO)</span></div>
+  <div class="vrow" id="rb"></div><p class="small">Een replica vervangt geen back-up: een per ongeluk verwijderde tabel wordt direct mee gekopieerd. Alleen een herstelpunt van vóór de fout helpt.</p>`;
+  let N=60;const W=360,hm=m=>{const t=480+m;return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0")};
+  const draw=()=>{el.querySelectorAll(".seg").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.n===N));
+    const t=+el.querySelector("#ti").value,r=+el.querySelector("#re").value,lb=Math.floor(t/N)*N,lost=t-lb;
+    el.querySelector("#tiv").textContent=hm(t);el.querySelector("#rev").textContent=r>=60?(r/60).toString().replace(".",",")+" uur":r+" min";
+    const pc=x=>Math.min(100,x/W*100);let ticks="";for(let m=0;m<=W;m+=N)ticks+=`<div class="tick" style="left:${pc(m)}%"></div>`;
+    el.querySelector("#tl").innerHTML=`<div class="seg2" style="left:0;width:${pc(lb)}%;background:var(--ok-soft)"></div><div class="seg2" style="left:${pc(lb)}%;width:${pc(lost)}%;background:var(--bad)"></div><div class="seg2" style="left:${pc(t)}%;width:${pc(r)}%;background:var(--warm-soft)"></div>${ticks}<div class="inc" style="left:${pc(t)}%"></div>`;
+    el.querySelector("#rb").innerHTML=`<span class="badge ${lost<=15?"ok":"bad"}">Verloren: ${lost} min data (RPO-doel 15 min)</span><span class="badge ${r<=120?"ok":"bad"}">Plat: ${r} min (RTO-doel 120 min)</span>`};
+  el.querySelectorAll(".seg").forEach(b=>b.onclick=()=>{N=+b.dataset.n;draw()});
+  el.querySelector("#ti").oninput=draw;el.querySelector("#re").oninput=draw;draw();}},
+
+pad:{title:"De weg van een webverzoek",fn(el){
+  const ND=[["pc","PC-1","192.168.1.10"],["sw","Switch","laag 2 · MAC"],["rt","Router + NAT","gateway .1"],["net","Internet",""],["az","Azure","webshop :443"]];
+  const ST=[
+    [["pc"],"DHCP","De PC krijgt automatisch zijn IP-configuratie van DHCP: 192.168.1.10/24, gateway 192.168.1.1 en een DNS-server."],
+    [["pc","dns"],"DNS","De browser vraagt aan DNS: wat is het IP-adres van www.boekenkast.nl? Werkt een site wel via het IP-adres maar niet via de naam, dan zit het probleem hier."],
+    [["pc"],"Eigen subnet?","De PC vergelijkt het doel-IP met zijn eigen subnet (/24). Het doel valt erbuiten, dus het pakket gaat naar de default gateway."],
+    [["pc","sw"],"Switch (laag 2)","Het frame krijgt het MAC-adres van de gateway. De switch kijkt in zijn MAC-tabel en stuurt het naar de juiste poort."],
+    [["sw","rt"],"Router (laag 3)","De router kijkt naar het IP-adres en kiest een route naar buiten. Kan een PC zijn gateway wel pingen maar een ander subnet niet? Controleer dan de routerinterfaces (shutdown?), de routes, de firewall en de gateway van de doelhost."],
+    [["rt"],"NAT","NAT vertaalt het privé-adres 192.168.1.10:51234 naar het publieke adres van het kantoor, bijvoorbeeld 84.10.20.30:40001. Zo delen alle PC's één publiek IP."],
+    [["rt","net","az"],"HTTPS naar Azure","Het verzoek gaat via internet naar poort 443 in Azure. TLS versleutelt het onderweg; TCP zorgt dat alles compleet en op volgorde aankomt."],
+    [["az","net","rt","pc"],"Antwoord terug","De webshop antwoordt. NAT vertaalt het publieke adres terug naar 192.168.1.10 en de pagina verschijnt."]];
+  let k=0;
+  el.innerHTML=`<h4>Van PC naar webshop, stap voor stap</h4><div class="vrow" style="justify-content:center"><div class="nd" data-n="dns">DNS-server<small>naam → IP</small></div></div>
+  <div class="path">${ND.map((n,j)=>`${j?`<span class="ln" data-l="${ND[j-1][0]}-${n[0]}"></span>`:""}<div class="nd" data-n="${n[0]}">${n[1]}<small>${n[2]}</small></div>`).join("")}</div>
+  <div class="detail"><b id="pt"></b><span id="px"></span></div>
+  <div class="actions"><button class="btn ghost" id="pp">Vorige stap</button><span class="kbd" id="pn"></span><button class="btn" id="pv">Volgende stap</button></div>`;
+  const draw=()=>{const [on,t,x]=ST[k];el.querySelectorAll(".nd").forEach(d=>d.classList.toggle("on",on.includes(d.dataset.n)));
+    el.querySelectorAll(".ln").forEach(l=>{const [a,b]=l.dataset.l.split("-");l.classList.toggle("on",on.includes(a)&&on.includes(b))});
+    el.querySelector("#pt").textContent=(k+1)+". "+t;el.querySelector("#px").textContent=x;el.querySelector("#pn").textContent=`stap ${k+1} van ${ST.length}`;
+    el.querySelector("#pp").disabled=k===0;el.querySelector("#pv").disabled=k===ST.length-1};
+  el.querySelector("#pp").onclick=()=>{if(k>0){k--;draw()}};el.querySelector("#pv").onclick=()=>{if(k<ST.length-1){k++;draw()}};draw();}},
+
+ansible:{title:"Ansible en idempotentie",fn(el){
+  let st={pkg:false,svc:false,idx:false},run=0;
+  el.innerHTML=`<h4>Een playbook twee keer draaien</h4><p class="small">Ansible beschrijft de gewenste toestand. Alleen wat afwijkt, wordt veranderd.</p>
+  <pre class="code">[webservers]            # inventory.ini: wáár
+localhost ansible_connection=local
+
+- hosts: webservers      # webserver.yml: wát
+  become: true
+  tasks:
+    - apt: name=nginx state=present
+    - service: name=nginx state=started
+    - copy: dest=/var/www/html/index.html</pre>
+  <div class="vrow"><button class="btn" id="ar">ansible-playbook -i inventory.ini webserver.yml</button></div>
+  <div class="vrow"><button class="seg" id="am">Iemand wijzigt index.html met de hand</button><button class="seg" id="as">Nginx wordt gestopt</button><button class="seg" id="ax">Opnieuw beginnen</button></div>
+  <div class="console" id="ac" aria-live="polite"><span class="dim">Nog niet gedraaid.</span></div><p class="small" id="aexp"></p>`;
+  const T2=[["Installeer Nginx","pkg"],["Zorg dat Nginx gestart is","svc"],["Plaats de welkomstpagina","idx"]];
+  el.querySelector("#ar").onclick=()=>{run++;let ch=0,out=`<span class="dim">PLAY [Configureer webserver voor De Boekenkast] — run ${run}</span>\n\nTASK [Gathering Facts]\n<span class="okc">ok: [localhost]</span>\n`;
+    T2.forEach(([n,key])=>{out+=`\nTASK [${n}]\n`;if(st[key])out+=`<span class="okc">ok: [localhost]</span>\n`;else{st[key]=true;ch++;out+=`<span class="chg">changed: [localhost]</span>\n`}});
+    out+=`\nPLAY RECAP\nlocalhost : <span class="okc">ok=${1+T2.length}</span>  <span class="chg">changed=${ch}</span>  unreachable=0  failed=0`;
+    el.querySelector("#ac").innerHTML=out;
+    el.querySelector("#aexp").textContent=ch===0?"changed=0: alles stond al goed, dus Ansible deed niets. Dat heet idempotent: je kunt het playbook veilig zo vaak draaien als je wilt.":`changed=${ch}: Ansible heeft ${ch} afwijking${ch>1?"en":""} hersteld. Draai het nog een keer en kijk wat er gebeurt.`};
+  el.querySelector("#am").onclick=()=>{st.idx=false;el.querySelector("#aexp").textContent="De pagina wijkt nu af van wat in het playbook staat. Draai het playbook opnieuw."};
+  el.querySelector("#as").onclick=()=>{st.svc=false;el.querySelector("#aexp").textContent="Nginx draait niet meer. Draai het playbook opnieuw."};
+  el.querySelector("#ax").onclick=()=>{st={pkg:false,svc:false,idx:false};run=0;el.querySelector("#ac").innerHTML='<span class="dim">Nog niet gedraaid.</span>';el.querySelector("#aexp").textContent=""};}}
+};
+
+function syncNav(){const q=document.getElementById("tabQuiz"),v=document.getElementById("tabViz");if(!q)return;
+  q.toggleAttribute("aria-current",view==="quiz");if(view==="quiz")q.setAttribute("aria-current","page");
+  v.toggleAttribute("aria-current",view==="viz");if(view==="viz")v.setAttribute("aria-current","page");
+  document.getElementById("bar").hidden=view!=="quiz"}
+function renderGallery(k){
+  ctl?.abort();stopViz();view="viz";syncNav();
+  k=k||"osi";
+  app.innerHTML=`<section class="card"><h2>Illustraties</h2><p class="hint" style="margin:0">Kies een onderwerp. Alles is klikbaar of versleepbaar.</p>
+    <div class="gal">${Object.keys(VIZ).map(x=>`<button class="seg" data-v="${x}" aria-pressed="${x===k}">${VIZ[x].title}</button>`).join("")}</div><div class="viz" id="galbox"></div></section>`;
+  app.querySelectorAll(".gal .seg").forEach(b=>b.onclick=()=>renderGallery(b.dataset.v));
+  mountViz(k,document.getElementById("galbox"));
+}
+document.getElementById("tabViz").onclick=()=>renderGallery();
+document.getElementById("tabQuiz").onclick=()=>{if(view!=="quiz")renderQ()};
+
+load();renderQ();
+</script>
+
+</body></html>

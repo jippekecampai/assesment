@@ -74,6 +74,9 @@ export type ToezichtSamenvatting = {
 export type Toezicht = { events: ToezichtEvent[]; samenvatting: ToezichtSamenvatting | null };
 export const getToezicht = (id: string) => get<Toezicht>(`/api/candidates/${encodeURIComponent(id)}/toezicht`);
 
+export type ArtifactApp = { slug: string; titel: string; omschrijving: string };
+export const listApps = () => get<ArtifactApp[]>("/api/apps");
+
 export type GradeDetail = {
   questionId: string;
   domain: string;

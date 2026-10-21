@@ -71,3 +71,11 @@ test('canSeeLogboek: alleen leden van LOGBOEK_GROUP_ID, zonder instelling nieman
   assert.equal(canSeeLogboek(undefined, { AUTH_DEV_MODE: '1' }), true);
   assert.equal(canSeeLogboek('geen-base64-json', { LOGBOEK_GROUP_ID: 'g-1' }), false);
 });
+
+test('canSeeLogboek: LOGBOEK_USERS als tijdelijke lijst van e-mailadressen', () => {
+  const janneke = principal([{ typ: 'preferred_username', val: 'Janneke@Campai.nl' }]);
+  const ander = principal([{ typ: 'preferred_username', val: 'iemand@campai.nl' }]);
+  const env = { LOGBOEK_USERS: 'janneke@campai.nl, hr@campai.nl' };
+  assert.equal(canSeeLogboek(janneke, env), true);
+  assert.equal(canSeeLogboek(ander, env), false);
+});

@@ -18,6 +18,7 @@ import {
   IconClipboardList,
   IconDownload,
   IconFileText,
+  IconSchool,
   IconSearch,
   IconSettings,
   IconShieldCheck,
@@ -35,11 +36,13 @@ import { MedewerkerOverview } from "./views/MedewerkerOverview";
 import { Beleid } from "./views/Beleid";
 import { Beheer } from "./views/Beheer";
 import { Sollicitanten } from "./views/Sollicitanten";
+import { Training } from "./views/Training";
 import campaiLogo from "./assets/campai-logo.svg";
 
 export type ViewId =
   | "employeeOverview"
   | "academy"
+  | "training"
   | "performance"
   | "sollicitanten"
   | "candidateReviews"
@@ -57,6 +60,7 @@ interface NavEntry {
 const navEntries: NavEntry[] = [
   { id: "employeeOverview", label: "Mijn overview", icon: IconUserCircle, group: "Medewerker" },
   { id: "academy", label: "Skills Academy", icon: IconBook2, group: "Medewerker" },
+  { id: "training", label: "Training", icon: IconSchool, group: "Medewerker" },
   { id: "performance", label: "Performance loop", icon: IconTargetArrow, group: "Management" },
   { id: "sollicitanten", label: "Sollicitanten", icon: IconUserPlus, group: "Recruitment" },
   { id: "candidateReviews", label: "Kandidaat reviews", icon: IconClipboardList, group: "Recruitment" },
@@ -68,6 +72,7 @@ const navEntries: NavEntry[] = [
 const viewTitles: Record<ViewId, string> = {
   employeeOverview: "Mijn overview",
   academy: "Skills Academy",
+  training: "Training",
   performance: "Performance loop",
   sollicitanten: "Sollicitanten",
   candidateReviews: "Kandidaat reviews",
@@ -167,6 +172,7 @@ export function App() {
         <Box key={view}>
           {view === "employeeOverview" && <MedewerkerOverview onOpenAcademy={() => setView("academy")} />}
           {view === "academy" && <SkillsAcademy />}
+          {view === "training" && <Training />}
           {view === "performance" && <Performanceloop />}
           {view === "sollicitanten" && <Sollicitanten />}
           {view === "candidateReviews" && <Reviewdashboard search={search} />}
